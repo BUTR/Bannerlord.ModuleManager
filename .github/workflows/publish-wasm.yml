@@ -11,54 +11,48 @@ on:
 
 jobs:
   publish-npm:
-    name: Publish NPM
+    name: Publish on NPM and GPR
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
+      
+      - name: Setup .NET 6
+        uses: actions/setup-dotnet@master
+        with:
+          dotnet-version: 6.0.x
+      
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14
+          
+      - run: |
+          cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && \
+          npm version $(node -p "require('./package.json').version = \
+          require('./package.json').version.split('.')[0]+'.' + \
+          require('./package.json').version.split('.')[1]+'.' + \
+          $(git rev-list HEAD --count)") --no-git-tag-version --allow-same-version;
+          
+      - run: cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && npm ci
+      
+      - run: dotnet publish src/Bannerlord.ModuleManager.WASM
+      
+      - run: cp src/Bannerlord.ModuleManager.WASM/*.js src/Bannerlord.ModuleManager.WASM/npm_publish
       
       - uses: actions/setup-node@v1
         with:
           node-version: 14
           registry-url: https://registry.npmjs.org/
           scope: '@butr'
-          
-      - run: |
-          cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && \
-          npm version $(node -p "require('./package.json').version = \
-          require('./package.json').version.split('.')[0]+'.' + \
-          require('./package.json').version.split('.')[1]+'.' + \
-          $(git rev-list HEAD --count)") --no-git-tag-version --allow-same-version;
-          
-      - run: cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && npm ci
       
-      - run: cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && npm pack
-
       - run:  cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{secrets.PUBLISH_NPM_TOKEN}}
 
-  publish-gpr:
-    name: Publish GPR
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      
       - uses: actions/setup-node@v1
         with:
           node-version: 14
           registry-url: https://npm.pkg.github.com/
           scope: '@butr'
-          
-      - run: |
-          cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && \
-          npm version $(node -p "require('./package.json').version = \
-          require('./package.json').version.split('.')[0]+'.' + \
-          require('./package.json').version.split('.')[1]+'.' + \
-          $(git rev-list HEAD --count)") --no-git-tag-version --allow-same-version;
-          
-      - run: cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && npm ci
-      
-      - run: cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && npm pack
 
       - run:  cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && npm publish
         env:
