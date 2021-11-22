@@ -1,0 +1,45 @@
+name: Publish
+
+on:
+  repository_dispatch:
+    types: [wasm_publish]
+
+jobs:
+  publish-npm:
+    name: Publish on NPM and GPR
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+     
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14
+          
+      - run: |
+          cd ./src/Bannerlord.ModuleManager.TypeScript && \
+          npm version $(node -p "require('./package.json').version = \
+          require('./package.json').version.split('.')[0]+'.' + \
+          require('./package.json').version.split('.')[1]+'.' + \
+          $(git rev-list HEAD --count)") --no-git-tag-version --allow-same-version;
+          
+      - run: cd ./src/Bannerlord.ModuleManager.TypeScript && npm ci
+      
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14
+          registry-url: https://registry.npmjs.org/
+          scope: '@butr'
+      
+      - run:  cd ./src/src/Bannerlord.ModuleManager.TypeScript && npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.PUBLISH_NPM_TOKEN}}
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14
+          registry-url: https://npm.pkg.github.com/
+          scope: '@butr'
+
+      - run:  cd ./src/src/Bannerlord.ModuleManager.TypeScript && npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.PUBLISH_GITHUB_TOKEN}}
