@@ -34,9 +34,9 @@ jobs:
           
       - run: cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && npm ci
       
-      - run: dotnet publish src/Bannerlord.ModuleManager.WASM
+      - run: dotnet publish -c Release src/Bannerlord.ModuleManager.WASM
       
-      - run: cp src/Bannerlord.ModuleManager.WASM/*.js src/Bannerlord.ModuleManager.WASM/npm_publish
+      - run: cp "src/Bannerlord.ModuleManager.WASM/"*.js "src/Bannerlord.ModuleManager.WASM/npm_publish/"
       
       - uses: actions/setup-node@v1
         with:
