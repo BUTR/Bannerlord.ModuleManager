@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>10.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <LibraryName>blmodulemanager</LibraryName>
+	<AssemblyName>BannerlordModuleManager</AssemblyName>
+    <Clean>false</Clean>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="npm_publish\blmodulemanager.js" />
+    <None Remove="npm_publish\dotnet.js.map" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DotNetJS" Version="0.2.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bannerlord.ModuleManager.Shared\Bannerlord.ModuleManager.csproj" />
+  </ItemGroup>
+
+</Project>

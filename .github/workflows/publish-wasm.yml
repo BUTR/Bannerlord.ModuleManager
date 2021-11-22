@@ -1,0 +1,50 @@
+name: Publish
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - '.github/workflows/publish-wasm.yml'
+      - 'src/Bannerlord.ModuleManager/**.cs'
+      - 'src/Bannerlord.ModuleManager.WASM/**.*'
+
+jobs:
+  publish:
+    name: Publish on GPR and NPM
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14
+          
+      - run: |
+          cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && \
+          npm version $(node -p "require('./package.json').version = \
+          require('./package.json').version.split('.')[0]+'.' + \
+          require('./package.json').version.split('.')[1]+'.' + \
+          $(git rev-list HEAD --count)") --no-git-tag-version --allow-same-version;
+          
+      - run: cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && npm ci
+      
+      - run: cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && npm pack
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14
+          registry-url: https://registry.npmjs.org/
+          scope: '@butr'
+      - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.PUBLISH_NPM_TOKEN}}
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14
+          registry-url: https://npm.pkg.github.com/
+          scope: '@butr'
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.PUBLISH_GITHUB_TOKEN}}
