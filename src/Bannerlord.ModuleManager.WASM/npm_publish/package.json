@@ -2,8 +2,9 @@
   "version": "1.0.0",
   "name": "@butr/blmodulemanager-raw",
   "description": "Raw WASM package bundled with the dotnet runtime",
-  "main": "blmodulemanager.js",
-  "typings": "blmodulemanager.d.ts",
+  "main": "lib/blmodulemanager.js",
+  "typings": "lib/blmodulemanager.d.ts",
+  "files": [ "lib/" ],
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com:BUTR/Bannerlord.ModuleManager.git"
@@ -19,6 +20,7 @@
     "url": "https://github.com/BUTR/Bannerlord.ModuleManager/issues"
   },
   "homepage": "https://github.com/BUTR/Bannerlord.ModuleManager#readme",
+  "peerDependencies": {},
   "devDependencies": {
     "webpack": "^4.41.2"
   }
