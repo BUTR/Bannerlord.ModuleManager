@@ -10,8 +10,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish-npm:
-    name: Publish on NPM and GPR
+  publish:
+    name: Publish on NuGet and GPR
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1

@@ -25,6 +25,9 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>Butter.png</PackageIcon>
+    <PackageProjectUrl>https://github.com/BUTR/Bannerlord.ModuleManager</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/BUTR/Bannerlord.ModuleManager.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
   <ItemGroup>
     <None Include="../../resources/Butter.png" Pack="true" PackagePath="" />

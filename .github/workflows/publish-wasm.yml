@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish-npm:
+  publish:
     name: Publish on NPM and GPR
     runs-on: ubuntu-latest
     steps:
