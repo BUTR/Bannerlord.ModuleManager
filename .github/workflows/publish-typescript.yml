@@ -30,7 +30,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
           scope: '@butr'
       
-      - run:  cd ./src/src/Bannerlord.ModuleManager.TypeScript && npm publish --access public
+      - run:  cd ./src/Bannerlord.ModuleManager.TypeScript && npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{secrets.PUBLISH_NPM_TOKEN}}
 
@@ -40,6 +40,6 @@ jobs:
           registry-url: https://npm.pkg.github.com/
           scope: '@butr'
 
-      - run:  cd ./src/src/Bannerlord.ModuleManager.TypeScript && npm publish
+      - run:  cd ./src/Bannerlord.ModuleManager.TypeScript && npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.PUBLISH_GITHUB_TOKEN}}
