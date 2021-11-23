@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net5;net6</TargetFrameworks>
+    <LangVersion>10.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <VersionOverride>0</VersionOverride>
+    <Version>1.0.$(VersionOverride)</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+      <PackageReference Condition="$(TargetFramework) == 'netstandard2.0' OR $(TargetFramework) == 'netstandard2.1'" Include="IsExternalInit" Version="1.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+      <PackageReference Condition="$(TargetFramework) == 'netstandard2.0'" Include="Microsoft.Bcl.HashCode" Version="1.1.1" />
+  </ItemGroup>
+
+  <!--NuGet Package-->
+  <PropertyGroup>
+    <PackageId>Bannerlord.ModuleManager</PackageId>
+    <PackageDescription>A library for managing Module dependencies.</PackageDescription>
+    <Title>Bannerlord ModuleManager</Title>
+    <Authors>BUTR</Authors>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>Butter.png</PackageIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="../../resources/Butter.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+  <!--NuGet Package-->
+
+</Project>

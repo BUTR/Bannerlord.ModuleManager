@@ -1,0 +1,36 @@
+name: Publish
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - '.github/workflows/publish-wasm.yml'
+      - 'src/Bannerlord.ModuleManager/**.cs'
+      - 'src/Bannerlord.ModuleManager.WASM/**.*'
+  workflow_dispatch:
+
+jobs:
+  publish-npm:
+    name: Publish on NPM and GPR
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      
+      - name: Setup .NET 6
+        uses: actions/setup-dotnet@master
+        with:
+          dotnet-version: 6.0.x
+
+      - run: dotnet pack -c Release src/Bannerlord.ModuleManager -o ./packages
+      
+      - name: Push to NuGet
+        run: dotnet nuget push "./packages/*.nupkg" -k ${{secrets.NUGET_API_KEY}} -s https://www.nuget.org --skip-duplicate
+        shell: pwsh
+
+      - name: Push to GPR
+        run: |
+             for f in ./packages/*.nupkg
+             do
+               curl -vX PUT -u "vslee:${{secrets.GITHUB_TOKEN}}" -F package=@$f https://nuget.pkg.github.com/BUTR/
+             done

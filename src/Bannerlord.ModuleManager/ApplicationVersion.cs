@@ -67,9 +67,9 @@ namespace Bannerlord.ModuleManager
                 return false;
 
             var applicationVersionType = FromPrefix(array[0][0]);
-            if (!skipCheck && !int.TryParse(array[0].AsSpan(1), out major))
+            if (!skipCheck && !int.TryParse(array[0].Substring(1), out major))
             {
-                if (array[0].AsSpan(1) != "*") return false;
+                if (array[0].Substring(1) != "*") return false;
                 major = int.MinValue;
                 minor = int.MinValue;
                 revision = int.MinValue;

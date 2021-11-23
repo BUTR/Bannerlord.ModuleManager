@@ -29,7 +29,7 @@ namespace Bannerlord.ModuleManager
 
         public static void Visit<T>(T item, Func<T, IEnumerable<T>> getDependencies, ICollection<T> sorted, HashSet<T> visited)
         {
-            if (visited.TryGetValue(item, out _))
+            if (visited.Contains(item))
             {
                 return;
             }

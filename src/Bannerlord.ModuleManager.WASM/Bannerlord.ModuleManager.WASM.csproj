@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Bannerlord.ModuleManager.Shared\Bannerlord.ModuleManager.csproj" />
+    <ProjectReference Include="..\Bannerlord.ModuleManager\Bannerlord.ModuleManager.csproj" />
   </ItemGroup>
 
 </Project>
