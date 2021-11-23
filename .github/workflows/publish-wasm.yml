@@ -8,6 +8,7 @@ on:
       - '.github/workflows/publish-wasm.yml'
       - 'src/Bannerlord.ModuleManager/**.cs'
       - 'src/Bannerlord.ModuleManager.WASM/**.*'
+  workflow_dispatch:
 
 jobs:
   publish-npm:
