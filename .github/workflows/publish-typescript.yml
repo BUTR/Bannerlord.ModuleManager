@@ -3,6 +3,7 @@ name: Publish TypeScript
 on:
   repository_dispatch:
     types: [wasm_publish]
+  workflow_dispatch:
 
 jobs:
   publish-npm:
