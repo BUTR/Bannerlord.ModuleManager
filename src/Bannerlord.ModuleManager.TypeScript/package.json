@@ -47,7 +47,7 @@
     "node": ">=10"
   },
   "dependencies": {
-    "@butr/blmodulemanager-raw": "^1.0.14"
+    "@butr/blmodulemanager-raw": "*"
   },
   "devDependencies": {
     "@ava/typescript": "^1.1.1",

@@ -21,9 +21,9 @@ jobs:
           npm version $(node -p "require('./package.json').version = \
           require('./package.json').version.split('.')[0]+'.' + \
           require('./package.json').version.split('.')[1]+'.' + \
-          $(git rev-list HEAD --count)") --no-git-tag-version --allow-same-version;
+          $(git rev-list --no-merges --count master)") --no-git-tag-version --allow-same-version;
           
-      - run: cd ./src/Bannerlord.ModuleManager.TypeScript && npm ci
+      - run: cd ./src/Bannerlord.ModuleManager.TypeScript && npm ci && npm i @butr/blmodulemanager-raw
       
       - uses: actions/setup-node@v1
         with:
