@@ -50,7 +50,7 @@ namespace Bannerlord.ModuleManager
                     tags.Add(subModuleTags, value);
                 }
             }
-            
+
             return new SubModuleInfoExtended
             {
                 Name = name,

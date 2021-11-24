@@ -104,7 +104,7 @@ namespace Bannerlord.ModuleManager
                         dependentModuleMetadatas.Add(new DependentModuleMetadata
                         {
                             Id = idAttr.InnerText,
-                            LoadType = (LoadType)order,
+                            LoadType = (LoadType) order,
                             IsOptional = optional,
                             IsIncompatible = incompatible,
                             Version = dVersion,
