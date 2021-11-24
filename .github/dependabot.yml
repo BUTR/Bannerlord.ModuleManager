@@ -9,8 +9,13 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-
+      
   - package-ecosystem: "npm"
-    directory: "/"
+    directory: "src/Bannerlord.ModuleManager.WASM/npm_publish"
+    schedule:
+      interval: "daily"
+      
+  - package-ecosystem: "npm"
+    directory: "src/Bannerlord.ModuleManager.TypeScript"
     schedule:
       interval: "daily"
