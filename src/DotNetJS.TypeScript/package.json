@@ -1,0 +1,20 @@
+{
+  "name": "@butr/dotnet-runtime-ts",
+  "version": "1.0.0",
+  "description": "TypeScript declarations for dotnet-runtime",
+  "typings": "lib/types",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BUTR/Bannerlord.ModuleManager.git"
+  },
+  "author": "BUTR",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BUTR/Bannerlord.ModuleManager/issues"
+  },
+  "homepage": "https://github.com/BUTR/Bannerlord.ModuleManager#readme"
+}
