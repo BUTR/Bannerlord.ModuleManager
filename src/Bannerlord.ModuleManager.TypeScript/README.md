@@ -1,3 +1,3 @@
-# blmodulemanager
+# Bannerlord.ModuleManager.TypeScript
 
-Bannerlord.ModuleManager for JS/TS
+Bannerlord.ModuleManager bindings for JS/TS
