@@ -22,6 +22,6 @@
   "homepage": "https://github.com/BUTR/Bannerlord.ModuleManager#readme",
   "peerDependencies": {},
   "devDependencies": {
-    "webpack": "^4.41.2"
+    "webpack": "^5.64.3"
   }
 }
