@@ -10,7 +10,7 @@ jobs:
     name: Publish on NPM and GPR
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2.4.0
      
       - uses: actions/setup-node@v1
         with:
