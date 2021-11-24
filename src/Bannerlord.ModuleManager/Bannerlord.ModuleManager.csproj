@@ -1,5 +1,5 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1;net5;net6</TargetFrameworks>
     <LangVersion>10.0</LangVersion>
@@ -7,20 +7,15 @@
     <VersionOverride>0</VersionOverride>
     <Version>1.0.$(VersionOverride)</Version>
   </PropertyGroup>
-
   <ItemGroup>
-      <PackageReference Condition="$(TargetFramework) == 'netstandard2.0' OR $(TargetFramework) == 'netstandard2.1'" Include="IsExternalInit" Version="1.0.1">
+    <PackageReference Condition="$(TargetFramework) == 'netstandard2.0' OR $(TargetFramework) == 'netstandard2.1'" Include="IsExternalInit" Version="1.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-      <PackageReference Condition="$(TargetFramework) == 'netstandard2.0'" Include="Microsoft.Bcl.HashCode" Version="1.1.1" />
+    <PackageReference Condition="$(TargetFramework) == 'netstandard2.0'" Include="Microsoft.Bcl.HashCode" Version="1.1.1" />
   </ItemGroup>
-
   <!--NuGet Package-->
   <PropertyGroup>
-    <PackageId>Bannerlord.ModuleManager</PackageId>
-    <PackageDescription>A library for managing Module dependencies.</PackageDescription>
-    <Title>Bannerlord ModuleManager</Title>
     <Authors>BUTR</Authors>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -29,9 +24,36 @@
     <RepositoryUrl>https://github.com/BUTR/Bannerlord.ModuleManager.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
-  <ItemGroup>
+  <PropertyGroup Condition="$(PackAsSource) != 'true'">
+    <PackageId>Bannerlord.ModuleManager</PackageId>
+    <PackageDescription>A library for managing Mount &amp; Blade 2: Bannerlord Module dependencies.</PackageDescription>
+    <Title>Bannerlord ModuleManager</Title>
+  </PropertyGroup>
+  <ItemGroup Condition="$(PackAsSource) == 'true'">
     <None Include="../../resources/Butter.png" Pack="true" PackagePath="" />
   </ItemGroup>
+  <PropertyGroup Condition="$(PackAsSource) == 'true'">
+    <PackageId>Bannerlord.ModuleManager.Source</PackageId>
+    <PackageDescription>Source code for managing Mount &amp; Blade 2: Bannerlord Module dependencies.</PackageDescription>
+    <Title>Bannerlord ModuleManager Source</Title>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <BuildProjectReferences>false</BuildProjectReferences>
+    <BuildOnPack>false</BuildOnPack>
+    <PackOnBuild>false</PackOnBuild>
+    <PackBuildOutput>false</PackBuildOutput>
+    <PackCompile>true</PackCompile>
+    <PackEmbeddedResource>true</PackEmbeddedResource>
+    <EnablePackCleanup>false</EnablePackCleanup>
+    <EnablePackInference>false</EnablePackInference>
+    <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)' == ''">obj</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <ItemGroup Condition="$(PackAsSource) == 'true'">
+    <PackageReference Include="NuGetizer" Version="0.7.5" />
+    <PackageFile Include="**/*.cs" PackagePath="content\cs\$(TargetFramework)\$(ProjectName)\%(RelativeDir)%(Filename).cs.pp"
+                 Exclude="$(BaseIntermediateOutputPath)/**/*.cs" />
+    <PackageFile Include="**/*.cs" PackagePath="contentFiles\cs\$(TargetFramework)\$(ProjectName)\%(RelativeDir)%(Filename).cs.pp"
+                 Exclude="$(BaseIntermediateOutputPath)/**/*.cs" />
+    <PackageFile Include="../../resources/Butter.png" PackagePath="Butter.png" />
+  </ItemGroup>
   <!--NuGet Package-->
-
 </Project>

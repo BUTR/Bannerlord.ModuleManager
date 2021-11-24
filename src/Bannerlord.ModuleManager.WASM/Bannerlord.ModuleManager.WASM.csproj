@@ -5,8 +5,8 @@
     <LangVersion>10.0</LangVersion>
     <Nullable>enable</Nullable>
     <LibraryName>blmodulemanager</LibraryName>
-	<AssemblyName>BannerlordModuleManager</AssemblyName>
     <Clean>false</Clean>
+    <AssemblyName>BannerlordModuleManager</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
