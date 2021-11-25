@@ -1,4 +1,4 @@
-declare module '@butr/blmodulemanager-raw' {
+declare module '@butr/blmodulemanager' {
     import { DotNetRuntime } from "@butr/dotnet-runtime-ts/lib/types/dotnet";
     import { DotNetWasmWrapper } from "@butr/dotnet-runtime-ts/lib/types/wrapper";
   
