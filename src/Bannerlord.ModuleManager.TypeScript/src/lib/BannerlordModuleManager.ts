@@ -1,4 +1,4 @@
-import { boot, invoke } from '@butr/blmodulemanager-raw';
+import wrapper from '@butr/blmodulemanager-raw';
 
 import { IModuleInfoExtended, isIModuleInfoExtended, ISubModuleInfoExtended, isISubModuleInfoExtended } from './index';
 
@@ -9,11 +9,11 @@ export class BannerlordModuleManager {
     return bmm;
   }
   private async init() {
-    await boot();
+    await wrapper.boot();
   }
 
   sort(unsorted: readonly IModuleInfoExtended[]): IModuleInfoExtended[] | null {
-    const result = invoke<IModuleInfoExtended[]>('Sort', unsorted);
+    const result = wrapper.invoke<IModuleInfoExtended[]>('Sort', unsorted);
     if (Array.isArray(result) && result.every((x) => isIModuleInfoExtended(x))) {
       return result;
     }
@@ -21,7 +21,7 @@ export class BannerlordModuleManager {
   }
 
   areAllDependenciesOfModulePresent(unsorted: readonly IModuleInfoExtended[], module: IModuleInfoExtended): boolean | null {
-    const result = invoke<boolean>('AreAllDependenciesOfModulePresent', unsorted, module);
+    const result = wrapper.invoke<boolean>('AreAllDependenciesOfModulePresent', unsorted, module);
     if (typeof result === 'boolean') {
       return result;
     }
@@ -29,7 +29,7 @@ export class BannerlordModuleManager {
   }
 
   getDependentModulesOf(source: readonly IModuleInfoExtended[], module: IModuleInfoExtended, skipExternalDependencies: boolean): readonly IModuleInfoExtended[] | null {
-    const result = invoke<readonly IModuleInfoExtended[]>('GetDependentModulesOf', source, module, skipExternalDependencies);
+    const result = wrapper.invoke<readonly IModuleInfoExtended[]>('GetDependentModulesOf', source, module, skipExternalDependencies);
     if (Array.isArray(result) && result.every((x) => isIModuleInfoExtended(x))) {
       return result;
     }
@@ -37,7 +37,7 @@ export class BannerlordModuleManager {
   }
 
   getModuleInfo(xml: string): IModuleInfoExtended | null {
-    const result = invoke<IModuleInfoExtended>('GetModuleInfo', xml);
+    const result = wrapper.invoke<IModuleInfoExtended>('GetModuleInfo', xml);
     if (isIModuleInfoExtended(result)) {
       return result;
     }
@@ -45,7 +45,7 @@ export class BannerlordModuleManager {
   }
 
   getSubModuleInfo(xml: string): ISubModuleInfoExtended | null {
-    const result = invoke<ISubModuleInfoExtended>('GetSubModuleInfo', xml);
+    const result = wrapper.invoke<ISubModuleInfoExtended>('GetSubModuleInfo', xml);
     if (isISubModuleInfoExtended(result)) {
       return result;
     }

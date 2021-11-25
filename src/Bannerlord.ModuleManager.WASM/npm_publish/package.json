@@ -23,7 +23,9 @@
   },
   "homepage": "https://github.com/BUTR/Bannerlord.ModuleManager#readme",
   "devDependencies": {
-    "@butr/dotnet-runtime-ts": "*",
     "webpack": "^5.64.3"
+  },
+  "dependencies": {
+    "@butr/dotnet-runtime-ts": "*"
   }
 }
