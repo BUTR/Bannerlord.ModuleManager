@@ -7,6 +7,8 @@ on:
     paths:
       - '.github/workflows/publish-dotnetjs-typescript.yml'
       - 'src/DotNetJS.TypeScript/**.*'
+      - 'src/Bannerlord.ModuleManager.WASM/**.*'
+      - 'src/Bannerlord.ModuleManager.TypeScript/**.*'
   workflow_dispatch:
 
 jobs:
