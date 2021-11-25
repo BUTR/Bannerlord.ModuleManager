@@ -36,9 +36,9 @@ jobs:
       
       - run: cp ./src/Bannerlord.ModuleManager.WASM/bin/*.js ./src/Bannerlord.ModuleManager.WASM/bin/*.map ./src/Bannerlord.ModuleManager.WASM/npm_publish/src
       
-      - run: cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && npm build
+      - run: cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && npm run build
       
-      - run: cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && npm test
+      - run: cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && npm run test
       
       - uses: actions/setup-node@v1
         with:
