@@ -31,7 +31,7 @@ jobs:
           require('./package.json').version.split('.')[1]+'.' + \
           $(git rev-list --no-merges --count master)") --no-git-tag-version --allow-same-version;
           
-      - run: cd ./src/DotNetJS.TypeScript && npm ci && npm i @butr/dotnet-runtime-ts@*
+      - run: cd ./src/DotNetJS.TypeScript && npm ci
       
       - uses: actions/setup-node@v1
         with:

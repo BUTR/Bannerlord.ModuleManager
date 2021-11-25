@@ -30,7 +30,7 @@ jobs:
           require('./package.json').version.split('.')[1]+'.' + \
           $(git rev-list --no-merges --count master)") --no-git-tag-version --allow-same-version;
           
-      - run: cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && npm ci
+      - run: cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && npm ci && npm i @butr/dotnet-runtime-ts@*
       
       - run: dotnet publish -c Release src/Bannerlord.ModuleManager.WASM
       
