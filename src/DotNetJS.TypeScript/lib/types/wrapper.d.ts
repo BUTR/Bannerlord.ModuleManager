@@ -1,11 +1,18 @@
-import { invoke, invokeAsync } from "./interop";
+import { invoke as invokeAssembly, invokeAsync as invokeAssemblyAsync } from "./interop";
+
+declare function boot(): Promise<void>;
+declare function invoke<TType>(method: string, ...args: any[]): TType;
+declare function invokeAsync<TType>(method: string, ...args: any[]): Promise<TType>;
 
 export interface DotNetWasmWrapper {
-  boot: () => Promise<void>;
+  boot: typeof boot;
 
-  invoke: <TType>(method: string, ...args: any[]) => TType;
-  invokeAsync: <TType>(method: string, ...args: any[]) => Promise<TType>;
+  invoke: typeof invoke;
+  invokeAsync: typeof invokeAsync;
 
-  invokeAssembly: typeof invoke;
-  invokeAssemblyAsync: typeof invokeAsync;
+  invokeAssembly: typeof invokeAssembly;
+  invokeAssemblyAsync: typeof invokeAssemblyAsync;
 }
+
+export declare const wrapper: DotNetWasmWrapper;
+export { boot, invoke, invokeAsync, invokeAssembly, invokeAssemblyAsync };
