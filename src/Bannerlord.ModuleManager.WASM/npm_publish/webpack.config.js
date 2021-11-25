@@ -2,12 +2,29 @@ const path = require("path");
 
 module.exports = {
     mode: "production",
-    entry: "./blmodulemanager.js",
+    entry: "./src/index.js",
+    devtool: "source-map",
+    mode: "production",
     output: {
+        filename: "index.js",
         path: path.resolve(__dirname, "dist"),
-        filename: "blmodulemanager.js",
         library: "blmodulemanager",
         libraryTarget: "umd",
-        globalObject: "this"
+        umdNamedDefine: true,
+        globalObject: "this",
+        clean: true,
     },
+    resolve: {
+        extensions: ['', '.ts', '.tsx','.webpack.js', '.web.js', '.js']
+    },
+    module: {
+        rules: [
+          {
+            test: /\.js$/,
+            use: ["source-map-loader"],
+            exclude: /node_modules/,
+            enforce: "pre"
+          }
+        ]
+    }
 };

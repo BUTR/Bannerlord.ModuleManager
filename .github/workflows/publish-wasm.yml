@@ -1,4 +1,4 @@
-name: Publish JavaScript Raw
+name: Publish NPM
 
 on:
   repository_dispatch:
@@ -55,10 +55,3 @@ jobs:
       - run: cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.PUBLISH_GITHUB_TOKEN}}
-          
-      - name: Repository Dispatch
-        uses: peter-evans/repository-dispatch@v1
-        with:
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          event-type: wasm_publish
-          client_payload: '{"github": ${{ toJson(github) }}}'

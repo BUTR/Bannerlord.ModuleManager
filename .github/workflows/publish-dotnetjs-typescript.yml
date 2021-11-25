@@ -1,4 +1,4 @@
-name: Publish DotNetJS TypeScript
+name: Publish DotNetJS Declarations
 
 on:
   push:
