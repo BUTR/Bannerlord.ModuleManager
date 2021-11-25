@@ -27,6 +27,8 @@ jobs:
           
       - run: cd ./src/Bannerlord.ModuleManager.TypeScript && npm ci && npm i @butr/blmodulemanager-raw@*
       
+      - run: cd ./src/Bannerlord.ModuleManager.TypeScript && npm run test
+      
       - uses: actions/setup-node@v1
         with:
           node-version: 16
