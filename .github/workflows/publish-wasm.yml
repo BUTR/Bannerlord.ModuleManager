@@ -1,13 +1,8 @@
 name: Publish JavaScript Raw
 
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - '.github/workflows/publish-wasm.yml'
-      - 'src/Bannerlord.ModuleManager/**.cs'
-      - 'src/Bannerlord.ModuleManager.WASM/**.*'
+  repository_dispatch:
+    types: [dotnetjs_types_publish]
   workflow_dispatch:
 
 jobs:

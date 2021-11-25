@@ -1,3 +1,3 @@
-export interface ObjectReference {
-    _id: number;
-}
+//export interface ObjectReference {
+//    _id: number;
+//}
