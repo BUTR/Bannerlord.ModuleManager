@@ -16,7 +16,7 @@ jobs:
      
       - uses: actions/setup-node@v1
         with:
-          node-version: 14
+          node-version: 16
           
       - run: |
           cd ./src/Bannerlord.ModuleManager.TypeScript && \
@@ -29,7 +29,7 @@ jobs:
       
       - uses: actions/setup-node@v1
         with:
-          node-version: 14
+          node-version: 16
           registry-url: https://registry.npmjs.org/
           scope: '@butr'
       
@@ -39,7 +39,7 @@ jobs:
 
       - uses: actions/setup-node@v1
         with:
-          node-version: 14
+          node-version: 16
           registry-url: https://npm.pkg.github.com/
           scope: '@butr'
 

@@ -22,7 +22,7 @@ jobs:
 
       - uses: actions/setup-node@v1
         with:
-          node-version: 14
+          node-version: 16
           
       - run: |
           cd ./src/DotNetJS.TypeScript && \
@@ -31,11 +31,11 @@ jobs:
           require('./package.json').version.split('.')[1]+'.' + \
           $(git rev-list --no-merges --count master)") --no-git-tag-version --allow-same-version;
           
-      - run: cd ./src/DotNetJS.TypeScript && npm ci
+      - run: cd ./src/DotNetJS.TypeScript && npm ci && npm i @butr/dotnet-runtime-ts@*
       
       - uses: actions/setup-node@v1
         with:
-          node-version: 14
+          node-version: 16
           registry-url: https://registry.npmjs.org/
           scope: '@butr'
       
@@ -45,7 +45,7 @@ jobs:
 
       - uses: actions/setup-node@v1
         with:
-          node-version: 14
+          node-version: 16
           registry-url: https://npm.pkg.github.com/
           scope: '@butr'
 
