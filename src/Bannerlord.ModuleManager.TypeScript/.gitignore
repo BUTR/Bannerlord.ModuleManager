@@ -3,6 +3,7 @@ build
 node_modules
 src/lib/**/**.js
 src/test/**/**.js
+!src/test/**/_**.js
 !src/**/**.spec.js
 coverage
 *.tgz
