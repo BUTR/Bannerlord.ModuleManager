@@ -5,9 +5,21 @@
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
   "module": "build/module/index.js",
-  "repository": "https://github.com/Aragas/@butr/blmodulemanager",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com:BUTR/Bannerlord.ModuleManager.git"
+  },
+  "keywords": [
+    "bannerlord",
+    "wasm",
+    "modulemanager"
+  ],
+  "author": "BUTR",
   "license": "MIT",
-  "keywords": [],
+  "homepage": "https://github.com/BUTR/Bannerlord.ModuleManager#readme",
+  "bugs": {
+    "url": "https://github.com/BUTR/Bannerlord.ModuleManager/issues"
+  },
   "scripts": {
     "build": "run-p build:*",
     "build:main": "tsc -p tsconfig.json && copyfiles -f ./src/lib/blmodulemanager.d.ts ./src/lib/dotnet.js.map ./build/main/lib/",
