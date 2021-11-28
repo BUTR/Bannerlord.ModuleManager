@@ -19,7 +19,7 @@ jobs:
         with:
           dotnet-version: 6.0.x
       
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2.4.1
         with:
           node-version: 16
           
@@ -40,7 +40,7 @@ jobs:
       
       - run: cd ./src/Bannerlord.ModuleManager.TypeScript && npm run test
       
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2.4.1
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org/
@@ -50,7 +50,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{secrets.PUBLISH_NPM_TOKEN}}
 
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2.4.1
         with:
           node-version: 16
           registry-url: https://npm.pkg.github.com/
