@@ -1,6 +1,0 @@
-.vscode
-node_modules
-src
-test
-*.tgz
-webpack.config.js

@@ -1,8 +1,7 @@
-const test = require('ava');
+import test from 'ava';
 
-const { LibraryWasm } = require('./../dist/index');
-
-const { harmonyXml, uiExtenderExXml } = require('./_data');
+import { harmonyXml, uiExtenderExXml } from './_data';
+import { LibraryWasm } from '../lib/librarywasm';
 
 test('LibraryWasm', async (t) => {
   const blmodulemanager = await LibraryWasm.createAsync();

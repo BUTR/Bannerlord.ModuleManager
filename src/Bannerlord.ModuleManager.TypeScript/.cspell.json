@@ -1,0 +1,42 @@
+{
+  "version": "0.2",
+  "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/master/cspell.schema.json",
+  "language": "en",
+  "words": [
+    "Bannerlord",
+    "bitauth",
+    "bitjson",
+    "blmodulemanager",
+    "butr",
+    "cimg",
+    "circleci",
+    "codecov",
+    "commitlint",
+    "dependabot",
+    "editorconfig",
+    "esnext",
+    "execa",
+    "exponentiate",
+    "globby",
+    "libauth",
+    "librarywasm",
+    "Metadatas",
+    "mkdir",
+    "nocheck",
+    "prettierignore",
+    "sandboxed",
+    "Singleplayer",
+    "transpiled",
+    "typedoc",
+    "untracked"
+  ],
+  "flagWords": [],
+  "ignorePaths": [
+    "package.json",
+    "package-lock.json",
+    "yarn.lock",
+    "tsconfig.json",
+    "src/lib/blmodulemanager.js",
+    "node_modules/**"
+  ]
+}

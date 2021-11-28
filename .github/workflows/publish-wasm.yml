@@ -23,22 +23,22 @@ jobs:
         with:
           node-version: 16
           
+      - run: dotnet publish -c Release src/Bannerlord.ModuleManager.WASM
+      
+      - run: cp ./src/Bannerlord.ModuleManager.WASM/bin/*.js ./src/Bannerlord.ModuleManager.WASM/bin/*.map ./src/Bannerlord.ModuleManager.TypeScript/src/lib
+      
       - run: |
-          cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && \
+          cd ./src/Bannerlord.ModuleManager.TypeScript && \
           npm version $(node -p "require('./package.json').version = \
           require('./package.json').version.split('.')[0]+'.' + \
           require('./package.json').version.split('.')[1]+'.' + \
           $(git rev-list --no-merges --count master)") --no-git-tag-version --allow-same-version;
           
-      - run: cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && npm ci && npm i @butr/dotnet-runtime-ts@*
+      - run: cd ./src/Bannerlord.ModuleManager.TypeScript && npm ci && npm i @butr/dotnet-runtime-ts@*
       
-      - run: dotnet publish -c Release src/Bannerlord.ModuleManager.WASM
+      - run: cd ./src/Bannerlord.ModuleManager.TypeScript && npm run build
       
-      - run: cp ./src/Bannerlord.ModuleManager.WASM/bin/*.js ./src/Bannerlord.ModuleManager.WASM/bin/*.map ./src/Bannerlord.ModuleManager.WASM/npm_publish/src
-      
-      - run: cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && npm run build
-      
-      - run: cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && npm run test
+      - run: cd ./src/Bannerlord.ModuleManager.TypeScript && npm run test
       
       - uses: actions/setup-node@v1
         with:
@@ -46,7 +46,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
           scope: '@butr'
       
-      - run: cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && npm publish --access public
+      - run: cd ./src/Bannerlord.ModuleManager.TypeScript && npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{secrets.PUBLISH_NPM_TOKEN}}
 
@@ -56,6 +56,6 @@ jobs:
           registry-url: https://npm.pkg.github.com/
           scope: '@butr'
 
-      - run: cd ./src/Bannerlord.ModuleManager.WASM/npm_publish && npm publish
+      - run: cd ./src/Bannerlord.ModuleManager.TypeScript && npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.PUBLISH_GITHUB_TOKEN}}
