@@ -1,4 +1,5 @@
-import { BannerlordModuleManager as blmmanager, boot, BootStatus, getBootStatus } from "./dotnet";
+import { boot, BootStatus, getBootStatus } from "./dotnet";
+import dotnet from "./dotnet";
 import { ModuleInfoExtended } from "./types";
 
 export class BannerlordModuleManager {
@@ -15,22 +16,22 @@ export class BannerlordModuleManager {
     }
 
     sort(unsorted: ModuleInfoExtended[]): ModuleInfoExtended[] {
-        return blmmanager.Sort(unsorted);   
+        return dotnet.BannerlordModuleManager.Sort(unsorted);   
     }
 
-    areAllDependenciesOfModulePresent(unsorted: ModuleInfoExtended[], module: ModuleInfoExtended): ModuleInfoExtended[] {
-        return blmmanager.AreAllDependenciesOfModulePresent(unsorted, module);   
+    areAllDependenciesOfModulePresent(unsorted: ModuleInfoExtended[], module: ModuleInfoExtended): boolean {
+        return dotnet.BannerlordModuleManager.AreAllDependenciesOfModulePresent(unsorted, module);   
      }
 
     getDependentModulesOf(source: ModuleInfoExtended[], module: ModuleInfoExtended, skipExternalDependencies: boolean): ModuleInfoExtended[] {
-        return blmmanager.GetDependentModulesOf(source, module, skipExternalDependencies);
+        return dotnet.BannerlordModuleManager.GetDependentModulesOf(source, module, skipExternalDependencies);
     }
     
     getModuleInfo(xml: string): ModuleInfoExtended {
-        return blmmanager.GetModuleInfo(xml);
+        return dotnet.BannerlordModuleManager.GetModuleInfo(xml);
     }
     
     getSubModuleInfo(xml: string): ModuleInfoExtended {
-        return blmmanager.GetSubModuleInfo(xml);
+        return dotnet.BannerlordModuleManager.GetSubModuleInfo(xml);
     }
 }

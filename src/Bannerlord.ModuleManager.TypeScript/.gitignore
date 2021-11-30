@@ -1,7 +1,7 @@
 .nyc_output
 build
 node_modules
-src/lib/**/**.js
+src/lib/dotnet.*
 src/test/**/**.js
 !src/test/**/_**.js
 !src/**/**.spec.js

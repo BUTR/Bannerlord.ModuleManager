@@ -6,12 +6,12 @@ import { BannerlordModuleManager } from '../lib/BannerlordModuleManager';
 test('BannerlordModuleManager', async (t) => {
   const blmmanager = await BannerlordModuleManager.createAsync();
 
-  const uiExtenderEx = blmmanager.getModuleInfo(uiExtenderExXml);
+  const uiExtenderEx = await blmmanager.getModuleInfo(uiExtenderExXml);
   if (uiExtenderEx === null) {
     t.fail();
     return;
   }
-  const harmony = blmmanager.getModuleInfo(harmonyXml);
+  const harmony = await blmmanager.getModuleInfo(harmonyXml);
   if (harmony === null) {
     t.fail();
     return;

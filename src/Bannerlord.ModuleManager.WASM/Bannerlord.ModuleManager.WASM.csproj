@@ -4,15 +4,10 @@
     <TargetFramework>net6.0</TargetFramework>
     <LangVersion>10.0</LangVersion>
     <Nullable>enable</Nullable>
-    <LibraryName>blmodulemanager</LibraryName>
-    <Clean>false</Clean>
     <AssemblyName>BannerlordModuleManager</AssemblyName>
+    <EmitSourceMap>true</EmitSourceMap>
+    <EmitTypes>true</EmitTypes>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="npm_publish\blmodulemanager.js" />
-    <None Remove="npm_publish\dotnet.js.map" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="DotNetJS" Version="0.3.8" />

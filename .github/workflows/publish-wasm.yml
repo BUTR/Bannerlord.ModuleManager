@@ -25,7 +25,7 @@ jobs:
           
       - run: dotnet publish -c Release src/Bannerlord.ModuleManager.WASM
       
-      - run: cp ./src/Bannerlord.ModuleManager.WASM/bin/*.js ./src/Bannerlord.ModuleManager.WASM/bin/*.map ./src/Bannerlord.ModuleManager.TypeScript/src/lib
+      - run: cp ./src/Bannerlord.ModuleManager.WASM/bin/dotnet.* ./src/Bannerlord.ModuleManager.TypeScript/src/lib
       
       - run: |
           cd ./src/Bannerlord.ModuleManager.TypeScript && \
