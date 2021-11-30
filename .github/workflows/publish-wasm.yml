@@ -25,9 +25,11 @@ jobs:
         with:
           dotnet-version: 6.0.x
       
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2.5.0
         with:
           node-version: 16
+          cache: 'npm'
+          cache-dependency-path: src/Bannerlord.ModuleManager.TypeScript/package-lock.json
           
       - run: dotnet publish -c Release src/Bannerlord.ModuleManager.WASM
       
@@ -46,7 +48,7 @@ jobs:
       
       - run: cd ./src/Bannerlord.ModuleManager.TypeScript && npm run test
       
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2.5.0
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org/
@@ -56,7 +58,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{secrets.PUBLISH_NPM_TOKEN}}
 
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2.5.0
         with:
           node-version: 16
           registry-url: https://npm.pkg.github.com/
