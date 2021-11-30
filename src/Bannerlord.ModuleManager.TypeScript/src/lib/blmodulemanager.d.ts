@@ -1,1 +1,0 @@
-export * from "@butr/dotnet-runtime-ts/lib/types/wrapper"

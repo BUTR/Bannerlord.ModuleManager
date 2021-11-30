@@ -1,17 +1,17 @@
 import test from 'ava';
 
 import { harmonyXml, uiExtenderExXml } from './_data';
-import { LibraryWasm } from '../lib/librarywasm';
+import { BannerlordModuleManager } from '../lib/BannerlordModuleManager';
 
-test('LibraryWasm', async (t) => {
-  const blmodulemanager = await LibraryWasm.createAsync();
+test('BannerlordModuleManager', async (t) => {
+  const blmmanager = await BannerlordModuleManager.createAsync();
 
-  const uiExtenderEx = blmodulemanager.getModuleInfo(uiExtenderExXml);
+  const uiExtenderEx = blmmanager.getModuleInfo(uiExtenderExXml);
   if (uiExtenderEx === null) {
     t.fail();
     return;
   }
-  const harmony = blmodulemanager.getModuleInfo(harmonyXml);
+  const harmony = blmmanager.getModuleInfo(harmonyXml);
   if (harmony === null) {
     t.fail();
     return;
@@ -19,7 +19,7 @@ test('LibraryWasm', async (t) => {
 
   const unsorted = [uiExtenderEx, harmony];
 
-  const sorted = blmodulemanager.sort(unsorted);
+  const sorted = blmmanager.sort(unsorted);
   if (sorted === null || !Array.isArray(sorted)) {
     t.fail();
     return;

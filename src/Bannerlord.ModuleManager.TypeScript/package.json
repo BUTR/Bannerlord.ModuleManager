@@ -83,7 +83,7 @@
     "exclude": [
       "**/_*.*",
       "**/*.spec.*",
-      "src/lib/blmodulemanager.js"
+      "src/lib/dotnet.js"
     ]
   }
 }

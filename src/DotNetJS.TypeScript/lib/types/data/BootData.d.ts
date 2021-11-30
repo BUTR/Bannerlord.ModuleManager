@@ -1,6 +1,6 @@
 import { Assembly } from "./Assembly";
 
-export interface BootData {
+export declare type BootData = {
     wasm: Uint8Array | string;
     assemblies: Assembly[];
     entryAssemblyName: string;

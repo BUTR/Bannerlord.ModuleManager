@@ -1,12 +1,12 @@
 import { getBootStatus, terminate } from "./boot";
-import { BootStatus } from "./data/BootStatus";
-import { createObjectReference, createStreamReference, disposeObjectReference, invoke as invokeAssembly, invokeAsync as invokeAssemblyAsync } from "./interop";
+import { BootStatus } from "./data";
+import { createObjectReference, createStreamReference, disposeObjectReference } from "./interop";
 
 declare function boot(): Promise<void>;
 declare function invoke<TType>(method: string, ...args: any[]): TType;
 declare function invokeAsync<TType>(method: string, ...args: any[]): Promise<TType>;
 
-export interface DotNetWasmWrapper {
+export declare type DotNetWasmWrapper = {
   BootStatus: typeof BootStatus;
   getBootStatus: typeof getBootStatus;
   boot: typeof boot;
@@ -18,13 +18,11 @@ export interface DotNetWasmWrapper {
 
   invoke: typeof invoke;
   invokeAsync: typeof invokeAsync;
-
-  invokeAssembly: typeof invokeAssembly;
-  invokeAssemblyAsync: typeof invokeAssemblyAsync;
 }
 
 declare const wrapper: DotNetWasmWrapper;
-export { 
+
+export {
   BootStatus,
   getBootStatus,
   boot,
@@ -33,8 +31,7 @@ export {
   disposeObjectReference,
   createStreamReference,
   invoke,
-  invokeAsync,
-  invokeAssembly,
-  invokeAssemblyAsync
+  invokeAsync
 };
+
 export default wrapper;

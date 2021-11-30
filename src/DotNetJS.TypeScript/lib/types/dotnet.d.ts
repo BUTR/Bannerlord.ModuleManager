@@ -1,10 +1,8 @@
+import { BootStatus, BootData, Assembly } from "./data";
 import { boot, getBootStatus, terminate } from "./boot";
-import { BootStatus } from "./data/BootStatus";
-import { BootData } from "./data/BootData";
 import { invoke, invokeAsync, createObjectReference, disposeObjectReference, createStreamReference } from "./interop";
-import { Assembly } from "./data/Assembly";
 
-export interface DotNetRuntime {
+export declare type DotNetRuntime = {
     BootStatus: typeof BootStatus;
     getBootStatus: typeof getBootStatus;
     boot: typeof boot;
@@ -17,5 +15,20 @@ export interface DotNetRuntime {
 }
 
 export declare const dotnet: DotNetRuntime;
-export { BootStatus, BootData, Assembly };
-export { boot, getBootStatus, terminate, invoke, invokeAsync, createObjectReference, disposeObjectReference, createStreamReference };
+
+export {
+    BootStatus,
+    BootData,
+    Assembly
+};
+
+export { 
+    boot,
+    getBootStatus,
+    terminate,
+    invoke,
+    invokeAsync,
+    createObjectReference,
+    disposeObjectReference,
+    createStreamReference
+};

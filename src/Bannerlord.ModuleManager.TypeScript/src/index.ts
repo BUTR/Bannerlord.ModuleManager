@@ -1,1 +1,1 @@
-export * from "./lib/librarywasm";
+export * from "./lib/BannerlordModuleManager";

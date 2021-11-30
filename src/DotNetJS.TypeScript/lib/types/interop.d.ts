@@ -1,10 +1,6 @@
-//import { ObjectReference } from "./data/ObjectReference";
-
 export declare function initializeInterop(): void;
-export declare const invoke: <TType>(assembly: string, method: string, ...args: any[]) => TType;
-export declare const invokeAsync: <TType>(assembly: string, method: string, ...args: any[]) => Promise<TType>;
-//export declare const createObjectReference: (object: any) => ObjectReference;
-//export declare const disposeObjectReference: (objectReference: ObjectReference) => void;
-export declare const createObjectReference: (object: any) => any;
-export declare const disposeObjectReference: (objectReference: any) => void;
-export declare const createStreamReference: (buffer: Uint8Array | any) => any;
+export declare function invoke<TType>(assembly: string, method: string, ...args: any[]): TType;
+export declare function invokeAsync<TType>(assembly: string, method: string, ...args: any[]): Promise<TType>;
+export declare function createObjectReference(object: any): any;
+export declare function disposeObjectReference(objectReference: any): void;
+export declare function createStreamReference(buffer: Uint8Array | any): any;
