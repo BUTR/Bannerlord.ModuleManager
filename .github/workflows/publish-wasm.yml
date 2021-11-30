@@ -1,8 +1,14 @@
 name: Publish NPM
 
 on:
-  repository_dispatch:
-    types: [dotnetjs_types_publish]
+  push:
+    branches:
+      - master
+    paths:
+      - '.github/workflows/publish-wasm.yml'
+      - 'src/DotNetJS.TypeScript/**.*'
+      - 'src/Bannerlord.ModuleManager.WASM/**.*'
+      - 'src/Bannerlord.ModuleManager.TypeScript/**.*'
   workflow_dispatch:
 
 jobs:
@@ -34,7 +40,7 @@ jobs:
           require('./package.json').version.split('.')[1]+'.' + \
           $(git rev-list --no-merges --count master)") --no-git-tag-version --allow-same-version;
           
-      - run: cd ./src/Bannerlord.ModuleManager.TypeScript && npm ci && npm i @butr/dotnet-runtime-ts@*
+      - run: cd ./src/Bannerlord.ModuleManager.TypeScript && npm ci
       
       - run: cd ./src/Bannerlord.ModuleManager.TypeScript && npm run build
       

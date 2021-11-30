@@ -16,22 +16,22 @@ export class BannerlordModuleManager {
     }
 
     sort(unsorted: ModuleInfoExtended[]): ModuleInfoExtended[] {
-        return dotnet.BannerlordModuleManager.Sort(unsorted);   
+        return dotnet.dotnet.BannerlordModuleManager.Sort(unsorted);   
     }
 
     areAllDependenciesOfModulePresent(unsorted: ModuleInfoExtended[], module: ModuleInfoExtended): boolean {
-        return dotnet.BannerlordModuleManager.AreAllDependenciesOfModulePresent(unsorted, module);   
+        return dotnet.dotnet.BannerlordModuleManager.AreAllDependenciesOfModulePresent(unsorted, module);   
      }
 
     getDependentModulesOf(source: ModuleInfoExtended[], module: ModuleInfoExtended, skipExternalDependencies: boolean): ModuleInfoExtended[] {
-        return dotnet.BannerlordModuleManager.GetDependentModulesOf(source, module, skipExternalDependencies);
+        return dotnet.dotnet.BannerlordModuleManager.GetDependentModulesOf(source, module, skipExternalDependencies);
     }
     
     getModuleInfo(xml: string): ModuleInfoExtended {
-        return dotnet.BannerlordModuleManager.GetModuleInfo(xml);
+        return dotnet.dotnet.BannerlordModuleManager.GetModuleInfo(xml);
     }
     
     getSubModuleInfo(xml: string): ModuleInfoExtended {
-        return dotnet.BannerlordModuleManager.GetSubModuleInfo(xml);
+        return dotnet.dotnet.BannerlordModuleManager.GetSubModuleInfo(xml);
     }
 }
