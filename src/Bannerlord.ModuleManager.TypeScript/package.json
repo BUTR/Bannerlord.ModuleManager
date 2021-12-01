@@ -22,8 +22,8 @@
   },
   "scripts": {
     "build": "run-p build:*",
-    "build:main": "tsc -p tsconfig.json",
-    "build:module": "tsc -p tsconfig.module.json",
+    "build:main": "tsc -p tsconfig.json && copyfiles -f src/lib/dotnet.d.ts build/main/lib/",
+    "build:module": "tsc -p tsconfig.module.json && copyfiles -f src/lib/dotnet.d.ts build/module/lib/",
     "test": "run-s build test:*",
     "test:spelling": "cspell \"{README.md,.github/*.md,src/**/*.ts,src/**/*.js}\"",
     "test:unit": "nyc ava",
@@ -49,6 +49,7 @@
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "ava": "^3.15.0",
     "codecov": "^3.8.2",
+    "copyfiles": "^2.4.1",
     "cspell": "^5.13.1",
     "npm-run-all": "^4.1.5",
     "nyc": "^15.1.0",
