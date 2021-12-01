@@ -1,4 +1,4 @@
-import { boot, BootStatus, getBootStatus } from "./dotnet";
+import { boot, BootStatus, getBootStatus, terminate } from "./dotnet";
 import dotnet from "./dotnet";
 import { ModuleInfoExtended } from "./types";
 
@@ -33,5 +33,9 @@ export class BannerlordModuleManager {
     
     getSubModuleInfo(xml: string): ModuleInfoExtended {
         return dotnet.BannerlordModuleManager.GetSubModuleInfo(xml);
+    }
+
+    async dispose(): Promise<void> { 
+        await terminate();
     }
 }

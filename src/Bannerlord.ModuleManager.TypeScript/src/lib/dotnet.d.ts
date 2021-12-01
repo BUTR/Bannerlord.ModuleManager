@@ -1,20 +1,9 @@
-export declare const dotnet: {
-    BannerlordModuleManager: {
-        Sort: (source: any) => any,
-        AreAllDependenciesOfModulePresent: (source: any, module: any) => boolean,
-        GetDependentModulesOf: (source: any, module: any, skipExternalDependencies: boolean) => any,
-        GetModuleInfo: (xmlContent: string) => any,
-        GetSubModuleInfo: (xmlContent: string) => any,
-    };
-    BootStatus: typeof BootStatus;
-    getBootStatus: typeof getBootStatus;
-    boot: typeof boot;
-    terminate: typeof terminate;
-    invoke: <T>(assembly: string, method: string, ...args: any[]) => T;
-    invokeAsync: <T_1>(assembly: string, method: string, ...args: any[]) => Promise<T_1>;
-    createObjectReference: (object: any) => any;
-    disposeObjectReference: (objectReference: any) => void;
-    createStreamReference: (buffer: any) => any;
+export declare const BannerlordModuleManager: {
+    Sort: (source: any) => any,
+    AreAllDependenciesOfModulePresent: (source: any, module: any) => boolean,
+    GetDependentModulesOf: (source: any, module: any, skipExternalDependencies: boolean) => any,
+    GetModuleInfo: (xmlContent: string) => any,
+    GetSubModuleInfo: (xmlContent: string) => any,
 };
 export interface Assembly {
     name: string;
