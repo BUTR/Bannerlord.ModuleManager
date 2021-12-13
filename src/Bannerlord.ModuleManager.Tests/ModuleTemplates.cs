@@ -23,7 +23,7 @@ namespace Bannerlord.ModuleManager.Tests
             IsMultiplayerModule = false,
             DependentModules = new List<DependentModule>
             {
-                new("NativeModule", ApplicationVersion.Empty)
+                new("NativeModule", ApplicationVersion.Empty, false)
             },
         };
 
@@ -37,7 +37,7 @@ namespace Bannerlord.ModuleManager.Tests
             IsMultiplayerModule = false,
             DependentModules = new List<DependentModule>
             {
-                new("NativeModule", ApplicationVersion.Empty)
+                new("NativeModule", ApplicationVersion.Empty, false)
             },
             DependentModuleMetadatas = new List<DependentModuleMetadata>
             {
@@ -76,7 +76,7 @@ namespace Bannerlord.ModuleManager.Tests
         {
             DependentModules = new List<DependentModule>
             {
-                new("NativeModule", ApplicationVersion.Empty)
+                new("NativeModule", ApplicationVersion.Empty, false)
             },
         };
         public static ModuleInfoExtended CustomModuleWithNativeDMM => CustomModuleBase with
@@ -110,7 +110,7 @@ namespace Bannerlord.ModuleManager.Tests
         {
             DependentModules = new List<DependentModule>
             {
-                new("CustomModule", ApplicationVersion.Empty)
+                new("CustomModule", ApplicationVersion.Empty, false)
             },
         };
         public static ModuleInfoExtended CustomModule2WithCustomModuleDMM => Custom2ModuleBase with
@@ -152,6 +152,17 @@ namespace Bannerlord.ModuleManager.Tests
                 }
             }
         };
+        public static ModuleInfoExtended CustomModule2WithCustomModuleOptionalTW => Custom2ModuleBase with
+        {
+            DependentModules = new List<DependentModule>
+            {
+                new()
+                {
+                    Id = "CustomModule",
+                    IsOptional = true,
+                }
+            }
+        };
         public static ModuleInfoExtended CustomModule2WithCustomModuleIncompatible => Custom2ModuleBase with
         {
             DependentModuleMetadatas = new List<DependentModuleMetadata>
@@ -160,6 +171,16 @@ namespace Bannerlord.ModuleManager.Tests
                 {
                     Id = "CustomModule",
                     IsIncompatible = true
+                }
+            }
+        };
+        public static ModuleInfoExtended CustomModule2WithCustomModuleIncompatibleTW => Custom2ModuleBase with
+        {
+            IncompatibleModules = new List<DependentModule>
+            {
+                new()
+                {
+                    Id = "CustomModule"
                 }
             }
         };
@@ -174,6 +195,16 @@ namespace Bannerlord.ModuleManager.Tests
                     IsOptional = false,
                     LoadType = LoadType.LoadAfterThis,
                     Version = ApplicationVersion.Empty
+                }
+            }
+        };
+        public static ModuleInfoExtended CommunityFrameworkModuleBeforeNativeTW => CommunityFrameworkModuleBase with
+        {
+            ModulesToLoadAfterThis = new List<DependentModule>
+            {
+                new()
+                {
+                    Id = "NativeModule",
                 }
             }
         };
@@ -204,6 +235,7 @@ namespace Bannerlord.ModuleManager.Tests
         /// One module depends on another module as an optional
         /// </summary>
         Optional,
+        OptionalTW,
         /// <summary>
         /// One module depends on another module as an optional
         /// Two times
@@ -213,6 +245,7 @@ namespace Bannerlord.ModuleManager.Tests
         /// One module depends on another module as an optional, but that module doesn't exist
         /// </summary>
         OptionalNonExisting,
+        OptionalTWNonExisting,
 
         /// <summary>
         /// One module declares another module as incompatible
@@ -222,6 +255,10 @@ namespace Bannerlord.ModuleManager.Tests
         /// One module declares another module as incompatible
         /// </summary>
         Incompatible1,
+        /// <summary>
+        /// One module declares another module as incompatible
+        /// </summary>
+        IncompatibleTW,
 
         /// <summary>
         /// Framework - load before Native
@@ -230,6 +267,7 @@ namespace Bannerlord.ModuleManager.Tests
         /// Custom    - after Native
         /// </summary>
         Complex1,
+        ComplexTW1,
         /// <summary>
         /// Framework - load before Native
         /// Native    - nothing
@@ -237,6 +275,7 @@ namespace Bannerlord.ModuleManager.Tests
         /// Custom2   - incompatible with Custom
         /// </summary>
         Complex2,
+        ComplexTW2,
 
         /// <summary>
         /// Native    - nothing
@@ -339,13 +378,37 @@ namespace Bannerlord.ModuleManager.Tests
             ModuleListTemplates.OptionalNonExisting => (
                 new()
                 {
-                    ModuleTemplates.Custom2ModuleBase,
+                    ModuleTemplates.CustomModule2WithCustomModuleOptional,
                     ModuleTemplates.NativeModuleBase,
                 },
                 new()
                 {
                     ModuleTemplates.NativeModuleBase.Id,
-                    ModuleTemplates.Custom2ModuleBase.Id,
+                    ModuleTemplates.CustomModule2WithCustomModuleOptional.Id,
+                }),
+            ModuleListTemplates.OptionalTW => (
+                new()
+                {
+                    ModuleTemplates.CustomModule2WithCustomModuleOptionalTW,
+                    ModuleTemplates.NativeModuleBase,
+                    ModuleTemplates.CustomModuleWithNativeDMM,
+                },
+                new()
+                {
+                    ModuleTemplates.NativeModuleBase.Id,
+                    ModuleTemplates.CustomModuleWithNativeDMM.Id,
+                    ModuleTemplates.CustomModule2WithCustomModuleOptional.Id,
+                }),
+            ModuleListTemplates.OptionalTWNonExisting => (
+                new()
+                {
+                    ModuleTemplates.CustomModule2WithCustomModuleOptionalTW,
+                    ModuleTemplates.NativeModuleBase,
+                },
+                new()
+                {
+                    ModuleTemplates.NativeModuleBase.Id,
+                    ModuleTemplates.CustomModule2WithCustomModuleOptional.Id,
                 }),
             ModuleListTemplates.Incompatible0 => (
                 new()
@@ -370,6 +433,18 @@ namespace Bannerlord.ModuleManager.Tests
                 {
                     ModuleTemplates.NativeModuleBase.Id,
                     ModuleTemplates.CustomModule2WithCustomModuleIncompatible.Id,
+                }),
+            ModuleListTemplates.IncompatibleTW => (
+                new()
+                {
+                    ModuleTemplates.CustomModuleWithNativeDMM,
+                    ModuleTemplates.NativeModuleBase,
+                    ModuleTemplates.CustomModule2WithCustomModuleIncompatibleTW,
+                },
+                new()
+                {
+                    ModuleTemplates.NativeModuleBase.Id,
+                    ModuleTemplates.CustomModuleWithNativeDMM.Id,
                 }),
 
             ModuleListTemplates.Complex1 => (
@@ -398,6 +473,35 @@ namespace Bannerlord.ModuleManager.Tests
                 new()
                 {
                     ModuleTemplates.CommunityFrameworkModuleBeforeNative.Id,
+                    ModuleTemplates.NativeModuleBase.Id,
+                    ModuleTemplates.CustomModuleWithNativeDMM.Id,
+                }),
+            ModuleListTemplates.ComplexTW1 => (
+                new()
+                {
+                    ModuleTemplates.CustomModuleWithNativeDMM,
+                    ModuleTemplates.NativeModuleBase,
+                    ModuleTemplates.Native2ModuleBase,
+                    ModuleTemplates.CommunityFrameworkModuleBeforeNativeTW,
+                },
+                new()
+                {
+                    ModuleTemplates.CommunityFrameworkModuleBeforeNativeTW.Id,
+                    ModuleTemplates.NativeModuleBase.Id,
+                    ModuleTemplates.Native2ModuleBase.Id,
+                    ModuleTemplates.CustomModuleWithNativeDMM.Id,
+                }),
+            ModuleListTemplates.ComplexTW2 => (
+                new()
+                {
+                    ModuleTemplates.CustomModuleWithNativeDMM,
+                    ModuleTemplates.NativeModuleBase,
+                    ModuleTemplates.CustomModule2WithCustomModuleIncompatible,
+                    ModuleTemplates.CommunityFrameworkModuleBeforeNativeTW,
+                },
+                new()
+                {
+                    ModuleTemplates.CommunityFrameworkModuleBeforeNativeTW.Id,
                     ModuleTemplates.NativeModuleBase.Id,
                     ModuleTemplates.CustomModuleWithNativeDMM.Id,
                 }),

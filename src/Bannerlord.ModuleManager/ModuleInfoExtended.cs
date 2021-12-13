@@ -18,6 +18,8 @@ namespace Bannerlord.ModuleManager
         public bool IsMultiplayerModule { get; init; }
         public IReadOnlyList<SubModuleInfoExtended> SubModules { get; init; } = Array.Empty<SubModuleInfoExtended>();
         public IReadOnlyList<DependentModule> DependentModules { get; init; } = Array.Empty<DependentModule>();
+        public IReadOnlyList<DependentModule> ModulesToLoadAfterThis { get; init; } = Array.Empty<DependentModule>();
+        public IReadOnlyList<DependentModule> IncompatibleModules { get; init; } = Array.Empty<DependentModule>();
         public string Url { get; init; } = string.Empty;
         public IReadOnlyList<DependentModuleMetadata> DependentModuleMetadatas { get; init; } = Array.Empty<DependentModuleMetadata>();
 
@@ -46,7 +48,36 @@ namespace Bannerlord.ModuleManager
                 if (dependentModulesList[i]?.Attributes?["Id"] is { } idAttr)
                 {
                     ApplicationVersion.TryParse(dependentModulesList[i]?.Attributes?["DependentVersion"]?.InnerText, out var dVersion);
-                    dependentModules[i] = new DependentModule(idAttr.InnerText, dVersion);
+                    var isOptional = dependentModulesList[i]?.Attributes?["Optional"] is { InnerText: "true" };
+                    dependentModules[i] = new DependentModule(idAttr.InnerText, dVersion, isOptional);
+                }
+            }
+
+            var modulesToLoadAfterThisNode = moduleNode?.SelectSingleNode("ModulesToLoadAfterThis");
+            var modulesToLoadAfterThisList = modulesToLoadAfterThisNode?.SelectNodes("Module");
+            var modulesToLoadAfterThis = new DependentModule[dependentModulesList?.Count ?? 0];
+            for (var i = 0; i < modulesToLoadAfterThisList?.Count; i++)
+            {
+                if (modulesToLoadAfterThisList[i]?.Attributes?["Id"] is { } idAttr)
+                {
+                    modulesToLoadAfterThis[i] = new DependentModule
+                    {
+                        Id = idAttr.InnerText
+                    };
+                }
+            }
+
+            var incompatibleModulesNode = moduleNode?.SelectSingleNode("IncompatibleModules");
+            var incompatibleModulesList = incompatibleModulesNode?.SelectNodes("Module");
+            var incompatibleModules = new DependentModule[dependentModulesList?.Count ?? 0];
+            for (var i = 0; i < incompatibleModulesList?.Count; i++)
+            {
+                if (incompatibleModulesList[i]?.Attributes?["Id"] is { } idAttr)
+                {
+                    incompatibleModules[i] = new DependentModule
+                    {
+                        Id = idAttr.InnerText
+                    };
                 }
             }
 
@@ -62,6 +93,7 @@ namespace Bannerlord.ModuleManager
             }
 
             // Custom data
+            //
             var url = moduleNode?.SelectSingleNode("Url")?.Attributes?["value"]?.InnerText ?? string.Empty;
 
             var dependentModuleMetadatasNode = moduleNode?.SelectSingleNode("DependedModuleMetadatas");
@@ -120,8 +152,8 @@ namespace Bannerlord.ModuleManager
                     dependentModuleMetadatas.Add(new DependentModuleMetadata
                     {
                         Id = idAttr.InnerText,
-                        LoadType = LoadType.None,
-                        IsOptional = true,
+                        LoadType = LoadType.LoadAfterThis,
+                        IsOptional = false,
                         IsIncompatible = false,
                         Version = ApplicationVersion.Empty,
                         VersionRange = ApplicationVersionRange.Empty
@@ -181,6 +213,8 @@ namespace Bannerlord.ModuleManager
                 IsMultiplayerModule = isMultiplayerModule,
                 SubModules = subModules,
                 DependentModules = dependentModules,
+                ModulesToLoadAfterThis = modulesToLoadAfterThis,
+                IncompatibleModules = incompatibleModules,
                 Url = url,
                 DependentModuleMetadatas = dependentModuleMetadatas
             };

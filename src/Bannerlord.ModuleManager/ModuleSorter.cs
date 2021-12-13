@@ -49,7 +49,19 @@ namespace Bannerlord.ModuleManager
         {
             foreach (var dependentModule in info.DependentModules)
             {
+                if (dependentModule.IsOptional)
+                {
+                    continue;
+                }
+
                 if (source.All(m => m.Id != dependentModule.Id))
+                {
+                    return false;
+                }
+            }
+            foreach (var dependentModule in info.IncompatibleModules)
+            {
+                if (source.Any(m => m.Id == dependentModule.Id))
                 {
                     return false;
                 }
@@ -128,6 +140,16 @@ namespace Bannerlord.ModuleManager
             {
                 foreach (var moduleInfo in sourceList)
                 {
+                    foreach (var dependentModule in moduleInfo.ModulesToLoadAfterThis)
+                    {
+                        if (dependentModule.Id != module.Id)
+                        {
+                            continue;
+                        }
+
+                        yield return moduleInfo;
+                    }
+
                     foreach (var dependentModuleMetadata in moduleInfo.DependentModuleMetadatas)
                     {
                         if (dependentModuleMetadata.LoadType != LoadType.LoadAfterThis)
