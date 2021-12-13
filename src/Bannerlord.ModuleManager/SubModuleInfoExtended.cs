@@ -10,10 +10,10 @@ namespace Bannerlord.ModuleManager
         public string DLLName { get; init; } = string.Empty;
         public IReadOnlyList<string> Assemblies { get; init; } = Array.Empty<string>();
         public string SubModuleClassType { get; init; } = string.Empty;
-        public IReadOnlyDictionary<SubModuleTags, string> Tags { get; init; } = new Dictionary<SubModuleTags, string>();
+        public IReadOnlyList<(SubModuleTags, string)> Tags { get; init; } = new List<(SubModuleTags, string)>();
 
         public SubModuleInfoExtended() { }
-        public SubModuleInfoExtended(string name, string dllName, IReadOnlyList<string> assemblies, string subModuleClassType, IReadOnlyDictionary<SubModuleTags, string> tags)
+        public SubModuleInfoExtended(string name, string dllName, IReadOnlyList<string> assemblies, string subModuleClassType, IReadOnlyList<(SubModuleTags, string)> tags)
         {
             Name = name;
             DLLName = dllName;
@@ -42,12 +42,12 @@ namespace Bannerlord.ModuleManager
             }
 
             var tagsList = subModuleNode.SelectSingleNode("Tags")?.SelectNodes("Tag");
-            var tags = new Dictionary<SubModuleTags, string>(tagsList?.Count ?? 0);
+            var tags = new List<(SubModuleTags, string)>(tagsList?.Count ?? 0);
             for (var i = 0; i < tagsList?.Count; i++)
             {
                 if (tagsList[i]?.Attributes?["key"]?.InnerText is { } key && tagsList[i]?.Attributes?["value"]?.InnerText is { } value && Enum.TryParse<SubModuleTags>(key, out var subModuleTags))
                 {
-                    tags.Add(subModuleTags, value);
+                    tags.Add((subModuleTags, value));
                 }
             }
 
