@@ -29,6 +29,8 @@ namespace Bannerlord.ModuleManager
         public bool IsSameWithChangeSet(ApplicationVersion other) =>
             Major == other.Major && Minor == other.Minor && Revision == other.Revision && ChangeSet == other.ChangeSet;
 
+        public override string ToString() => $"{GetPrefix(ApplicationVersionType)}{Major}.{Minor}.{Revision}.{ChangeSet}";
+
         public static char GetPrefix(ApplicationVersionType applicationVersionType) => applicationVersionType switch
         {
             ApplicationVersionType.Alpha => 'a',
