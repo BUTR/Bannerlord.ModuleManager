@@ -55,7 +55,7 @@ namespace Bannerlord.ModuleManager
 
             var modulesToLoadAfterThisNode = moduleNode?.SelectSingleNode("ModulesToLoadAfterThis");
             var modulesToLoadAfterThisList = modulesToLoadAfterThisNode?.SelectNodes("Module");
-            var modulesToLoadAfterThis = new DependentModule[dependentModulesList?.Count ?? 0];
+            var modulesToLoadAfterThis = new DependentModule[modulesToLoadAfterThisList?.Count ?? 0];
             for (var i = 0; i < modulesToLoadAfterThisList?.Count; i++)
             {
                 if (modulesToLoadAfterThisList[i]?.Attributes?["Id"] is { } idAttr)
@@ -69,7 +69,7 @@ namespace Bannerlord.ModuleManager
 
             var incompatibleModulesNode = moduleNode?.SelectSingleNode("IncompatibleModules");
             var incompatibleModulesList = incompatibleModulesNode?.SelectNodes("Module");
-            var incompatibleModules = new DependentModule[dependentModulesList?.Count ?? 0];
+            var incompatibleModules = new DependentModule[incompatibleModulesList?.Count ?? 0];
             for (var i = 0; i < incompatibleModulesList?.Count; i++)
             {
                 if (incompatibleModulesList[i]?.Attributes?["Id"] is { } idAttr)
