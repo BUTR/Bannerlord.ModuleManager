@@ -230,6 +230,6 @@ namespace Bannerlord.ModuleManager
             if (ReferenceEquals(this, other)) return true;
             return Id == other.Id;
         }
-        public override int GetHashCode() => HashCode.Combine(Id);
+        public override int GetHashCode() => Id.GetHashCode();
     }
 }
