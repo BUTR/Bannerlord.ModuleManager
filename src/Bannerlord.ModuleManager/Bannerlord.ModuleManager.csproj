@@ -5,7 +5,7 @@
     <LangVersion>10.0</LangVersion>
     <Nullable>enable</Nullable>
     <VersionOverride>0</VersionOverride>
-    <Version>1.0.$(VersionOverride)</Version>
+    <Version>2.0.$(VersionOverride)</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Condition="$(TargetFramework) == 'netstandard2.0' OR $(TargetFramework) == 'netstandard2.1'" Include="IsExternalInit" Version="1.0.1">

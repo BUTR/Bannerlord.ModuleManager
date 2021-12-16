@@ -15,11 +15,19 @@ test("api available", async (t) => {
     t.fail();
   }
 
+  if ("SortWithOptions" in BannerlordModuleManager === false) {
+    t.fail();
+  }
+
   if ("AreAllDependenciesOfModulePresent" in BannerlordModuleManager === false) {
     t.fail();
   }
 
   if ("GetDependentModulesOf" in BannerlordModuleManager === false) {
+    t.fail();
+  }
+
+  if ("GetDependentModulesOfWithOptions" in BannerlordModuleManager === false) {
     t.fail();
   }
 

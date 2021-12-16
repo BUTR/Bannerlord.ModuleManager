@@ -4,6 +4,12 @@ using System.Linq;
 
 namespace Bannerlord.ModuleManager
 {
+    public sealed record ModuleSorterOptions
+    {
+        public bool SkipOptionals { get; init; }
+        public bool SkipExternalDependencies { get; init; }
+    }
+
     public static class ModuleSorter
     {
         public static IList<ModuleInfoExtended> Sort(ICollection<ModuleInfoExtended> source)
@@ -14,6 +20,15 @@ namespace Bannerlord.ModuleManager
                 .ToArray();
 
             return TopologySort(correctModules, module => GetDependentModulesOf(correctModules, module));
+        }
+        public static IList<ModuleInfoExtended> Sort(ICollection<ModuleInfoExtended> source, ModuleSorterOptions options)
+        {
+            var correctModules = source
+                .Where(x => AreAllDependenciesOfModulePresent(source, x))
+                .OrderByDescending(mim => mim.Id, new AlphanumComparatorFast())
+                .ToArray();
+
+            return TopologySort(correctModules, module => GetDependentModulesOf(correctModules, module, options));
         }
 
         public static IList<T> TopologySort<T>(IEnumerable<T> source, Func<T, IEnumerable<T>> getDependencies)
@@ -92,26 +107,37 @@ namespace Bannerlord.ModuleManager
             return true;
         }
 
-        public static IEnumerable<ModuleInfoExtended> GetDependentModulesOf(IEnumerable<ModuleInfoExtended> source, ModuleInfoExtended module, bool skipExternalDependencies = false)
+        public static IEnumerable<ModuleInfoExtended> GetDependentModulesOf(IEnumerable<ModuleInfoExtended> source, ModuleInfoExtended module)
         {
             var visited = new HashSet<ModuleInfoExtended>();
-            return GetDependentModulesOf(source, module, visited, skipExternalDependencies);
+            return GetDependentModulesOf(source, module, visited, new ModuleSorterOptions() { SkipOptionals = false, SkipExternalDependencies = false });
         }
 
-        public static IEnumerable<ModuleInfoExtended> GetDependentModulesOf(IEnumerable<ModuleInfoExtended> source, ModuleInfoExtended module, HashSet<ModuleInfoExtended> visited, bool skipExternalDependencies = false)
+        public static IEnumerable<ModuleInfoExtended> GetDependentModulesOf(IEnumerable<ModuleInfoExtended> source, ModuleInfoExtended module, ModuleSorterOptions options)
+        {
+            var visited = new HashSet<ModuleInfoExtended>();
+            return GetDependentModulesOf(source, module, visited, options);
+        }
+
+        public static IEnumerable<ModuleInfoExtended> GetDependentModulesOf(IEnumerable<ModuleInfoExtended> source, ModuleInfoExtended module, HashSet<ModuleInfoExtended> visited, ModuleSorterOptions options)
         {
             var dependencies = new List<ModuleInfoExtended>();
-            Visit(module, x => GetDependentModulesOfInternal(source, x, skipExternalDependencies), dependencies, visited);
+            Visit(module, x => GetDependentModulesOfInternal(source, x, options), dependencies, visited);
             return dependencies;
         }
 
 
-        private static IEnumerable<ModuleInfoExtended> GetDependentModulesOfInternal(IEnumerable<ModuleInfoExtended> source, ModuleInfoExtended module, bool skipExternalDependencies = false)
+        private static IEnumerable<ModuleInfoExtended> GetDependentModulesOfInternal(IEnumerable<ModuleInfoExtended> source, ModuleInfoExtended module, ModuleSorterOptions options)
         {
             var sourceList = source.ToList();
 
             foreach (var dependentModule in module.DependentModules)
             {
+                if (dependentModule.IsOptional && options.SkipOptionals)
+                {
+                    continue;
+                }
+
                 if (sourceList.Find(i => i.Id == dependentModule.Id) is { } moduleInfo)
                 {
                     yield return moduleInfo;
@@ -120,6 +146,11 @@ namespace Bannerlord.ModuleManager
 
             foreach (var dependentModuleMetadata in module.DependentModuleMetadatas)
             {
+                if (dependentModuleMetadata.IsOptional && options.SkipOptionals)
+                {
+                    continue;
+                }
+
                 if (dependentModuleMetadata.LoadType != LoadType.LoadBeforeThis)
                 {
                     continue;
@@ -136,12 +167,17 @@ namespace Bannerlord.ModuleManager
                 }
             }
 
-            if (!skipExternalDependencies)
+            if (!options.SkipExternalDependencies)
             {
                 foreach (var moduleInfo in sourceList)
                 {
                     foreach (var dependentModule in moduleInfo.ModulesToLoadAfterThis)
                     {
+                        if (dependentModule.IsOptional && options.SkipOptionals)
+                        {
+                            continue;
+                        }
+
                         if (dependentModule.Id != module.Id)
                         {
                             continue;
@@ -152,6 +188,11 @@ namespace Bannerlord.ModuleManager
 
                     foreach (var dependentModuleMetadata in moduleInfo.DependentModuleMetadatas)
                     {
+                        if (dependentModuleMetadata.IsOptional && options.SkipOptionals)
+                        {
+                            continue;
+                        }
+
                         if (dependentModuleMetadata.LoadType != LoadType.LoadAfterThis)
                         {
                             continue;

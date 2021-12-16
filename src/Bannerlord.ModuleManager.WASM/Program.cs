@@ -15,12 +15,20 @@ namespace Bannerlord.ModuleManager.WASM
             ModuleSorter.Sort(source);
 
         [JSInvokable]
+        public static IList<ModuleInfoExtended> SortWithOptions(ModuleInfoExtended[] source, ModuleSorterOptions options) =>
+            ModuleSorter.Sort(source, options);
+
+        [JSInvokable]
         public static bool AreAllDependenciesOfModulePresent(ModuleInfoExtended[] source, ModuleInfoExtended module) =>
             ModuleSorter.AreAllDependenciesOfModulePresent(source, module);
 
         [JSInvokable]
-        public static ModuleInfoExtended[] GetDependentModulesOf(ModuleInfoExtended[] source, ModuleInfoExtended module, bool skipExternalDependencies = false) =>
-            ModuleSorter.GetDependentModulesOf(source, module, skipExternalDependencies).ToArray();
+        public static ModuleInfoExtended[] GetDependentModulesOf(ModuleInfoExtended[] source, ModuleInfoExtended module) =>
+            ModuleSorter.GetDependentModulesOf(source, module).ToArray();
+
+        [JSInvokable]
+        public static ModuleInfoExtended[] GetDependentModulesOfWithOptions(ModuleInfoExtended[] source, ModuleInfoExtended module, ModuleSorterOptions options) =>
+            ModuleSorter.GetDependentModulesOf(source, module, options).ToArray();
 
         //[JSInvokable]
         //public static ModuleInfoExtended[] GetDependentModulesOf(ModuleInfoExtended[] source, ModuleInfoExtended[] visited, ModuleInfoExtended module, bool skipExternalDependencies = false) =>

@@ -25,11 +25,17 @@ test('sort', async (t) => {
     return;
   }
 
+  const sorted2 = blmmanager.sortWithOptions(unsorted, { skipOptionals: true, skipExternalDependencies: true });
+  if (sorted2 === null || !Array.isArray(sorted2)) {
+    t.fail();
+    return;
+  }
+
   t.deepEqual(uiExtenderEx.id, 'Bannerlord.UIExtenderEx');
   t.deepEqual(harmony.id, 'Bannerlord.Harmony');
   t.deepEqual(sorted.length, 2);
   t.deepEqual(sorted[0].id, harmony.id);
-  t.deepEqual (sorted[1].id, uiExtenderEx.id);
+  t.deepEqual(sorted[1].id, uiExtenderEx.id);
 
   await blmmanager.dispose();
 });
