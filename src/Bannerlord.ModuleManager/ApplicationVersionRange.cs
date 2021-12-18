@@ -45,6 +45,6 @@
             return false;
         }
 
-        //public bool Equals(ApplicationVersionRange? other) => Min.IsSame(other.Min) && Max.IsSame(other.Max);
+        public bool Equals(ApplicationVersionRange? other) => Min.IsSame(other.Min) && Max.IsSame(other.Max);
     }
 }
