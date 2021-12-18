@@ -1,6 +1,6 @@
 import { boot, BootStatus, getBootStatus, terminate } from "./dotnet";
 import dotnet from "./dotnet";
-import { ModuleInfoExtended, ModuleSorterOptions } from "./types";
+import { ApplicationVersion, ModuleInfoExtended, ModuleSorterOptions } from "./types";
 
 export class BannerlordModuleManager {
     static async createAsync(): Promise<BannerlordModuleManager> {
@@ -41,6 +41,10 @@ export class BannerlordModuleManager {
 
     getSubModuleInfo(xml: string): ModuleInfoExtended {
         return dotnet.BannerlordModuleManager.GetSubModuleInfo(xml);
+    }
+
+    compareVersions(x: ApplicationVersion, y: ApplicationVersion): number {
+        return dotnet.BannerlordModuleManager.CompareVersions(x, y);
     }
 
     async dispose(): Promise<void> {

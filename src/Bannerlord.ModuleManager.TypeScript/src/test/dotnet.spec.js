@@ -39,5 +39,9 @@ test("api available", async (t) => {
     t.fail();
   }
 
+  if ("CompareVersions" in BannerlordModuleManager === false) {
+    t.fail();
+  }
+
   t.pass();
 });

@@ -8,6 +8,8 @@ namespace Bannerlord.ModuleManager.WASM
 {
     public static class Program
     {
+        private static readonly ApplicationVersionComparer _applicationVersionComparer = new();
+
         public static void Main() { }
 
         [JSInvokable]
@@ -57,5 +59,8 @@ namespace Bannerlord.ModuleManager.WASM
             }
             catch { return null; }
         }
+
+        [JSInvokable]
+        public static int CompareVersions(ApplicationVersion x, ApplicationVersion y) => _applicationVersionComparer.Compare(x, y);
     }
 }
