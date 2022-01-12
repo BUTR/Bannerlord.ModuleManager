@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Bannerlord.ModuleManager
+﻿namespace Bannerlord.ModuleManager
 {
     public sealed record ApplicationVersion
     {

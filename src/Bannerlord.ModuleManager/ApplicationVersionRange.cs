@@ -15,6 +15,12 @@
             Min = min;
         }
 
+        public bool IsSame(ApplicationVersionRange other) =>
+            Min.IsSame(other.Min) && Max.IsSame(other.Max);
+
+        public bool IsSameWithChangeSet(ApplicationVersionRange other) =>
+            Min.IsSameWithChangeSet(other.Min) && Max.IsSameWithChangeSet(other.Max);
+
         public override string ToString() => $"{Min} - {Max}";
 
         public static bool TryParse(string versionRangeAsString, out ApplicationVersionRange versionRange)
@@ -44,7 +50,5 @@
 
             return false;
         }
-
-        public bool Equals(ApplicationVersionRange? other) => Min.IsSame(other.Min) && Max.IsSame(other.Max);
     }
 }
