@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Xml;
 
 namespace Bannerlord.ModuleManager
@@ -10,10 +12,10 @@ namespace Bannerlord.ModuleManager
         public string DLLName { get; init; } = string.Empty;
         public IReadOnlyList<string> Assemblies { get; init; } = Array.Empty<string>();
         public string SubModuleClassType { get; init; } = string.Empty;
-        public IReadOnlyList<(SubModuleTags, string)> Tags { get; init; } = new List<(SubModuleTags, string)>();
+        public IReadOnlyDictionary<string, IReadOnlyList<string>> Tags { get; init; } = new Dictionary<string, IReadOnlyList<string>>();
 
         public SubModuleInfoExtended() { }
-        public SubModuleInfoExtended(string name, string dllName, IReadOnlyList<string> assemblies, string subModuleClassType, IReadOnlyList<(SubModuleTags, string)> tags)
+        public SubModuleInfoExtended(string name, string dllName, IReadOnlyList<string> assemblies, string subModuleClassType, IReadOnlyDictionary<string, IReadOnlyList<string>> tags)
         {
             Name = name;
             DLLName = dllName;
@@ -42,12 +44,19 @@ namespace Bannerlord.ModuleManager
             }
 
             var tagsList = subModuleNode.SelectSingleNode("Tags")?.SelectNodes("Tag");
-            var tags = new List<(SubModuleTags, string)>(tagsList?.Count ?? 0);
+            var tags = new Dictionary<string, List<string>>();
             for (var i = 0; i < tagsList?.Count; i++)
             {
-                if (tagsList[i]?.Attributes?["key"]?.InnerText is { } key && tagsList[i]?.Attributes?["value"]?.InnerText is { } value && Enum.TryParse<SubModuleTags>(key, out var subModuleTags))
+                if (tagsList[i]?.Attributes?["key"]?.InnerText is { } key && tagsList[i]?.Attributes?["value"]?.InnerText is { } value)
                 {
-                    tags.Add((subModuleTags, value));
+                    if (tags.TryGetValue(key, out var list))
+                    {
+                        list.Add(value);
+                    }
+                    else
+                    {
+                        tags[key] = new List<string> { value };
+                    }
                 }
             }
 
@@ -57,7 +66,7 @@ namespace Bannerlord.ModuleManager
                 DLLName = dllName,
                 Assemblies = assemblies,
                 SubModuleClassType = subModuleClassType,
-                Tags = tags
+                Tags = new ReadOnlyDictionary<string, IReadOnlyList<string>>(tags.ToDictionary(x => x.Key, x => new ReadOnlyCollection<string>(x.Value) as IReadOnlyList<string>))
             };
         }
 

@@ -1,6 +1,6 @@
 {
   "name": "@butr/blmodulemanager",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "C# WASM package bundled with the dotnet runtime and TS declarations",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
