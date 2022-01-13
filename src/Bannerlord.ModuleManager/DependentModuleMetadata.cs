@@ -38,6 +38,8 @@
 
 namespace Bannerlord.ModuleManager
 {
+#nullable enable
+#pragma warning disable
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
     internal
 #else
@@ -65,4 +67,6 @@ namespace Bannerlord.ModuleManager
         public static string GetIncompatible(bool isOptional) => isOptional ? "Incompatible " : "";
         public override string ToString() => GetLoadType(LoadType) + GetIncompatible(IsIncompatible) + Id + GetVersion(Version) + GetVersionRange(VersionRange) + GetOptional(IsOptional);
     }
+#pragma warning restore
+#nullable restore
 }

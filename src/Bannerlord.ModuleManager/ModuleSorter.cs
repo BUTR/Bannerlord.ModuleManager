@@ -42,6 +42,8 @@ namespace Bannerlord.ModuleManager
     using global::System.Collections.Generic;
     using global::System.Linq;
 
+#nullable enable
+#pragma warning disable
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
     internal
 #else
@@ -257,4 +259,6 @@ namespace Bannerlord.ModuleManager
             }
         }
     }
+#pragma warning restore
+#nullable restore
 }

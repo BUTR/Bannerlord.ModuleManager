@@ -38,6 +38,8 @@
 
 namespace Bannerlord.ModuleManager
 {
+#nullable enable
+#pragma warning disable
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
     internal
 #else
@@ -57,4 +59,6 @@ namespace Bannerlord.ModuleManager
             IsOptional = isOptional;
         }
     }
+#pragma warning restore
+#nullable restore
 }

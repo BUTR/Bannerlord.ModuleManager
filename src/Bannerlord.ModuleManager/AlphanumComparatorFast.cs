@@ -43,6 +43,9 @@ namespace Bannerlord.ModuleManager
     using global::System.Collections.Generic;
     using global::System.Text;
 
+#nullable enable
+#pragma warning disable
+
     /// <summary>
     /// Alphanumeric sort. This sorting algorithm logically handles numbers in strings. It makes sense to humans.
     /// Highway names like 50F and 100F will be sorted wrongly with ASCII sort.
@@ -148,4 +151,6 @@ namespace Bannerlord.ModuleManager
             Numeric
         }
     }
+#pragma warning restore
+#nullable restore
 }
