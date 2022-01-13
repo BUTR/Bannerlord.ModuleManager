@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <VersionOverride>0</VersionOverride>
     <Version>3.0.$(VersionOverride)</Version>
+    <DefineConstants>$(DefineConstants);BANNERLORDBUTRMODULEMANAGER_PUBLIC</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Condition="$(TargetFramework) == 'netstandard2.0' OR $(TargetFramework) == 'netstandard2.1'" Include="IsExternalInit" Version="1.0.2">
