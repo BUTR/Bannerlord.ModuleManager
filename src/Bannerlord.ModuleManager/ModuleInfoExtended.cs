@@ -48,7 +48,7 @@ namespace Bannerlord.ModuleManager
                 if (dependentModulesList[i]?.Attributes?["Id"] is { } idAttr)
                 {
                     ApplicationVersion.TryParse(dependentModulesList[i]?.Attributes?["DependentVersion"]?.InnerText, out var dVersion);
-                    var isOptional = true;// dependentModulesList[i]?.Attributes?["Optional"] is { InnerText: "true" };
+                    var isOptional = dependentModulesList[i]?.Attributes?["Optional"] is { } optional && optional.InnerText.Equals("true");
                     dependentModules[i] = new DependentModule(idAttr.InnerText, dVersion, isOptional);
                 }
             }
