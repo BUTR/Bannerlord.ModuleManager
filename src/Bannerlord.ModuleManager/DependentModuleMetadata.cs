@@ -36,6 +36,7 @@
 // SOFTWARE.
 #endregion
 
+#nullable enable
 namespace Bannerlord.ModuleManager
 {
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
@@ -59,10 +60,11 @@ namespace Bannerlord.ModuleManager
             LoadType.LoadBeforeThis => "After        ",
             _ => "ERROR        "
         };
-        public static string GetVersion(ApplicationVersion av) => av.IsSameWithChangeSet(ApplicationVersion.Empty) ? "" : $" {av}";
-        public static string GetVersionRange(ApplicationVersionRange avr) => avr == ApplicationVersionRange.Empty ? "" : $" {avr}";
+        public static string GetVersion(ApplicationVersion? av) => av?.IsSameWithChangeSet(ApplicationVersion.Empty) == true ? "" : $" {av}";
+        public static string GetVersionRange(ApplicationVersionRange? avr) => avr == ApplicationVersionRange.Empty ? "" : $" {avr}";
         public static string GetOptional(bool isOptional) => isOptional ? " Optional" : "";
         public static string GetIncompatible(bool isOptional) => isOptional ? "Incompatible " : "";
         public override string ToString() => GetLoadType(LoadType) + GetIncompatible(IsIncompatible) + Id + GetVersion(Version) + GetVersionRange(VersionRange) + GetOptional(IsOptional);
     }
 }
+#nullable restore

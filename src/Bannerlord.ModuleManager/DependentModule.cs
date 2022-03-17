@@ -36,6 +36,7 @@
 // SOFTWARE.
 #endregion
 
+#nullable enable
 namespace Bannerlord.ModuleManager
 {
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
@@ -58,3 +59,4 @@ namespace Bannerlord.ModuleManager
         }
     }
 }
+#nullable restore

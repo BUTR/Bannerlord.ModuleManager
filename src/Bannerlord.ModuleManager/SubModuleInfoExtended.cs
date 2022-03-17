@@ -36,6 +36,7 @@
 // SOFTWARE.
 #endregion
 
+#nullable enable
 namespace Bannerlord.ModuleManager
 {
     using global::System;
@@ -82,7 +83,7 @@ namespace Bannerlord.ModuleManager
                 assemblies = new string[assembliesList?.Count ?? 0];
                 for (var i = 0; i < assembliesList?.Count; i++)
                 {
-                    assemblies[i] = assembliesList[i]?.Attributes?["value"]?.InnerText is { } value ? value : string.Empty;
+                    assemblies[i] = assembliesList?[i]?.Attributes?["value"]?.InnerText is { } value ? value : string.Empty;
                 }
             }
 
@@ -90,7 +91,7 @@ namespace Bannerlord.ModuleManager
             var tags = new Dictionary<string, List<string>>();
             for (var i = 0; i < tagsList?.Count; i++)
             {
-                if (tagsList[i]?.Attributes?["key"]?.InnerText is { } key && tagsList[i]?.Attributes?["value"]?.InnerText is { } value)
+                if (tagsList?[i]?.Attributes?["key"]?.InnerText is { } key && tagsList[i]?.Attributes?["value"]?.InnerText is { } value)
                 {
                     if (tags.TryGetValue(key, out var list))
                     {
@@ -124,3 +125,4 @@ namespace Bannerlord.ModuleManager
         public override int GetHashCode() => Name.GetHashCode();
     }
 }
+#nullable restore

@@ -36,6 +36,7 @@
 // SOFTWARE.
 #endregion
 
+#nullable enable
 namespace Bannerlord.ModuleManager
 {
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
@@ -64,11 +65,11 @@ namespace Bannerlord.ModuleManager
             ChangeSet = changeSet;
         }
 
-        public bool IsSame(ApplicationVersion other) =>
-            Major == other.Major && Minor == other.Minor && Revision == other.Revision;
+        public bool IsSame(ApplicationVersion? other) =>
+            Major == other?.Major && Minor == other.Minor && Revision == other.Revision;
 
-        public bool IsSameWithChangeSet(ApplicationVersion other) =>
-            Major == other.Major && Minor == other.Minor && Revision == other.Revision && ChangeSet == other.ChangeSet;
+        public bool IsSameWithChangeSet(ApplicationVersion? other) =>
+            Major == other?.Major && Minor == other.Minor && Revision == other.Revision && ChangeSet == other.ChangeSet;
 
         public override string ToString() => $"{GetPrefix(ApplicationVersionType)}{Major}.{Minor}.{Revision}.{ChangeSet}";
 
@@ -155,3 +156,4 @@ namespace Bannerlord.ModuleManager
         }
     }
 }
+#nullable restore

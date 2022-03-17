@@ -36,6 +36,7 @@
 // SOFTWARE.
 #endregion
 
+#nullable enable
 namespace Bannerlord.ModuleManager
 {
     using global::System;
@@ -88,7 +89,7 @@ namespace Bannerlord.ModuleManager
             var dependentModules = new DependentModule[dependentModulesList?.Count ?? 0];
             for (var i = 0; i < dependentModulesList?.Count; i++)
             {
-                if (dependentModulesList[i]?.Attributes?["Id"] is { } idAttr)
+                if (dependentModulesList?[i]?.Attributes?["Id"] is { } idAttr)
                 {
                     ApplicationVersion.TryParse(dependentModulesList[i]?.Attributes?["DependentVersion"]?.InnerText, out var dVersion);
                     var isOptional = dependentModulesList[i]?.Attributes?["Optional"] is { } optional && optional.InnerText.Equals("true");
@@ -101,7 +102,7 @@ namespace Bannerlord.ModuleManager
             var modulesToLoadAfterThis = new DependentModule[modulesToLoadAfterThisList?.Count ?? 0];
             for (var i = 0; i < modulesToLoadAfterThisList?.Count; i++)
             {
-                if (modulesToLoadAfterThisList[i]?.Attributes?["Id"] is { } idAttr)
+                if (modulesToLoadAfterThisList?[i]?.Attributes?["Id"] is { } idAttr)
                 {
                     modulesToLoadAfterThis[i] = new DependentModule
                     {
@@ -115,7 +116,7 @@ namespace Bannerlord.ModuleManager
             var incompatibleModules = new DependentModule[incompatibleModulesList?.Count ?? 0];
             for (var i = 0; i < incompatibleModulesList?.Count; i++)
             {
-                if (incompatibleModulesList[i]?.Attributes?["Id"] is { } idAttr)
+                if (incompatibleModulesList?[i]?.Attributes?["Id"] is { } idAttr)
                 {
                     incompatibleModules[i] = new DependentModule
                     {
@@ -129,7 +130,7 @@ namespace Bannerlord.ModuleManager
             var subModules = new List<SubModuleInfoExtended>(subModuleList?.Count ?? 0);
             for (var i = 0; i < subModuleList?.Count; i++)
             {
-                if (SubModuleInfoExtended.FromXml(subModuleList[i]) is { } subModule)
+                if (SubModuleInfoExtended.FromXml(subModuleList?[i]) is { } subModule)
                 {
                     subModules.Add(subModule);
                 }
@@ -156,7 +157,7 @@ namespace Bannerlord.ModuleManager
             var dependentModuleMetadatas = new List<DependentModuleMetadata>(dependentModuleMetadatasList?.Count ?? 0 + loadAfterModuleList?.Count ?? 0 + optionalDependentModuleList.Count);
             for (var i = 0; i < dependentModuleMetadatasList?.Count; i++)
             {
-                if (dependentModuleMetadatasList[i]?.Attributes?["id"] is { } idAttr)
+                if (dependentModuleMetadatasList?[i]?.Attributes?["id"] is { } idAttr)
                 {
                     var incompatible = dependentModuleMetadatasList[i]?.Attributes?["incompatible"]?.InnerText.Equals("true") ?? false;
                     if (incompatible)
@@ -190,7 +191,7 @@ namespace Bannerlord.ModuleManager
             }
             for (var i = 0; i < loadAfterModuleList?.Count; i++)
             {
-                if (loadAfterModuleList[i]?.Attributes?["Id"] is { } idAttr)
+                if (loadAfterModuleList?[i]?.Attributes?["Id"] is { } idAttr)
                 {
                     dependentModuleMetadatas.Add(new DependentModuleMetadata
                     {
@@ -276,3 +277,4 @@ namespace Bannerlord.ModuleManager
         public override int GetHashCode() => Id.GetHashCode();
     }
 }
+#nullable restore

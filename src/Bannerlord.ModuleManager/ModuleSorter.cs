@@ -36,6 +36,7 @@
 // SOFTWARE.
 #endregion
 
+#nullable enable
 namespace Bannerlord.ModuleManager
 {
     using global::System;
@@ -258,3 +259,4 @@ namespace Bannerlord.ModuleManager
         }
     }
 }
+#nullable restore

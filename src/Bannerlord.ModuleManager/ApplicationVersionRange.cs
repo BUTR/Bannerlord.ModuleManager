@@ -36,6 +36,7 @@
 // SOFTWARE.
 #endregion
 
+#nullable enable
 namespace Bannerlord.ModuleManager
 {
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
@@ -58,11 +59,11 @@ namespace Bannerlord.ModuleManager
             Min = min;
         }
 
-        public bool IsSame(ApplicationVersionRange other) =>
-            Min.IsSame(other.Min) && Max.IsSame(other.Max);
+        public bool IsSame(ApplicationVersionRange? other) =>
+            Min.IsSame(other?.Min) && Max.IsSame(other?.Max);
 
-        public bool IsSameWithChangeSet(ApplicationVersionRange other) =>
-            Min.IsSameWithChangeSet(other.Min) && Max.IsSameWithChangeSet(other.Max);
+        public bool IsSameWithChangeSet(ApplicationVersionRange? other) =>
+            Min.IsSameWithChangeSet(other?.Min) && Max.IsSameWithChangeSet(other?.Max);
 
         public override string ToString() => $"{Min} - {Max}";
 
@@ -95,3 +96,4 @@ namespace Bannerlord.ModuleManager
         }
     }
 }
+#nullable restore

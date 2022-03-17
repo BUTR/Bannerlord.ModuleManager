@@ -36,8 +36,10 @@
 // SOFTWARE.
 #endregion
 
+#nullable enable
 namespace Bannerlord.ModuleManager
 {
+    using global::System.Collections;
     using global::System.Collections.Generic;
 
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
@@ -45,10 +47,23 @@ namespace Bannerlord.ModuleManager
 #else
     public
 # endif
-        class ApplicationVersionComparer : IComparer<ApplicationVersion>
+        class ApplicationVersionComparer : IComparer<ApplicationVersion?>, IComparer
     {
-        public virtual int Compare(ApplicationVersion x, ApplicationVersion y)
+        /// <inheritdoc/>
+        public int Compare(object? x, object? y) => Compare(x as ApplicationVersion, y as ApplicationVersion);
+
+        /// <inheritdoc/>
+        public virtual int Compare(ApplicationVersion? x, ApplicationVersion? y)
         {
+            if (x is null && y is null)
+                return 0;
+
+            if (x is null)
+                return -1;
+
+            if (y is null)
+                return 1;
+
             var versionTypeComparison = x.ApplicationVersionType.CompareTo(y.ApplicationVersionType);
             if (versionTypeComparison != 0) return versionTypeComparison;
 
@@ -68,3 +83,4 @@ namespace Bannerlord.ModuleManager
         }
     }
 }
+#nullable restore
