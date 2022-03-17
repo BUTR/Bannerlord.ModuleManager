@@ -36,7 +36,6 @@
 // SOFTWARE.
 #endregion
 
-#nullable enable
 namespace Bannerlord.ModuleManager
 {
     using global::System;
@@ -44,6 +43,8 @@ namespace Bannerlord.ModuleManager
     using global::System.Linq;
     using global::System.Xml;
 
+#nullable enable
+#pragma warning disable
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
     internal
 #else
@@ -276,5 +277,6 @@ namespace Bannerlord.ModuleManager
         }
         public override int GetHashCode() => Id.GetHashCode();
     }
-}
+#pragma warning restore
 #nullable restore
+}

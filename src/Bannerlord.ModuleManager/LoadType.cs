@@ -36,9 +36,10 @@
 // SOFTWARE.
 #endregion
 
-#nullable enable
 namespace Bannerlord.ModuleManager
 {
+#nullable enable
+#pragma warning disable
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
     internal
 #else
@@ -56,5 +57,6 @@ namespace Bannerlord.ModuleManager
         LoadAfterThis = 1,
         LoadBeforeThis = 2
     }
-}
+#pragma warning restore
 #nullable restore
+}

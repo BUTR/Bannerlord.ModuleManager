@@ -36,12 +36,13 @@
 // SOFTWARE.
 #endregion
 
-#nullable enable
 namespace Bannerlord.ModuleManager
 {
     using global::System.Collections;
     using global::System.Collections.Generic;
 
+#nullable enable
+#pragma warning disable
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
     internal
 #else
@@ -82,5 +83,6 @@ namespace Bannerlord.ModuleManager
             return 0;
         }
     }
-}
+#pragma warning restore
 #nullable restore
+}
