@@ -16,7 +16,7 @@ jobs:
     name: Publish on NPM and GPR
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v3.0.0
         with:
           fetch-depth: 0
       
