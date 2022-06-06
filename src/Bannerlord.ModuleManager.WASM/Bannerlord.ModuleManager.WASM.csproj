@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetJS" Version="0.5.2" />
+    <PackageReference Include="DotNetJS" Version="0.13.7" />
   </ItemGroup>
 
   <ItemGroup>
