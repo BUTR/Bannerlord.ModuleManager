@@ -1,1 +1,1 @@
-    interface WebGLRenderingContext {}
+interface WebGLRenderingContext { }

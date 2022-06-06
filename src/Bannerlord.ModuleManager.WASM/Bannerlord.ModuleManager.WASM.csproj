@@ -5,12 +5,10 @@
     <LangVersion>10.0</LangVersion>
     <Nullable>enable</Nullable>
     <AssemblyName>BannerlordModuleManager</AssemblyName>
-    <EmitSourceMap>true</EmitSourceMap>
-    <EmitTypes>true</EmitTypes>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetJS" Version="0.5.2" />
+    <PackageReference Include="DotNetJS" Version="0.13.8" />
   </ItemGroup>
 
   <ItemGroup>

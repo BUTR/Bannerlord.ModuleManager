@@ -1,8 +1,12 @@
-﻿using Microsoft.JSInterop;
+﻿using DotNetJS;
+
+using Microsoft.JSInterop;
 
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+
+[assembly: JSNamespace("Bannerlord.ModuleManager.WASM", "Bannerlord.ModuleManager")]
 
 namespace Bannerlord.ModuleManager.WASM
 {

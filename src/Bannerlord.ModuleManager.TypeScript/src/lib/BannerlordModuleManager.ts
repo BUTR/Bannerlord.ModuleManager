@@ -1,6 +1,9 @@
-import { boot, BootStatus, getBootStatus, terminate } from "./dotnet";
+import { boot, BootStatus, getBootStatus, terminate, Bannerlord } from "./dotnet";
 import dotnet from "./dotnet";
-import { ApplicationVersion, ModuleInfoExtended, ModuleSorterOptions } from "./types";
+import ModuleInfoExtended = Bannerlord.ModuleManager.ModuleInfoExtended;
+import SubModuleInfoExtended = Bannerlord.ModuleManager.SubModuleInfoExtended;
+import ModuleSorterOptions = Bannerlord.ModuleManager.ModuleSorterOptions;
+import ApplicationVersion = Bannerlord.ModuleManager.ApplicationVersion;
 
 export class BannerlordModuleManager {
     static async createAsync(): Promise<BannerlordModuleManager> {
@@ -16,35 +19,35 @@ export class BannerlordModuleManager {
     }
 
     sort(unsorted: ModuleInfoExtended[]): ModuleInfoExtended[] {
-        return dotnet.BannerlordModuleManager.Sort(unsorted);
+        return dotnet.Bannerlord.ModuleManager.Sort(unsorted);
     }
 
     sortWithOptions(unsorted: ModuleInfoExtended[], options: ModuleSorterOptions): ModuleInfoExtended[] {
-        return dotnet.BannerlordModuleManager.SortWithOptions(unsorted, options);
+        return dotnet.Bannerlord.ModuleManager.SortWithOptions(unsorted, options);
     }
 
     areAllDependenciesOfModulePresent(unsorted: ModuleInfoExtended[], module: ModuleInfoExtended): boolean {
-        return dotnet.BannerlordModuleManager.AreAllDependenciesOfModulePresent(unsorted, module);
+        return dotnet.Bannerlord.ModuleManager.AreAllDependenciesOfModulePresent(unsorted, module);
     }
 
     getDependentModulesOf(source: ModuleInfoExtended[], module: ModuleInfoExtended): ModuleInfoExtended[] {
-        return dotnet.BannerlordModuleManager.GetDependentModulesOf(source, module);
+        return dotnet.Bannerlord.ModuleManager.GetDependentModulesOf(source, module);
     }
 
     getDependentModulesOfWithOptions(source: ModuleInfoExtended[], module: ModuleInfoExtended, options: ModuleSorterOptions): ModuleInfoExtended[] {
-        return dotnet.BannerlordModuleManager.GetDependentModulesOfWithOptions(source, module, options);
+        return dotnet.Bannerlord.ModuleManager.GetDependentModulesOfWithOptions(source, module, options);
     }
 
-    getModuleInfo(xml: string): ModuleInfoExtended {
-        return dotnet.BannerlordModuleManager.GetModuleInfo(xml);
+    getModuleInfo(xml: string): ModuleInfoExtended | undefined {
+        return dotnet.Bannerlord.ModuleManager.GetModuleInfo(xml);
     }
 
-    getSubModuleInfo(xml: string): ModuleInfoExtended {
-        return dotnet.BannerlordModuleManager.GetSubModuleInfo(xml);
+    getSubModuleInfo(xml: string): SubModuleInfoExtended | undefined {
+        return dotnet.Bannerlord.ModuleManager.GetSubModuleInfo(xml);
     }
 
     compareVersions(x: ApplicationVersion, y: ApplicationVersion): number {
-        return dotnet.BannerlordModuleManager.CompareVersions(x, y);
+        return dotnet.Bannerlord.ModuleManager.CompareVersions(x, y);
     }
 
     async dispose(): Promise<void> {

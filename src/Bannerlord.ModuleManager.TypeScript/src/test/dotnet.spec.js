@@ -1,6 +1,6 @@
 const test = require("ava");
 
-const { BannerlordModuleManager, boot, terminate } = require("../lib/dotnet");
+const { Bannerlord, boot, terminate } = require("../lib/dotnet");
 
 test.beforeEach("init", async (t) => {
   await boot();
@@ -11,35 +11,35 @@ test.afterEach.always("cleanup", (t) => {
 });
 
 test("api available", async (t) => {
-  if ("Sort" in BannerlordModuleManager === false) {
+  if ("Sort" in Bannerlord.ModuleManager === false) {
     t.fail();
   }
 
-  if ("SortWithOptions" in BannerlordModuleManager === false) {
+  if ("SortWithOptions" in Bannerlord.ModuleManager === false) {
     t.fail();
   }
 
-  if ("AreAllDependenciesOfModulePresent" in BannerlordModuleManager === false) {
+  if ("AreAllDependenciesOfModulePresent" in Bannerlord.ModuleManager === false) {
     t.fail();
   }
 
-  if ("GetDependentModulesOf" in BannerlordModuleManager === false) {
+  if ("GetDependentModulesOf" in Bannerlord.ModuleManager === false) {
     t.fail();
   }
 
-  if ("GetDependentModulesOfWithOptions" in BannerlordModuleManager === false) {
+  if ("GetDependentModulesOfWithOptions" in Bannerlord.ModuleManager === false) {
     t.fail();
   }
 
-  if ("GetModuleInfo" in BannerlordModuleManager === false) {
+  if ("GetModuleInfo" in Bannerlord.ModuleManager === false) {
     t.fail();
   }
 
-  if ("GetSubModuleInfo" in BannerlordModuleManager === false) {
+  if ("GetSubModuleInfo" in Bannerlord.ModuleManager === false) {
     t.fail();
   }
 
-  if ("CompareVersions" in BannerlordModuleManager === false) {
+  if ("CompareVersions" in Bannerlord.ModuleManager === false) {
     t.fail();
   }
 

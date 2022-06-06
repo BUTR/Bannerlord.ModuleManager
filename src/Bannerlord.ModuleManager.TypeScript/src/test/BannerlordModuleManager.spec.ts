@@ -7,12 +7,12 @@ test('sort', async (t) => {
   const blmmanager = await BannerlordModuleManager.createAsync();
 
   const uiExtenderEx = blmmanager.getModuleInfo(uiExtenderExXml);
-  if (uiExtenderEx === null) {
+  if (uiExtenderEx === null || uiExtenderEx === undefined) {
     t.fail();
     return;
   }
   const harmony = blmmanager.getModuleInfo(harmonyXml);
-  if (harmony === null) {
+  if (harmony === null || harmony === undefined) {
     t.fail();
     return;
   }
