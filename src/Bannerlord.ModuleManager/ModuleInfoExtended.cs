@@ -107,7 +107,8 @@ namespace Bannerlord.ModuleManager
                 {
                     modulesToLoadAfterThis[i] = new DependentModule
                     {
-                        Id = idAttr.InnerText
+                        Id = idAttr.InnerText,
+                        IsOptional = true
                     };
                 }
             }
@@ -121,7 +122,8 @@ namespace Bannerlord.ModuleManager
                 {
                     incompatibleModules[i] = new DependentModule
                     {
-                        Id = idAttr.InnerText
+                        Id = idAttr.InnerText,
+                        IsOptional = true
                     };
                 }
             }
