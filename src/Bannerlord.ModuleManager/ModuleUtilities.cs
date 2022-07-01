@@ -472,7 +472,7 @@ namespace Bannerlord.ModuleManager
             // Deselect all modules that depend on this module if they are selected
             foreach (var module in modules.Values/*.Where(m => !m.IsOfficial)*/)
             {
-                var dependencies = ModuleSorter.GetDependentModulesOf(modules.Values, module, opt);
+                var dependencies = ModuleSorter.GetDependentModulesOf(modules.Values, module, visitedModules, opt);
                 if (getSelected(module) && dependencies.Any(d => d.Id == targetModule.Id))
                 {
                     foreach (var issue in DisableModule(modules, module, visitedModules, getSelected, setSelected, getDisabled, setDisabled))
