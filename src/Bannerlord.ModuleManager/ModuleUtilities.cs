@@ -49,9 +49,24 @@ namespace Bannerlord.ModuleManager
 #else
     public
 # endif
-        sealed record ModuleIssue(ModuleInfoExtended Target, string SourceId, string Reason)
+        sealed record ModuleIssue(ModuleInfoExtended Target, string SourceId, ModuleIssueType Type)
     {
+        public string Reason { get; init; }
         public ApplicationVersionRange SourceVersion { get; init; }
+    }
+    
+#if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
+    internal
+#else
+    public
+# endif
+        enum ModuleIssueType
+    {
+        MissingDependencies,
+        DependencyMissingDependencies,
+        DependencyValidationError,
+        VersionMismatch,
+        Incompatible,
     }
 
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
@@ -59,7 +74,7 @@ namespace Bannerlord.ModuleManager
 #else
     public
 # endif
-        static class ModuleValidator
+        static class ModuleUtilities
     {
         /*
         private static bool CheckModuleCompatibility(ModuleInfoExtended moduleInfoExtended)
@@ -120,11 +135,7 @@ namespace Bannerlord.ModuleManager
         }
         */
         
-        public static IEnumerable<ModuleIssue> ValidateModule(
-            Dictionary<string, ModuleInfoExtended> loadedModules,
-            ModuleInfoExtended moduleInfoExtended,
-            Func<ModuleInfoExtended, bool> isSelected,
-            HashSet<ModuleInfoExtended> visitedModules)
+        public static IEnumerable<ModuleIssue> ValidateModule(Dictionary<string, ModuleInfoExtended> modules, ModuleInfoExtended module, Func<ModuleInfoExtended, bool> isSelected, HashSet<ModuleInfoExtended> visitedModules)
         {
             /*
             if (!CheckModuleCompatibility(moduleInfoExtended))
@@ -135,21 +146,22 @@ namespace Bannerlord.ModuleManager
             */
 
             // Check that all dependencies are present
-            foreach (var dependency in moduleInfoExtended.DependentModules)
+            foreach (var dependency in module.DependentModules)
             {
                 // Ignore the check for Optional
                 if (dependency.IsOptional) continue;
 
-                if (!loadedModules.ContainsKey(dependency.Id))
+                if (!modules.ContainsKey(dependency.Id))
                 {
-                    yield return new ModuleIssue(moduleInfoExtended, dependency.Id, $"Missing {dependency.Id} {dependency.Version}")
+                    yield return new ModuleIssue(module, dependency.Id, ModuleIssueType.MissingDependencies)
                     {
+                        Reason = $"Missing {dependency.Id} {dependency.Version}",
                         SourceVersion = new(dependency.Version, dependency.Version)
                     };
                     yield break;
                 }
             }
-            foreach (var metadata in moduleInfoExtended.DependentModuleMetadatas)
+            foreach (var metadata in module.DependentModuleMetadatas)
             {
                 // Ignore the check for Optional
                 if (metadata.IsOptional) continue;
@@ -157,19 +169,21 @@ namespace Bannerlord.ModuleManager
                 // Ignore the check for Incompatible
                 if (metadata.IsIncompatible) continue;
 
-                if (!loadedModules.ContainsKey(metadata.Id))
+                if (!modules.ContainsKey(metadata.Id))
                 {
                     if (metadata.Version != ApplicationVersion.Empty)
                     {
-                        yield return new ModuleIssue(moduleInfoExtended, metadata.Id, $"Missing {metadata.Id} {metadata.Version}")
+                        yield return new ModuleIssue(module, metadata.Id, ModuleIssueType.MissingDependencies)
                         {
+                            Reason = $"Missing {metadata.Id} {metadata.Version}",
                             SourceVersion = new(metadata.Version, metadata.Version)
                         };
                     }
                     if (metadata.VersionRange != ApplicationVersionRange.Empty)
                     {
-                        yield return new ModuleIssue(moduleInfoExtended, metadata.Id, $"Missing {metadata.Id} {metadata.VersionRange}")
+                        yield return new ModuleIssue(module, metadata.Id, ModuleIssueType.MissingDependencies)
                         {
+                            Reason = $"Missing {metadata.Id} {metadata.VersionRange}",
                             SourceVersion = metadata.VersionRange
                         };
                     }
@@ -178,9 +192,9 @@ namespace Bannerlord.ModuleManager
             }
 
             // Check that the dependencies themselves have all dependencies present
-            foreach (var dependency in ModuleSorter.GetDependentModulesOf(loadedModules.Values, moduleInfoExtended, visitedModules, new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true }).ToArray())
+            foreach (var dependency in ModuleSorter.GetDependentModulesOf(modules.Values, module, visitedModules, new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true }).ToArray())
             {
-                if (moduleInfoExtended.DependentModules.FirstOrDefault(dmm => dmm.Id == dependency.Id) is { } dependencyData)
+                if (module.DependentModules.FirstOrDefault(dmm => dmm.Id == dependency.Id) is { } dependencyData)
                 {
                     // Not found, might be from DependentModuleMetadatas
                     if (dependencyData is null) continue;
@@ -189,20 +203,26 @@ namespace Bannerlord.ModuleManager
                     if (dependencyData.IsOptional) continue;
 
                     // Check missing dependency dependencies
-                    if (!loadedModules.TryGetValue(dependency.Id, out var depencencyModuleInfo))
+                    if (!modules.TryGetValue(dependency.Id, out var depencencyModuleInfo))
                     {
-                        yield return new ModuleIssue(moduleInfoExtended, dependency.Id, $"'{dependency.Id}' is missing it's dependencies!");
+                        yield return new ModuleIssue(module, dependency.Id, ModuleIssueType.DependencyMissingDependencies)
+                        {
+                            Reason = $"'{dependency.Id}' is missing it's dependencies!"
+                        };
                         yield break;
                     }
                 
                     // Check depencency correctness
-                    if (ValidateModule(loadedModules, depencencyModuleInfo, isSelected, visitedModules).Any())
+                    if (ValidateModule(modules, depencencyModuleInfo, isSelected, visitedModules).Any())
                     {
-                        yield return new ModuleIssue(moduleInfoExtended, dependency.Id, $"'{dependency.Id}' has unresolved issues!");
+                        yield return new ModuleIssue(module, dependency.Id, ModuleIssueType.DependencyValidationError)
+                        {
+                            Reason = $"'{dependency.Id}' has unresolved issues!"
+                        };
                         yield break;
                     }
                 }
-                if (moduleInfoExtended.DependentModuleMetadatas.FirstOrDefault(dmm => dmm.Id == dependency.Id) is { } dependencyMetadata)
+                if (module.DependentModuleMetadatas.FirstOrDefault(dmm => dmm.Id == dependency.Id) is { } dependencyMetadata)
                 {
                     // Not found, might be from DependentModules
                     if (dependencyMetadata is null) continue;
@@ -217,16 +237,22 @@ namespace Bannerlord.ModuleManager
                     if (dependencyMetadata.IsIncompatible) continue;
 
                     // Check missing dependency dependencies
-                    if (!loadedModules.TryGetValue(dependency.Id, out var depencencyModuleInfo))
+                    if (!modules.TryGetValue(dependency.Id, out var depencencyModuleInfo))
                     {
-                        yield return new ModuleIssue(moduleInfoExtended, dependency.Id, $"'{dependency.Id}' is missing it's dependencies!");
+                        yield return new ModuleIssue(module, dependency.Id, ModuleIssueType.DependencyMissingDependencies)
+                        {
+                            Reason = $"'{dependency.Id}' is missing it's dependencies!"
+                        };
                         yield break;
                     }
 
                     // Check depencency correctness
-                    if (ValidateModule(loadedModules, depencencyModuleInfo, isSelected, visitedModules).Any())
+                    if (ValidateModule(modules, depencencyModuleInfo, isSelected, visitedModules).Any())
                     {
-                        yield return new ModuleIssue(moduleInfoExtended, dependency.Id, $"'{dependency.Id}' has unresolved issues!");
+                        yield return new ModuleIssue(module, dependency.Id, ModuleIssueType.DependencyValidationError)
+                        {
+                            Reason = $"'{dependency.Id}' has unresolved issues!"
+                        };
                         yield break;
                     }
                 }
@@ -234,7 +260,7 @@ namespace Bannerlord.ModuleManager
 
             // Check that the dependencies have the minimum required version set by DependedModuleMetadatas
             var comparer = new ApplicationVersionComparer();
-            foreach (var metadata in moduleInfoExtended.DependentModuleMetadatas.Where(m => /*!m.IsOptional &&*/ !m.IsIncompatible))
+            foreach (var metadata in module.DependentModuleMetadatas.Where(m => /*!m.IsOptional &&*/ !m.IsIncompatible))
             {
                 // Handle only direct dependencies
                 if (metadata.LoadType != LoadType.LoadBeforeThis) continue;
@@ -243,15 +269,16 @@ namespace Bannerlord.ModuleManager
                 if (metadata.Version == ApplicationVersion.Empty && metadata.VersionRange == ApplicationVersionRange.Empty) continue;
 
                 // Dependency is loaded
-                if (!loadedModules.TryGetValue(metadata.Id, out var dependedModule)) continue;
+                if (!modules.TryGetValue(metadata.Id, out var dependedModule)) continue;
 
                 if (metadata.Version != ApplicationVersion.Empty)
                 {
                     // dependedModuleMetadata.Version > dependedModule.Version
                     if (!metadata.IsOptional && (comparer.Compare(metadata.Version, dependedModule?.Version) > 0))
                     {
-                        yield return new ModuleIssue(moduleInfoExtended, dependedModule?.Id,  $"'{dependedModule?.Id}' wrong version <= {metadata.Version}")
+                        yield return new ModuleIssue(module, dependedModule?.Id, ModuleIssueType.VersionMismatch)
                         {
+                            Reason = $"'{dependedModule?.Id}' wrong version <= {metadata.Version}",
                             SourceVersion = new(metadata.Version, metadata.Version)
                         };
                         yield break;
@@ -266,16 +293,18 @@ namespace Bannerlord.ModuleManager
                     {
                         if (comparer.Compare(metadata.VersionRange.Min, dependedModule?.Version) > 0)
                         {
-                            yield return new ModuleIssue(moduleInfoExtended, dependedModule?.Id,  $"'{dependedModule?.Id}' wrong version < [{metadata.VersionRange}]")
+                            yield return new ModuleIssue(module, dependedModule?.Id, ModuleIssueType.VersionMismatch)
                             {
+                                Reason = $"'{dependedModule?.Id}' wrong version < [{metadata.VersionRange}]",
                                 SourceVersion = metadata.VersionRange
                             };
                             yield break;
                         }
                         if (comparer.Compare(metadata.VersionRange.Max, dependedModule?.Version) < 0)
                         {
-                            yield return new ModuleIssue(moduleInfoExtended, dependedModule?.Id,  $"'{dependedModule?.Id}' wrong version > [{metadata.VersionRange}]")
+                            yield return new ModuleIssue(module, dependedModule?.Id, ModuleIssueType.VersionMismatch)
                             {
+                                Reason = $"'{dependedModule?.Id}' wrong version > [{metadata.VersionRange}]",
                                 SourceVersion = metadata.VersionRange
                             };
                             yield break;
@@ -285,45 +314,56 @@ namespace Bannerlord.ModuleManager
             }
 
             // Do not load this mod if an incompatible mod is selected
-            foreach (var dependency in moduleInfoExtended.IncompatibleModules)
+            foreach (var dependency in module.IncompatibleModules)
             {
                 // Dependency is loaded
-                if (!loadedModules.TryGetValue(dependency.Id, out var depencencyModuleInfo)) continue;
+                if (!modules.TryGetValue(dependency.Id, out var depencencyModule) && !isSelected(depencencyModule)) continue;
 
                 // If the incompatible mod is selected, this mod should be disabled
-                if (isSelected(depencencyModuleInfo))
+                if (isSelected(depencencyModule))
                 {
-                    yield return new ModuleIssue(moduleInfoExtended, depencencyModuleInfo.Id,  $"'{depencencyModuleInfo.Id}' is incompatible with this module");
+                    yield return new ModuleIssue(module, depencencyModule.Id, ModuleIssueType.Incompatible)
+                    {
+                        Reason = $"'{depencencyModule.Id}' is incompatible with this module"
+                    };
                     yield break;
                 }
             }
-            foreach (var metadata in moduleInfoExtended.DependentModuleMetadatas.Where(m => m.IsIncompatible))
+            foreach (var metadata in module.DependentModuleMetadatas.Where(m => m.IsIncompatible))
             {
                 // Dependency is loaded
-                if (!loadedModules.TryGetValue(metadata.Id, out var metadataModuleInfo)) continue;
+                if (!modules.TryGetValue(metadata.Id, out var metadataModule) && !isSelected(metadataModule)) continue;
 
                 // If the incompatible mod is selected, this mod should be disabled
-                if (isSelected(metadataModuleInfo))
+                if (isSelected(metadataModule))
                 {
-                    yield return new ModuleIssue(moduleInfoExtended, metadataModuleInfo.Id,  $"'{metadataModuleInfo.Id}' is incompatible with this module");
+                    yield return new ModuleIssue(module, metadataModule.Id, ModuleIssueType.Incompatible)
+                    {
+                        Reason = $"'{metadataModule.Id}' is incompatible with this module"
+                    };
                     yield break;
                 }
             }
 
             // If another mod declared incompatibility and is selected, disable this
-            foreach (var kv in loadedModules)
+            foreach (var kv in modules)
             {
                 // Ignore self
-                if (kv.Key == moduleInfoExtended.Id) continue;
+                if (kv.Key == module.Id) continue;
 
-                foreach (var metadata in kv.Value.DependentModuleMetadatas.Where(m => m.IsIncompatible && m.Id == moduleInfoExtended.Id))
+                if (!isSelected(kv.Value)) continue;
+                
+                foreach (var metadata in kv.Value.DependentModuleMetadatas.Where(m => m.IsIncompatible && m.Id == module.Id))
                 {
-                    if (!loadedModules.TryGetValue(kv.Key, out var metadataModuleInfo)) continue;
+                    if (!modules.TryGetValue(kv.Key, out var metadataModule)) continue;
 
                     // If the incompatible mod is selected, this mod is disabled
-                    if (isSelected(metadataModuleInfo))
+                    if (isSelected(metadataModule))
                     {
-                        yield return new ModuleIssue(moduleInfoExtended, metadataModuleInfo.Id,  $"'{metadataModuleInfo.Id}' is incompatible with this");
+                        yield return new ModuleIssue(module, metadataModule.Id, ModuleIssueType.Incompatible)
+                        {
+                            Reason = $"'{metadataModule.Id}' is incompatible with this module"
+                        };
                         yield break;
                     }
                 }
@@ -365,7 +405,10 @@ namespace Bannerlord.ModuleManager
                         ToggleModuleSelection(loadedModules, incompatibleModuleInfo, modules, visited, getSelected, setSelected, getDisabled, setDisabled);
 
                     setDisabled(incompatibleModuleInfo, true);
-                    yield return new ModuleIssue(incompatibleModuleInfo, incompatibleModuleInfo.Id, $"'{targetModuleInfo.Id}' is incompatible with this");
+                    yield return new ModuleIssue(incompatibleModuleInfo, incompatibleModuleInfo.Id, ModuleIssueType.Incompatible)
+                    {
+                        Reason = $"'{targetModuleInfo.Id}' is incompatible with this"
+                    };
                 }
 
                 // Disable any mod that declares this mod as incompatible
