@@ -135,7 +135,9 @@ namespace Bannerlord.ModuleManager
         }
         */
         
-        public static IEnumerable<ModuleIssue> ValidateModule(Dictionary<string, ModuleInfoExtended> modules, ModuleInfoExtended module, Func<ModuleInfoExtended, bool> isSelected, HashSet<ModuleInfoExtended> visitedModules)
+        public static IEnumerable<ModuleIssue> ValidateModule(
+            Dictionary<string, ModuleInfoExtended> modules, ModuleInfoExtended targetModule, HashSet<ModuleInfoExtended> visitedModules,
+            Func<ModuleInfoExtended, bool> isSelected)
         {
             /*
             if (!CheckModuleCompatibility(moduleInfoExtended))
@@ -146,14 +148,14 @@ namespace Bannerlord.ModuleManager
             */
 
             // Check that all dependencies are present
-            foreach (var dependency in module.DependentModules)
+            foreach (var dependency in targetModule.DependentModules)
             {
                 // Ignore the check for Optional
                 if (dependency.IsOptional) continue;
 
                 if (!modules.ContainsKey(dependency.Id))
                 {
-                    yield return new ModuleIssue(module, dependency.Id, ModuleIssueType.MissingDependencies)
+                    yield return new ModuleIssue(targetModule, dependency.Id, ModuleIssueType.MissingDependencies)
                     {
                         Reason = $"Missing {dependency.Id} {dependency.Version}",
                         SourceVersion = new(dependency.Version, dependency.Version)
@@ -161,7 +163,7 @@ namespace Bannerlord.ModuleManager
                     yield break;
                 }
             }
-            foreach (var metadata in module.DependentModuleMetadatas)
+            foreach (var metadata in targetModule.DependentModuleMetadatas)
             {
                 // Ignore the check for Optional
                 if (metadata.IsOptional) continue;
@@ -173,7 +175,7 @@ namespace Bannerlord.ModuleManager
                 {
                     if (metadata.Version != ApplicationVersion.Empty)
                     {
-                        yield return new ModuleIssue(module, metadata.Id, ModuleIssueType.MissingDependencies)
+                        yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.MissingDependencies)
                         {
                             Reason = $"Missing {metadata.Id} {metadata.Version}",
                             SourceVersion = new(metadata.Version, metadata.Version)
@@ -181,7 +183,7 @@ namespace Bannerlord.ModuleManager
                     }
                     if (metadata.VersionRange != ApplicationVersionRange.Empty)
                     {
-                        yield return new ModuleIssue(module, metadata.Id, ModuleIssueType.MissingDependencies)
+                        yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.MissingDependencies)
                         {
                             Reason = $"Missing {metadata.Id} {metadata.VersionRange}",
                             SourceVersion = metadata.VersionRange
@@ -192,9 +194,10 @@ namespace Bannerlord.ModuleManager
             }
 
             // Check that the dependencies themselves have all dependencies present
-            foreach (var dependency in ModuleSorter.GetDependentModulesOf(modules.Values, module, visitedModules, new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true }).ToArray())
+            var opts = new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true };
+            foreach (var dependency in ModuleSorter.GetDependentModulesOf(modules.Values, targetModule, visitedModules, opts).ToArray())
             {
-                if (module.DependentModules.FirstOrDefault(dmm => dmm.Id == dependency.Id) is { } dependencyData)
+                if (targetModule.DependentModules.FirstOrDefault(dmm => dmm.Id == dependency.Id) is { } dependencyData)
                 {
                     // Not found, might be from DependentModuleMetadatas
                     if (dependencyData is null) continue;
@@ -205,7 +208,7 @@ namespace Bannerlord.ModuleManager
                     // Check missing dependency dependencies
                     if (!modules.TryGetValue(dependency.Id, out var depencencyModuleInfo))
                     {
-                        yield return new ModuleIssue(module, dependency.Id, ModuleIssueType.DependencyMissingDependencies)
+                        yield return new ModuleIssue(targetModule, dependency.Id, ModuleIssueType.DependencyMissingDependencies)
                         {
                             Reason = $"'{dependency.Id}' is missing it's dependencies!"
                         };
@@ -213,16 +216,16 @@ namespace Bannerlord.ModuleManager
                     }
                 
                     // Check depencency correctness
-                    if (ValidateModule(modules, depencencyModuleInfo, isSelected, visitedModules).Any())
+                    if (ValidateModule(modules, depencencyModuleInfo, visitedModules, isSelected).Any())
                     {
-                        yield return new ModuleIssue(module, dependency.Id, ModuleIssueType.DependencyValidationError)
+                        yield return new ModuleIssue(targetModule, dependency.Id, ModuleIssueType.DependencyValidationError)
                         {
                             Reason = $"'{dependency.Id}' has unresolved issues!"
                         };
                         yield break;
                     }
                 }
-                if (module.DependentModuleMetadatas.FirstOrDefault(dmm => dmm.Id == dependency.Id) is { } dependencyMetadata)
+                if (targetModule.DependentModuleMetadatas.FirstOrDefault(dmm => dmm.Id == dependency.Id) is { } dependencyMetadata)
                 {
                     // Not found, might be from DependentModules
                     if (dependencyMetadata is null) continue;
@@ -239,7 +242,7 @@ namespace Bannerlord.ModuleManager
                     // Check missing dependency dependencies
                     if (!modules.TryGetValue(dependency.Id, out var depencencyModuleInfo))
                     {
-                        yield return new ModuleIssue(module, dependency.Id, ModuleIssueType.DependencyMissingDependencies)
+                        yield return new ModuleIssue(targetModule, dependency.Id, ModuleIssueType.DependencyMissingDependencies)
                         {
                             Reason = $"'{dependency.Id}' is missing it's dependencies!"
                         };
@@ -247,9 +250,9 @@ namespace Bannerlord.ModuleManager
                     }
 
                     // Check depencency correctness
-                    if (ValidateModule(modules, depencencyModuleInfo, isSelected, visitedModules).Any())
+                    if (ValidateModule(modules, depencencyModuleInfo, visitedModules, isSelected).Any())
                     {
-                        yield return new ModuleIssue(module, dependency.Id, ModuleIssueType.DependencyValidationError)
+                        yield return new ModuleIssue(targetModule, dependency.Id, ModuleIssueType.DependencyValidationError)
                         {
                             Reason = $"'{dependency.Id}' has unresolved issues!"
                         };
@@ -260,7 +263,7 @@ namespace Bannerlord.ModuleManager
 
             // Check that the dependencies have the minimum required version set by DependedModuleMetadatas
             var comparer = new ApplicationVersionComparer();
-            foreach (var metadata in module.DependentModuleMetadatas.Where(m => /*!m.IsOptional &&*/ !m.IsIncompatible))
+            foreach (var metadata in targetModule.DependentModuleMetadatas.Where(m => /*!m.IsOptional &&*/ !m.IsIncompatible))
             {
                 // Handle only direct dependencies
                 if (metadata.LoadType != LoadType.LoadBeforeThis) continue;
@@ -276,7 +279,7 @@ namespace Bannerlord.ModuleManager
                     // dependedModuleMetadata.Version > dependedModule.Version
                     if (!metadata.IsOptional && (comparer.Compare(metadata.Version, dependedModule?.Version) > 0))
                     {
-                        yield return new ModuleIssue(module, dependedModule?.Id, ModuleIssueType.VersionMismatch)
+                        yield return new ModuleIssue(targetModule, dependedModule?.Id, ModuleIssueType.VersionMismatch)
                         {
                             Reason = $"'{dependedModule?.Id}' wrong version <= {metadata.Version}",
                             SourceVersion = new(metadata.Version, metadata.Version)
@@ -293,7 +296,7 @@ namespace Bannerlord.ModuleManager
                     {
                         if (comparer.Compare(metadata.VersionRange.Min, dependedModule?.Version) > 0)
                         {
-                            yield return new ModuleIssue(module, dependedModule?.Id, ModuleIssueType.VersionMismatch)
+                            yield return new ModuleIssue(targetModule, dependedModule?.Id, ModuleIssueType.VersionMismatch)
                             {
                                 Reason = $"'{dependedModule?.Id}' wrong version < [{metadata.VersionRange}]",
                                 SourceVersion = metadata.VersionRange
@@ -302,7 +305,7 @@ namespace Bannerlord.ModuleManager
                         }
                         if (comparer.Compare(metadata.VersionRange.Max, dependedModule?.Version) < 0)
                         {
-                            yield return new ModuleIssue(module, dependedModule?.Id, ModuleIssueType.VersionMismatch)
+                            yield return new ModuleIssue(targetModule, dependedModule?.Id, ModuleIssueType.VersionMismatch)
                             {
                                 Reason = $"'{dependedModule?.Id}' wrong version > [{metadata.VersionRange}]",
                                 SourceVersion = metadata.VersionRange
@@ -314,7 +317,7 @@ namespace Bannerlord.ModuleManager
             }
 
             // Do not load this mod if an incompatible mod is selected
-            foreach (var dependency in module.IncompatibleModules)
+            foreach (var dependency in targetModule.IncompatibleModules)
             {
                 // Dependency is loaded
                 if (!modules.TryGetValue(dependency.Id, out var depencencyModule) && !isSelected(depencencyModule)) continue;
@@ -322,14 +325,14 @@ namespace Bannerlord.ModuleManager
                 // If the incompatible mod is selected, this mod should be disabled
                 if (isSelected(depencencyModule))
                 {
-                    yield return new ModuleIssue(module, depencencyModule.Id, ModuleIssueType.Incompatible)
+                    yield return new ModuleIssue(targetModule, depencencyModule.Id, ModuleIssueType.Incompatible)
                     {
                         Reason = $"'{depencencyModule.Id}' is incompatible with this module"
                     };
                     yield break;
                 }
             }
-            foreach (var metadata in module.DependentModuleMetadatas.Where(m => m.IsIncompatible))
+            foreach (var metadata in targetModule.DependentModuleMetadatas.Where(m => m.IsIncompatible))
             {
                 // Dependency is loaded
                 if (!modules.TryGetValue(metadata.Id, out var metadataModule) && !isSelected(metadataModule)) continue;
@@ -337,7 +340,7 @@ namespace Bannerlord.ModuleManager
                 // If the incompatible mod is selected, this mod should be disabled
                 if (isSelected(metadataModule))
                 {
-                    yield return new ModuleIssue(module, metadataModule.Id, ModuleIssueType.Incompatible)
+                    yield return new ModuleIssue(targetModule, metadataModule.Id, ModuleIssueType.Incompatible)
                     {
                         Reason = $"'{metadataModule.Id}' is incompatible with this module"
                     };
@@ -346,23 +349,21 @@ namespace Bannerlord.ModuleManager
             }
 
             // If another mod declared incompatibility and is selected, disable this
-            foreach (var kv in modules)
+            foreach (var module in modules.Values)
             {
                 // Ignore self
-                if (kv.Key == module.Id) continue;
+                if (module.Id == targetModule.Id) continue;
 
-                if (!isSelected(kv.Value)) continue;
+                if (!isSelected(module)) continue;
                 
-                foreach (var metadata in kv.Value.DependentModuleMetadatas.Where(m => m.IsIncompatible && m.Id == module.Id))
+                foreach (var metadata in module.DependentModuleMetadatas.Where(m => m.IsIncompatible && m.Id == targetModule.Id))
                 {
-                    if (!modules.TryGetValue(kv.Key, out var metadataModule)) continue;
-
                     // If the incompatible mod is selected, this mod is disabled
-                    if (isSelected(metadataModule))
+                    if (isSelected(module))
                     {
-                        yield return new ModuleIssue(module, metadataModule.Id, ModuleIssueType.Incompatible)
+                        yield return new ModuleIssue(targetModule, module.Id, ModuleIssueType.Incompatible)
                         {
-                            Reason = $"'{metadataModule.Id}' is incompatible with this module"
+                            Reason = $"'{module.Id}' is incompatible with this module"
                         };
                         yield break;
                     }
@@ -371,91 +372,130 @@ namespace Bannerlord.ModuleManager
         }
         
         public static IEnumerable<ModuleIssue> ToggleModuleSelection(
-            Dictionary<string, ModuleInfoExtended> loadedModules,
-            ModuleInfoExtended targetModuleInfo,
-            List<ModuleInfoExtended> modules,
-            HashSet<ModuleInfoExtended> visited,
-            Func<ModuleInfoExtended, bool> getSelected,
-            Action<ModuleInfoExtended, bool> setSelected,
-            Func<ModuleInfoExtended, bool> getDisabled,
-            Action<ModuleInfoExtended, bool> setDisabled)
+            Dictionary<string, ModuleInfoExtended> modules, ModuleInfoExtended targetModule, HashSet<ModuleInfoExtended> visitedModules,
+            Func<ModuleInfoExtended, bool> getSelected, Action<ModuleInfoExtended, bool> setSelected,
+            Func<ModuleInfoExtended, bool> getDisabled, Action<ModuleInfoExtended, bool> setDisabled)
         {
-            var opt = new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true };
-
-            var dependencies = ModuleSorter.GetDependentModulesOf(loadedModules.Values, targetModuleInfo, visited, opt).ToArray();
-
-            setSelected(targetModuleInfo, !getSelected(targetModuleInfo));
-
-            if (getSelected(targetModuleInfo))
+            if (getSelected(targetModule))
             {
-                // Vanilla check
-                // Select all dependencies if they are not selected
-                foreach (var moduleInfo in loadedModules.Values)
-                {
-                    if (!getSelected(moduleInfo) && dependencies.Any(d => d.Id == moduleInfo.Id))
-                        ToggleModuleSelection(loadedModules, moduleInfo, modules, visited, getSelected, setSelected, getDisabled, setDisabled);
-                    //module.IsSelected |= allDependencies.Any(id => id == module.Info.Id);
-                }
-
-                // Deselect and disable any mod that is incompatible with this one
-                foreach (var dmm in targetModuleInfo.DependentModuleMetadatas.Where(dmm => dmm.IsIncompatible))
-                {
-                    if (!loadedModules.TryGetValue(dmm.Id, out var incompatibleModuleInfo)) continue;
-                    if (getSelected(incompatibleModuleInfo))
-                        ToggleModuleSelection(loadedModules, incompatibleModuleInfo, modules, visited, getSelected, setSelected, getDisabled, setDisabled);
-
-                    setDisabled(incompatibleModuleInfo, true);
-                    yield return new ModuleIssue(incompatibleModuleInfo, incompatibleModuleInfo.Id, ModuleIssueType.Incompatible)
-                    {
-                        Reason = $"'{targetModuleInfo.Id}' is incompatible with this"
-                    };
-                }
-
-                // Disable any mod that declares this mod as incompatible
-                foreach (var kv in loadedModules)
-                {
-                    foreach (var dmm in kv.Value.DependentModuleMetadatas.Where(dmm => dmm.IsIncompatible && dmm.Id == targetModuleInfo.Id))
-                    {
-                        if (!loadedModules.TryGetValue(kv.Key, out var incompatibleModuleInfo)) continue;
-                        if (getSelected(incompatibleModuleInfo))
-                            ToggleModuleSelection(loadedModules, incompatibleModuleInfo, modules, visited, getSelected, setSelected, getDisabled, setDisabled);
-
-                        // We need to re-check that everything is alright with the external dependency
-                        setDisabled(incompatibleModuleInfo, getDisabled(incompatibleModuleInfo) | !ModuleSorter.AreAllDependenciesOfModulePresent(loadedModules.Values, incompatibleModuleInfo));
-                    }
-                }
+                foreach (var issue in DisableModule(modules, targetModule, visitedModules, getSelected, setSelected, getDisabled, setDisabled))
+                    yield return issue;
             }
             else
             {
-                // Vanilla check
-                // Deselect all modules that depend on this module if they are selected
-                foreach (var moduleInfo in loadedModules.Values/*.Where(m => !m.IsOfficial)*/)
-                {
-                    var dependencies2 = ModuleSorter.GetDependentModulesOf(loadedModules.Values, moduleInfo, opt);
-                    if (getSelected(moduleInfo) && dependencies2.Any(d => d.Id == targetModuleInfo.Id))
-                        ToggleModuleSelection(loadedModules, moduleInfo, modules, visited, getSelected, setSelected, getDisabled, setDisabled);
-                }
+                foreach (var issue in EnableModule(modules, targetModule, visitedModules, getSelected, setSelected, getDisabled, setDisabled))
+                    yield return issue;
+            }
+        }
+        public static IEnumerable<ModuleIssue> EnableModule(
+            Dictionary<string, ModuleInfoExtended> modules, ModuleInfoExtended targetModule, HashSet<ModuleInfoExtended> visitedModules,
+            Func<ModuleInfoExtended, bool> getSelected, Action<ModuleInfoExtended, bool> setSelected,
+            Func<ModuleInfoExtended, bool> getDisabled, Action<ModuleInfoExtended, bool> setDisabled)
+        {
+            setSelected(targetModule, true);
 
-                // Enable for selection any mod that is incompatible with this one
-                foreach (var dmm in targetModuleInfo.DependentModuleMetadatas.Where(dmm => dmm.IsIncompatible))
+            var opt = new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true };
+            var dependencies = ModuleSorter.GetDependentModulesOf(modules.Values, targetModule, visitedModules, opt).ToArray();
+            
+            // Select all dependencies
+            foreach (var module in modules.Values)
+            {
+                if (!getSelected(module) && dependencies.Any(d => d.Id == module.Id))
                 {
-                    if (!loadedModules.TryGetValue(dmm.Id, out var incompatibleModuleInfo)) continue;
-                    setDisabled(incompatibleModuleInfo, false);
+                    foreach (var issue in EnableModule(modules, module, visitedModules, getSelected, setSelected, getDisabled, setDisabled))
+                        yield return issue;
                 }
+            }
+            
+            // Enable modules that are marked as LoadAfterThis
+            foreach (var metadata in targetModule.DependentModuleMetadatas)
+            {
+                if (metadata.IsOptional) continue;
+                
+                if (metadata.IsIncompatible) continue;
+                
+                if (metadata.LoadType != LoadType.LoadAfterThis) continue;
+                
+                if (!modules.TryGetValue(metadata.Id, out var metadataModule)) continue;
 
-                // Check if any mod that declares this mod as incompatible can be Enabled
-                foreach (var kv in loadedModules)
+                if (!getSelected(metadataModule))
                 {
-                    foreach (var dmm in kv.Value.DependentModuleMetadatas.Where(dmm => dmm.IsIncompatible && dmm.Id == targetModuleInfo.Id))
-                    {
-                        if (!loadedModules.TryGetValue(kv.Key, out var incompatibleModuleInfo)) continue;
-                        // We need to re-check that everything is alright with the external dependency
-                        setDisabled(incompatibleModuleInfo, getDisabled(incompatibleModuleInfo) & !ModuleSorter.AreAllDependenciesOfModulePresent(loadedModules.Values, incompatibleModuleInfo));
-                    }
+                    foreach (var issue in EnableModule(modules, metadataModule, visitedModules, getSelected, setSelected, getDisabled, setDisabled))
+                        yield return issue;
                 }
             }
 
-            //targetModule.IsDisabled = !AreAllDependenciesOfModulePresent(instance, targetModule.Info, modules);
+            // Deselect and disable any mod that is incompatible with this one
+            foreach (var metadata in targetModule.DependentModuleMetadatas.Where(dmm => dmm.IsIncompatible))
+            {
+                if (!modules.TryGetValue(metadata.Id, out var incompatibleModule)) continue;
+                
+                if (getSelected(incompatibleModule))
+                {
+                    foreach (var issue in DisableModule(modules, incompatibleModule, visitedModules, getSelected, setSelected, getDisabled, setDisabled))
+                        yield return issue;
+                }
+
+                setDisabled(incompatibleModule, true);
+                yield return new ModuleIssue(incompatibleModule, incompatibleModule.Id, ModuleIssueType.Incompatible)
+                {
+                    Reason = $"'{targetModule.Id}' is incompatible with this"
+                };
+            }
+
+            // Disable any mod that declares this mod as incompatible
+            foreach (var module in modules.Values)
+            {
+                foreach (var dmm in module.DependentModuleMetadatas.Where(dmm => dmm.IsIncompatible && dmm.Id == targetModule.Id))
+                {
+                    if (getSelected(module))
+                    {
+                        foreach (var issue in DisableModule(modules, module, visitedModules, getSelected, setSelected, getDisabled, setDisabled))
+                            yield return issue;
+                    }
+
+                    // We need to re-check that everything is alright with the external dependency
+                    setDisabled(module, getDisabled(module) | !ModuleSorter.AreAllDependenciesOfModulePresent(modules.Values, module));
+                }
+            }
+        }
+        public static IEnumerable<ModuleIssue> DisableModule(
+            Dictionary<string, ModuleInfoExtended> modules, ModuleInfoExtended targetModule, HashSet<ModuleInfoExtended> visitedModules,
+            Func<ModuleInfoExtended, bool> getSelected, Action<ModuleInfoExtended, bool> setSelected,
+            Func<ModuleInfoExtended, bool> getDisabled, Action<ModuleInfoExtended, bool> setDisabled)
+        {
+            setSelected(targetModule, false);
+
+            var opt = new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true };
+            
+            // Vanilla check
+            // Deselect all modules that depend on this module if they are selected
+            foreach (var module in modules.Values/*.Where(m => !m.IsOfficial)*/)
+            {
+                var dependencies = ModuleSorter.GetDependentModulesOf(modules.Values, module, opt);
+                if (getSelected(module) && dependencies.Any(d => d.Id == targetModule.Id))
+                {
+                    foreach (var issue in DisableModule(modules, module, visitedModules, getSelected, setSelected, getDisabled, setDisabled))
+                        yield return issue;
+                }
+            }
+
+            // Enable for selection any mod that is incompatible with this one
+            foreach (var metadata in targetModule.DependentModuleMetadatas.Where(dmm => dmm.IsIncompatible))
+            {
+                if (!modules.TryGetValue(metadata.Id, out var incompatibleModule)) continue;
+                setDisabled(incompatibleModule, false);
+            }
+
+            // Check if any mod that declares this mod as incompatible can be Enabled
+            foreach (var module in modules.Values)
+            {
+                foreach (var metadata in module.DependentModuleMetadatas.Where(dmm => dmm.IsIncompatible && dmm.Id == targetModule.Id))
+                {
+                    // We need to re-check that everything is alright with the external dependency
+                    setDisabled(module, getDisabled(module) & !ModuleSorter.AreAllDependenciesOfModulePresent(modules.Values, module));
+                }
+            }
         }
     }
 #pragma warning restore
