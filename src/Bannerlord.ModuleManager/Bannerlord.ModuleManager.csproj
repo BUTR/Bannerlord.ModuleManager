@@ -1,11 +1,11 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1;net5;net6</TargetFrameworks>
     <LangVersion>10.0</LangVersion>
     <Nullable>enable</Nullable>
     <VersionOverride>0</VersionOverride>
-    <Version>3.0.$(VersionOverride)</Version>
+    <Version>4.0.$(VersionOverride)</Version>
     <DefineConstants>$(DefineConstants);BANNERLORDBUTRMODULEMANAGER_PUBLIC</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
