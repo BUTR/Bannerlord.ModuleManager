@@ -136,17 +136,19 @@ namespace Bannerlord.ModuleManager
         */
         
         public static IEnumerable<ModuleIssue> ValidateModule(
+            Dictionary<string, ModuleInfoExtended> modules, ModuleInfoExtended targetModule,
+            Func<ModuleInfoExtended, bool> isSelected)
+        {
+            var visited = new HashSet<ModuleInfoExtended>();
+            foreach (var issue in ValidateModule(modules, targetModule, visited, isSelected))
+            {
+                yield return issue;
+            }
+        }
+        public static IEnumerable<ModuleIssue> ValidateModule(
             Dictionary<string, ModuleInfoExtended> modules, ModuleInfoExtended targetModule, HashSet<ModuleInfoExtended> visitedModules,
             Func<ModuleInfoExtended, bool> isSelected)
         {
-            /*
-            if (!CheckModuleCompatibility(moduleInfoExtended))
-            {
-                yield return new ModuleIssue(moduleInfoExtended, moduleInfoExtended.Id, "Not compatible!");
-                yield break;
-            }
-            */
-
             // Check that all dependencies are present
             foreach (var dependency in targetModule.DependentModules)
             {
@@ -370,39 +372,38 @@ namespace Bannerlord.ModuleManager
                 }
             }
         }
-        
-        public static IEnumerable<ModuleIssue> ToggleModuleSelection(
-            Dictionary<string, ModuleInfoExtended> modules, ModuleInfoExtended targetModule, HashSet<ModuleInfoExtended> visitedModules,
+
+        public static IEnumerable<ModuleIssue> EnableModule(
+            Dictionary<string, ModuleInfoExtended> modules, ModuleInfoExtended targetModule,
             Func<ModuleInfoExtended, bool> getSelected, Action<ModuleInfoExtended, bool> setSelected,
             Func<ModuleInfoExtended, bool> getDisabled, Action<ModuleInfoExtended, bool> setDisabled)
         {
-            if (getSelected(targetModule))
+            var visited = new HashSet<ModuleInfoExtended>();
+            foreach (var issue in EnableModuleInternal(modules, targetModule, visited, getSelected, setSelected, getDisabled, setDisabled))
             {
-                foreach (var issue in DisableModule(modules, targetModule, visitedModules, getSelected, setSelected, getDisabled, setDisabled))
-                    yield return issue;
-            }
-            else
-            {
-                foreach (var issue in EnableModule(modules, targetModule, visitedModules, getSelected, setSelected, getDisabled, setDisabled))
-                    yield return issue;
+                yield return issue;
             }
         }
-        public static IEnumerable<ModuleIssue> EnableModule(
+        private static IEnumerable<ModuleIssue> EnableModuleInternal(
             Dictionary<string, ModuleInfoExtended> modules, ModuleInfoExtended targetModule, HashSet<ModuleInfoExtended> visitedModules,
             Func<ModuleInfoExtended, bool> getSelected, Action<ModuleInfoExtended, bool> setSelected,
             Func<ModuleInfoExtended, bool> getDisabled, Action<ModuleInfoExtended, bool> setDisabled)
         {
+            if (visitedModules.Contains(targetModule))
+                yield break;
+            visitedModules.Add(targetModule);
+            
             setSelected(targetModule, true);
 
             var opt = new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true };
-            var dependencies = ModuleSorter.GetDependentModulesOf(modules.Values, targetModule, visitedModules, opt).ToArray();
-            
+            var dependencies = ModuleSorter.GetDependentModulesOf(modules.Values, targetModule, opt).ToArray();
+
             // Select all dependencies
             foreach (var module in modules.Values)
             {
                 if (!getSelected(module) && dependencies.Any(d => d.Id == module.Id))
                 {
-                    foreach (var issue in EnableModule(modules, module, visitedModules, getSelected, setSelected, getDisabled, setDisabled))
+                    foreach (var issue in EnableModuleInternal(modules, module, visitedModules, getSelected, setSelected, getDisabled, setDisabled))
                         yield return issue;
                 }
             }
@@ -420,7 +421,7 @@ namespace Bannerlord.ModuleManager
 
                 if (!getSelected(metadataModule))
                 {
-                    foreach (var issue in EnableModule(modules, metadataModule, visitedModules, getSelected, setSelected, getDisabled, setDisabled))
+                    foreach (var issue in EnableModuleInternal(modules, metadataModule, visitedModules, getSelected, setSelected, getDisabled, setDisabled))
                         yield return issue;
                 }
             }
@@ -432,7 +433,7 @@ namespace Bannerlord.ModuleManager
                 
                 if (getSelected(incompatibleModule))
                 {
-                    foreach (var issue in DisableModule(modules, incompatibleModule, visitedModules, getSelected, setSelected, getDisabled, setDisabled))
+                    foreach (var issue in DisableModuleInternal(modules, incompatibleModule, visitedModules, getSelected, setSelected, getDisabled, setDisabled))
                         yield return issue;
                 }
 
@@ -450,7 +451,7 @@ namespace Bannerlord.ModuleManager
                 {
                     if (getSelected(module))
                     {
-                        foreach (var issue in DisableModule(modules, module, visitedModules, getSelected, setSelected, getDisabled, setDisabled))
+                        foreach (var issue in DisableModuleInternal(modules, module, visitedModules, getSelected, setSelected, getDisabled, setDisabled))
                             yield return issue;
                     }
 
@@ -459,23 +460,39 @@ namespace Bannerlord.ModuleManager
                 }
             }
         }
+        
         public static IEnumerable<ModuleIssue> DisableModule(
+            Dictionary<string, ModuleInfoExtended> modules, ModuleInfoExtended targetModule,
+            Func<ModuleInfoExtended, bool> getSelected, Action<ModuleInfoExtended, bool> setSelected,
+            Func<ModuleInfoExtended, bool> getDisabled, Action<ModuleInfoExtended, bool> setDisabled)
+        {
+            var visited = new HashSet<ModuleInfoExtended>();
+            foreach (var issue in DisableModuleInternal(modules, targetModule, visited, getSelected, setSelected, getDisabled, setDisabled))
+            {
+                yield return issue;
+            }
+        }
+        private static IEnumerable<ModuleIssue> DisableModuleInternal(
             Dictionary<string, ModuleInfoExtended> modules, ModuleInfoExtended targetModule, HashSet<ModuleInfoExtended> visitedModules,
             Func<ModuleInfoExtended, bool> getSelected, Action<ModuleInfoExtended, bool> setSelected,
             Func<ModuleInfoExtended, bool> getDisabled, Action<ModuleInfoExtended, bool> setDisabled)
         {
+            if (visitedModules.Contains(targetModule))
+                yield break;
+            visitedModules.Add(targetModule);
+            
             setSelected(targetModule, false);
 
             var opt = new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true };
-            
+
             // Vanilla check
             // Deselect all modules that depend on this module if they are selected
             foreach (var module in modules.Values/*.Where(m => !m.IsOfficial)*/)
             {
-                var dependencies = ModuleSorter.GetDependentModulesOf(modules.Values, module, visitedModules, opt);
+                var dependencies = ModuleSorter.GetDependentModulesOf(modules.Values, module, opt);
                 if (getSelected(module) && dependencies.Any(d => d.Id == targetModule.Id))
                 {
-                    foreach (var issue in DisableModule(modules, module, visitedModules, getSelected, setSelected, getDisabled, setDisabled))
+                    foreach (var issue in DisableModuleInternal(modules, module, visitedModules, getSelected, setSelected, getDisabled, setDisabled))
                         yield return issue;
                 }
             }
