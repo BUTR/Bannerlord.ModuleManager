@@ -176,19 +176,7 @@ namespace Bannerlord.ModuleManager
                     };
                 }
             }
-            
-            // LoadAfterThis conflicts with LoadBeforeThis
-            foreach (var module in targetModule.DependenciesLoadAfterThis())
-            {
-                if (targetModule.DependenciesLoadBeforeThis().FirstOrDefault(x => string.Equals(x.Id, module.Id, StringComparison.Ordinal)) is { } metadata)
-                {
-                    yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.DependencyConflict)
-                    {
-                        Reason = $"Module {metadata.Id} is both depended upon as LoadAfter and LoadBefore"
-                    };
-                }
-            }
-            
+
             // LoadBeforeThis conflicts with LoadAfterThis
             foreach (var module in targetModule.DependenciesLoadBeforeThis())
             {
