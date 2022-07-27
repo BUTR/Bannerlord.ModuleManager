@@ -207,12 +207,19 @@ namespace Bannerlord.ModuleManager
                             SourceVersion = new(metadata.Version, metadata.Version)
                         };
                     }
-                    if (metadata.VersionRange != ApplicationVersionRange.Empty)
+                    else if (metadata.VersionRange != ApplicationVersionRange.Empty)
                     {
                         yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.MissingDependencies)
                         {
                             Reason = $"Missing {metadata.Id} {metadata.VersionRange}",
                             SourceVersion = metadata.VersionRange
+                        };
+                    }
+                    else
+                    {
+                        yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.MissingDependencies)
+                        {
+                            Reason = $"Missing {metadata.Id}"
                         };
                     }
                     yield break;
