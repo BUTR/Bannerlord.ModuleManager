@@ -55,12 +55,13 @@ namespace Bannerlord.ModuleManager
     {
         public string Name { get; init; } = string.Empty;
         public string DLLName { get; init; } = string.Empty;
-        public IReadOnlyList<string> Assemblies { get; init; } = Array.Empty<string>();
+        public IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> Assemblies { get; init; } = new Dictionary<string, IReadOnlyDictionary<string, string>>();
+
         public string SubModuleClassType { get; init; } = string.Empty;
         public IReadOnlyDictionary<string, IReadOnlyList<string>> Tags { get; init; } = new Dictionary<string, IReadOnlyList<string>>();
 
         public SubModuleInfoExtended() { }
-        public SubModuleInfoExtended(string name, string dllName, IReadOnlyList<string> assemblies, string subModuleClassType, IReadOnlyDictionary<string, IReadOnlyList<string>> tags)
+        public SubModuleInfoExtended(string name, string dllName, IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> assemblies, string subModuleClassType, IReadOnlyDictionary<string, IReadOnlyList<string>> tags)
         {
             Name = name;
             DLLName = dllName;
@@ -77,14 +78,24 @@ namespace Bannerlord.ModuleManager
             var dllName = subModuleNode.SelectSingleNode("DLLName")?.Attributes?["value"]?.InnerText ?? string.Empty;
 
             var subModuleClassType = subModuleNode.SelectSingleNode("SubModuleClassType")?.Attributes?["value"]?.InnerText ?? string.Empty;
-            var assemblies = Array.Empty<string>();
+            var assemblies = new Dictionary<string, Dictionary<string, string>>();
             if (subModuleNode.SelectSingleNode("Assemblies") != null)
             {
                 var assembliesList = subModuleNode.SelectSingleNode("Assemblies")?.SelectNodes("Assembly");
-                assemblies = new string[assembliesList?.Count ?? 0];
                 for (var i = 0; i < assembliesList?.Count; i++)
                 {
-                    assemblies[i] = assembliesList?[i]?.Attributes?["value"]?.InnerText is { } value ? value : string.Empty;
+                    if (assembliesList?[i]?.Attributes?["value"]?.InnerText is { } value)
+                    {
+                        if (!assemblies.TryGetValue(value, out var dict))
+                        {
+                            assemblies[value] = new Dictionary<string, string>();
+                        }
+ 
+                        foreach (XmlAttribute attribute in assembliesList[i]?.Attributes)
+                        {
+                            dict.Add(attribute.Name, attribute.Value); 
+                        }
+                    }
                 }
             }
 
@@ -94,14 +105,12 @@ namespace Bannerlord.ModuleManager
             {
                 if (tagsList?[i]?.Attributes?["key"]?.InnerText is { } key && tagsList[i]?.Attributes?["value"]?.InnerText is { } value)
                 {
-                    if (tags.TryGetValue(key, out var list))
+                    if (!tags.TryGetValue(key, out var list))
                     {
-                        list.Add(value);
+                        tags[key] = new List<string> {value};
                     }
-                    else
-                    {
-                        tags[key] = new List<string> { value };
-                    }
+                    
+                    list.Add(value);
                 }
             }
 
@@ -109,7 +118,7 @@ namespace Bannerlord.ModuleManager
             {
                 Name = name,
                 DLLName = dllName,
-                Assemblies = assemblies,
+                Assemblies = new ReadOnlyDictionary<string, IReadOnlyDictionary<string, string>>(assemblies.ToDictionary(x => x.Key, x => new ReadOnlyDictionary<string, string>(x.Value) as IReadOnlyDictionary<string, string>)),
                 SubModuleClassType = subModuleClassType,
                 Tags = new ReadOnlyDictionary<string, IReadOnlyList<string>>(tags.ToDictionary(x => x.Key, x => new ReadOnlyCollection<string>(x.Value) as IReadOnlyList<string>))
             };
