@@ -36,10 +36,10 @@ jobs:
       - run: cp ./src/Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/native/Bannerlord.ModuleManager.Native.dll ./src/Bannerlord.ModuleManager.Native.TypeScript/src/lib
       
       - run: |
-          cd ./src/Bannerlord.ModuleManager.Native.TypeScript && \
-          npm version $(node -p "require('./package.json').version = \
-          require('./package.json').version.split('.')[0]+'.' + \
-          require('./package.json').version.split('.')[1]+'.' + \
+          cd ./src/Bannerlord.ModuleManager.Native.TypeScript && `
+          npm version $(node -p "require('./package.json').version = `
+          require('./package.json').version.split('.')[0]+'.' + `
+          require('./package.json').version.split('.')[1]+'.' + `
           $(git rev-list --no-merges --count master)") --no-git-tag-version --allow-same-version;
           
       - run: cd ./src/Bannerlord.ModuleManager.Native.TypeScript && npm ci
