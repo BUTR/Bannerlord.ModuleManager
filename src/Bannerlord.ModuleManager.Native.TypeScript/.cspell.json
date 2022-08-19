@@ -8,6 +8,7 @@
     "bitjson",
     "blmmanager",
     "blmodulemanager",
+    "blmodulemanagernative",
     "butr",
     "ccall",
     "cimg",
