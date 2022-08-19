@@ -1,0 +1,11 @@
+.nyc_output
+build
+node_modules
+src/lib/dotnet.*
+src/test/**/**.js
+!src/test/**/_**.js
+!src/**/**.spec.js
+coverage
+*.tgz
+*.log
+*.dll

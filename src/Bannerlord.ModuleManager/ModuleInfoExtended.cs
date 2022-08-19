@@ -55,18 +55,113 @@ namespace Bannerlord.ModuleManager
         private static readonly string NativeModuleId = "Native";
         private static readonly string[] OfficialModuleIds = { NativeModuleId, "SandBox", "SandBoxCore", "StoryMode", "CustomBattle" };
 
-        public string Id { get; init; } = string.Empty;
-        public string Name { get; init; } = string.Empty;
-        public bool IsOfficial { get; init; }
-        public ApplicationVersion Version { get; init; } = ApplicationVersion.Empty;
-        public bool IsSingleplayerModule { get; init; }
-        public bool IsMultiplayerModule { get; init; }
-        public IReadOnlyList<SubModuleInfoExtended> SubModules { get; init; } = Array.Empty<SubModuleInfoExtended>();
-        public IReadOnlyList<DependentModule> DependentModules { get; init; } = Array.Empty<DependentModule>();
-        public IReadOnlyList<DependentModule> ModulesToLoadAfterThis { get; init; } = Array.Empty<DependentModule>();
-        public IReadOnlyList<DependentModule> IncompatibleModules { get; init; } = Array.Empty<DependentModule>();
-        public string Url { get; init; } = string.Empty;
-        public IReadOnlyList<DependentModuleMetadata> DependentModuleMetadatas { get; init; } = Array.Empty<DependentModuleMetadata>();
+        public string Id
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        } = string.Empty;
+
+        public string Name
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        } = string.Empty;
+
+        public bool IsOfficial
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        }
+
+        public ApplicationVersion Version
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        } = ApplicationVersion.Empty;
+
+        public bool IsSingleplayerModule
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        }
+
+        public bool IsMultiplayerModule
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        }
+
+        public IReadOnlyList<SubModuleInfoExtended> SubModules
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        } = Array.Empty<SubModuleInfoExtended>();
+
+        public IReadOnlyList<DependentModule> DependentModules
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        } = Array.Empty<DependentModule>();
+
+        public IReadOnlyList<DependentModule> ModulesToLoadAfterThis
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        } = Array.Empty<DependentModule>();
+
+        public IReadOnlyList<DependentModule> IncompatibleModules
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        } = Array.Empty<DependentModule>();
+
+        public string Url
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        } = string.Empty;
+
+        public IReadOnlyList<DependentModuleMetadata> DependentModuleMetadatas
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        } = Array.Empty<DependentModuleMetadata>();
 
         public static ModuleInfoExtended? FromXml(XmlDocument? xmlDocument)
         {

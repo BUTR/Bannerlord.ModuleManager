@@ -1,13 +1,13 @@
-name: Publish NPM
+name: Publish Native NPM
 
 on:
   push:
     branches:
       - master
     paths:
-      - '.github/workflows/publish-wasm.yml'
-      - 'src/Bannerlord.ModuleManager.WASM/**.*'
-      - 'src/Bannerlord.ModuleManager.TypeScript/**.*'
+      - '.github/workflows/publish-native-ts.yml'
+      - 'src/Bannerlord.ModuleManager.Native/**.*'
+      - 'src/Bannerlord.ModuleManager.Native.TypeScript/**.*'
   workflow_dispatch:
 
 jobs:
@@ -19,33 +19,33 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: Setup .NET 6
+      - name: Setup .NET 7
         uses: actions/setup-dotnet@master
         with:
-          dotnet-version: 6.x.x
+          dotnet-version: 7.x.x
       
       - uses: actions/setup-node@v3.4.1
         with:
           node-version: 16
           cache: 'npm'
-          cache-dependency-path: src/Bannerlord.ModuleManager.TypeScript/package-lock.json
+          cache-dependency-path: src/Bannerlord.ModuleManager.Native.TypeScript/package-lock.json
           
-      - run: dotnet publish -c Release src/Bannerlord.ModuleManager.WASM
+      - run: dotnet publish -r win-x64 -c Release src/Bannerlord.ModuleManager.Native
       
-      - run: cp ./src/Bannerlord.ModuleManager.WASM/bin/dotnet.* ./src/Bannerlord.ModuleManager.TypeScript/src/lib
+      - run: cp ./src/Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/native/Bannerlord.ModuleManager.Native.dll ./src/Bannerlord.ModuleManager.Native.TypeScript/src/lib
       
       - run: |
-          cd ./src/Bannerlord.ModuleManager.TypeScript && \
+          cd ./src/Bannerlord.ModuleManager.Native.TypeScript && \
           npm version $(node -p "require('./package.json').version = \
           require('./package.json').version.split('.')[0]+'.' + \
           require('./package.json').version.split('.')[1]+'.' + \
           $(git rev-list --no-merges --count master)") --no-git-tag-version --allow-same-version;
           
-      - run: cd ./src/Bannerlord.ModuleManager.TypeScript && npm ci
+      - run: cd ./src/Bannerlord.ModuleManager.Native.TypeScript && npm ci
       
-      - run: cd ./src/Bannerlord.ModuleManager.TypeScript && npm run build
+      - run: cd ./src/Bannerlord.ModuleManager.Native.TypeScript && npm run build
       
-      - run: cd ./src/Bannerlord.ModuleManager.TypeScript && npm run test
+      - run: cd ./src/Bannerlord.ModuleManager.Native.TypeScript && npm run test
       
       - uses: actions/setup-node@v3.4.1
         with:
@@ -53,7 +53,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
           scope: '@butr'
       
-      - run: cd ./src/Bannerlord.ModuleManager.TypeScript && npm publish --access public
+      - run: cd ./src/Bannerlord.ModuleManager.Native.TypeScript && npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{secrets.PUBLISH_NPM_TOKEN}}
 
@@ -63,6 +63,6 @@ jobs:
           registry-url: https://npm.pkg.github.com/
           scope: '@butr'
 
-      - run: cd ./src/Bannerlord.ModuleManager.TypeScript && npm publish
+      - run: cd ./src/Bannerlord.ModuleManager.Native.TypeScript && npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.PUBLISH_GITHUB_TOKEN}}

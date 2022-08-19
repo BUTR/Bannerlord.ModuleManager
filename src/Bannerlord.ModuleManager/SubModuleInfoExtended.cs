@@ -53,11 +53,50 @@ namespace Bannerlord.ModuleManager
 # endif
         sealed record SubModuleInfoExtended
     {
-        public string Name { get; init; } = string.Empty;
-        public string DLLName { get; init; } = string.Empty;
-        public IReadOnlyList<string> Assemblies { get; init; } = Array.Empty<string>();
-        public string SubModuleClassType { get; init; } = string.Empty;
-        public IReadOnlyDictionary<string, IReadOnlyList<string>> Tags { get; init; } = new Dictionary<string, IReadOnlyList<string>>();
+        public string Name
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        } = string.Empty;
+
+        public string DLLName
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        } = string.Empty;
+
+        public IReadOnlyList<string> Assemblies
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        } = Array.Empty<string>();
+
+        public string SubModuleClassType
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        } = string.Empty;
+
+        public IReadOnlyDictionary<string, IReadOnlyList<string>> Tags
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        } = new Dictionary<string, IReadOnlyList<string>>();
 
         public SubModuleInfoExtended() { }
         public SubModuleInfoExtended(string name, string dllName, IReadOnlyList<string> assemblies, string subModuleClassType, IReadOnlyDictionary<string, IReadOnlyList<string>> tags)

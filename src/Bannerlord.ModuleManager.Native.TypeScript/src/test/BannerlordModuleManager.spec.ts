@@ -1,10 +1,13 @@
 import test from 'ava';
 
 import { harmonyXml, uiExtenderExXml, invalidXml } from './_data';
-import { BannerlordModuleManager, IEnableDisableManager, IValidationManager } from '../lib/BannerlordModuleManager';
+import {
+  BannerlordModuleManager, IEnableDisableManager,/*, IValidationManager*/
+  IValidationManager
+} from '../lib/BannerlordModuleManager';
 
 test('sort', async (t) => {
-  const blmmanager = await BannerlordModuleManager.createAsync();
+  const blmmanager = new BannerlordModuleManager();
 
   const invalid = blmmanager.getModuleInfo(invalidXml);
   if (invalid === null || invalid === undefined) {
@@ -115,6 +118,4 @@ test('sort', async (t) => {
   t.deepEqual(sorted.length, 2);
   t.deepEqual(sorted[0].id, harmony.id);
   t.deepEqual(sorted[1].id, uiExtenderEx.id);
-
-  await blmmanager.dispose();
 });

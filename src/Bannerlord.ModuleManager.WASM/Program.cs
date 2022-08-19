@@ -24,21 +24,42 @@ namespace Bannerlord.ModuleManager.WASM
         public static IList<ModuleInfoExtended> SortWithOptions(ModuleInfoExtended[] source, ModuleSorterOptions options) =>
             ModuleSorter.Sort(source, options);
 
+
         [JSInvokable]
         public static bool AreAllDependenciesOfModulePresent(ModuleInfoExtended[] source, ModuleInfoExtended module) =>
-            ModuleSorter.AreAllDependenciesOfModulePresent(source, module);
+            ModuleUtilities.AreDependenciesPresent(source, module);
+
 
         [JSInvokable]
         public static ModuleInfoExtended[] GetDependentModulesOf(ModuleInfoExtended[] source, ModuleInfoExtended module) =>
-            ModuleSorter.GetDependentModulesOf(source, module).ToArray();
+            ModuleUtilities.GetDependencies(source, module).ToArray();
 
         [JSInvokable]
         public static ModuleInfoExtended[] GetDependentModulesOfWithOptions(ModuleInfoExtended[] source, ModuleInfoExtended module, ModuleSorterOptions options) =>
-            ModuleSorter.GetDependentModulesOf(source, module, options).ToArray();
+            ModuleUtilities.GetDependencies(source, module, options).ToArray();
 
-        //[JSInvokable]
-        //public static ModuleInfoExtended[] GetDependentModulesOf(ModuleInfoExtended[] source, ModuleInfoExtended[] visited, ModuleInfoExtended module, bool skipExternalDependencies = false) =>
-        //    ModuleSorter.GetDependentModulesOf(source, module, visited.ToHashSet(), skipExternalDependencies).ToArray();
+
+        [JSInvokable]
+        public static ModuleIssue[] ValidateModule(ModuleInfoExtended[] modules, ModuleInfoExtended targetModule, IJSUnmarshalledObjectReference manager) =>
+            ModuleUtilities.ValidateModule(modules, targetModule, module => manager.Invoke<bool>("isSelected", module.Id)).ToArray();
+
+        [JSInvokable]
+        public static ModuleIssue[] ValidateModuleDependenciesDeclarations(ModuleInfoExtended targetModule) =>
+            ModuleUtilities.ValidateModuleDependenciesDeclarations(targetModule).ToArray();
+
+
+        [JSInvokable]
+        public static ModuleIssue[] EnableModule(ModuleInfoExtended[] modules, ModuleInfoExtended targetModule, IJSUnmarshalledObjectReference manager) =>
+            ModuleUtilities.EnableModule(modules, targetModule,
+                module => manager.Invoke<bool>("getSelected", module.Id), (module, value) => manager.InvokeVoid("setSelected", module.Id, value),
+                module => manager.Invoke<bool>("getDisabled", module.Id), (module, value) => manager.InvokeVoid("setDisabled", module.Id, value)).ToArray();
+
+        [JSInvokable]
+        public static ModuleIssue[] DisableModule(ModuleInfoExtended[] modules, ModuleInfoExtended targetModule, IJSUnmarshalledObjectReference manager) =>
+            ModuleUtilities.DisableModule(modules, targetModule,
+                module => manager.Invoke<bool>("getSelected", module.Id), (module, value) => manager.InvokeVoid("setSelected", module.Id, value),
+                module => manager.Invoke<bool>("getDisabled", module.Id), (module, value) => manager.InvokeVoid("setDisabled", module.Id, value)).ToArray();
+
 
         [JSInvokable]
         public static ModuleInfoExtended? GetModuleInfo(string xmlContent)

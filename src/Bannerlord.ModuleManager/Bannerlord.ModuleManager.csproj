@@ -1,19 +1,21 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1;net5;net6</TargetFrameworks>
     <LangVersion>10.0</LangVersion>
     <Nullable>enable</Nullable>
     <VersionOverride>0</VersionOverride>
     <Version>4.0.$(VersionOverride)</Version>
-    <DefineConstants>$(DefineConstants);BANNERLORDBUTRMODULEMANAGER_PUBLIC</DefineConstants>
+    <DefineConstants>$(DefineConstants);BANNERLORDBUTRMODULEMANAGER_PUBLIC;</DefineConstants>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Condition="$(TargetFramework) == 'netstandard2.0' OR $(TargetFramework) == 'netstandard2.1'" Include="IsExternalInit" Version="1.0.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
+
   <!--NuGet Package-->
   <PropertyGroup>
     <Authors>BUTR</Authors>
@@ -24,14 +26,17 @@
     <RepositoryUrl>https://github.com/BUTR/Bannerlord.ModuleManager.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
+
   <PropertyGroup Condition="$(PackAsSource) != 'true'">
     <PackageId>Bannerlord.ModuleManager</PackageId>
     <PackageDescription>A library for managing Mount &amp; Blade 2: Bannerlord Module dependencies.</PackageDescription>
     <Title>Bannerlord ModuleManager</Title>
   </PropertyGroup>
+
   <ItemGroup Condition="$(PackAsSource) != 'true'">
     <None Include="../../resources/Butter.png" Pack="true" PackagePath="" />
   </ItemGroup>
+
   <PropertyGroup Condition="$(PackAsSource) == 'true'">
     <PackageId>Bannerlord.ModuleManager.Source</PackageId>
     <PackageDescription>Source code for managing Mount &amp; Blade 2: Bannerlord Module dependencies.</PackageDescription>
@@ -47,6 +52,7 @@
     <EnablePackInference>false</EnablePackInference>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)' == ''">obj</BaseIntermediateOutputPath>
   </PropertyGroup>
+
   <ItemGroup Condition="$(PackAsSource) == 'true'">
     <PackageReference Include="NuGetizer" Version="0.8.0" />
     <PackageFile Include="**/*.cs" PackagePath="content\cs\$(TargetFramework)\$(ProjectName)\%(RelativeDir)%(Filename).cs.pp"
@@ -56,4 +62,11 @@
     <PackageFile Include="../../resources/Butter.png" PackagePath="Butter.png" />
   </ItemGroup>
   <!--NuGet Package-->
+
+  <Target Name="SetReflectionFree">
+    <PropertyGroup>
+      <DefineConstants>$(DefineConstants);REFLECTION_FREE;</DefineConstants>
+    </PropertyGroup>
+  </Target>
+
 </Project>

@@ -1,9 +1,21 @@
-import { boot, BootStatus, getBootStatus, terminate, Bannerlord } from "./dotnet";
+import { boot, BootStatus, createObjectReference, getBootStatus, terminate, Bannerlord } from "./dotnet";
 import dotnet from "./dotnet";
 import ModuleInfoExtended = Bannerlord.ModuleManager.ModuleInfoExtended;
 import SubModuleInfoExtended = Bannerlord.ModuleManager.SubModuleInfoExtended;
 import ModuleSorterOptions = Bannerlord.ModuleManager.ModuleSorterOptions;
 import ApplicationVersion = Bannerlord.ModuleManager.ApplicationVersion;
+import ModuleIssue = Bannerlord.ModuleManager.ModuleIssue;
+
+export interface IValidationManager {
+    isSelected(moduleId: string): boolean,
+}
+
+export interface IEnableDisableManager {
+    getSelected(moduleId: string): boolean,
+    setSelected(moduleId: string, value: boolean): void,
+    getDisabled(moduleId: string): boolean,
+    setDisabled(moduleId: string, value: boolean): void,
+}
 
 export class BannerlordModuleManager {
     static async createAsync(): Promise<BannerlordModuleManager> {
@@ -36,6 +48,22 @@ export class BannerlordModuleManager {
 
     getDependentModulesOfWithOptions(source: ModuleInfoExtended[], module: ModuleInfoExtended, options: ModuleSorterOptions): ModuleInfoExtended[] {
         return dotnet.Bannerlord.ModuleManager.GetDependentModulesOfWithOptions(source, module, options);
+    }
+
+    validateModuleDependenciesDeclarations(module: ModuleInfoExtended): ModuleIssue[] {
+        return dotnet.Bannerlord.ModuleManager.ValidateModuleDependenciesDeclarations(module);
+    }
+
+    validateModule(modules: ModuleInfoExtended[], targetModule: ModuleInfoExtended, manager: IValidationManager): ModuleIssue[] {
+        return dotnet.Bannerlord.ModuleManager.ValidateModule(modules, targetModule, createObjectReference(manager));
+    }
+
+    enableModule(modules: ModuleInfoExtended[], targetModule: ModuleInfoExtended, manager: IEnableDisableManager): ModuleIssue[] {
+        return dotnet.Bannerlord.ModuleManager.EnableModule(modules, targetModule, createObjectReference(manager));
+    }
+
+    disableModule(modules: ModuleInfoExtended[], targetModule: ModuleInfoExtended, manager: IEnableDisableManager): ModuleIssue[] {
+        return dotnet.Bannerlord.ModuleManager.DisableModule(modules, targetModule, createObjectReference(manager));
     }
 
     getModuleInfo(xml: string): ModuleInfoExtended | undefined {

@@ -51,8 +51,23 @@ namespace Bannerlord.ModuleManager
 # endif
         sealed record ModuleSorterOptions
     {
-        public bool SkipOptionals { get; init; }
-        public bool SkipExternalDependencies { get; init; }
+        public bool SkipOptionals
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        }
+
+        public bool SkipExternalDependencies
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        }
     }
 
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC

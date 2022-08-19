@@ -47,12 +47,59 @@ namespace Bannerlord.ModuleManager
 # endif
         sealed record DependentModuleMetadata
     {
-        public string Id { get; init; } = string.Empty;
-        public LoadType LoadType { get; init; }
-        public bool IsOptional { get; init; }
-        public bool IsIncompatible { get; init; }
-        public ApplicationVersion Version { get; init; } = ApplicationVersion.Empty;
-        public ApplicationVersionRange VersionRange { get; init; } = ApplicationVersionRange.Empty;
+        public string Id
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        } = string.Empty;
+
+        public LoadType LoadType
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        }
+
+        public bool IsOptional
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        }
+
+        public bool IsIncompatible
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        }
+
+        public ApplicationVersion Version
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        } = ApplicationVersion.Empty;
+
+        public ApplicationVersionRange VersionRange
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        } = ApplicationVersionRange.Empty;
 
         public static string GetLoadType(LoadType loadType) => loadType switch
         {

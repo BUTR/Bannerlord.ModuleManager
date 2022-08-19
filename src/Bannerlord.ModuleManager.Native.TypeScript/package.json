@@ -1,0 +1,89 @@
+{
+  "name": "@butr/blmodulemanagernative",
+  "version": "4.0.0",
+  "description": "Package of native bindings bundled with TS declarations",
+  "main": "build/main/index.js",
+  "typings": "build/main/index.d.ts",
+  "module": "build/module/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com:BUTR/Bannerlord.ModuleManager.git"
+  },
+  "keywords": [
+    "bannerlord",
+    "modulemanager"
+  ],
+  "author": "BUTR",
+  "license": "MIT",
+  "homepage": "https://github.com/BUTR/Bannerlord.ModuleManager#readme",
+  "bugs": {
+    "url": "https://github.com/BUTR/Bannerlord.ModuleManager/issues"
+  },
+  "scripts": {
+    "build": "run-p build:*",
+    "build:main": "tsc -p tsconfig.json && copyfiles -f src/lib/Bannerlord.ModuleManager.Native.dll build/main/lib/",
+    "build:module": "tsc -p tsconfig.module.json && copyfiles -f src/lib/Bannerlord.ModuleManager.Native.dll build/module/lib/",
+    "test": "run-s build test:*",
+    "test:spelling": "cspell \"{README.md,.github/*.md,src/**/*.ts,src/**/*.js}\"",
+    "test:unit": "nyc ava",
+    "watch:build": "tsc -p tsconfig.json -w",
+    "watch:test": "nyc --silent ava --watch",
+    "cov": "run-s build test:unit cov:html cov:lcov && open-cli coverage/index.html",
+    "cov:html": "nyc report --reporter=html",
+    "cov:lcov": "nyc report --reporter=lcov",
+    "cov:send": "run-s cov:lcov && codecov",
+    "cov:check": "nyc report && nyc check-coverage --lines 100 --functions 100 --branches 100",
+    "doc": "run-s doc:html && open-cli build/docs/index.html",
+    "doc:html": "typedoc src/ --exclude **/*.spec.* --exclude **/_*.* --out build/docs",
+    "doc:json": "typedoc src/ --exclude **/*.spec.* --exclude **/_*.* --json build/docs/typedoc.json"
+  },
+  "engines": {
+    "node": ">=10"
+  },
+  "dependencies": {
+    "ffi-napi": "^4.0.3"
+  },
+  "devDependencies": {
+    "@ava/typescript": "^1.1.1",
+    "@istanbuljs/nyc-config-typescript": "^1.0.1",
+    "@types/ffi-napi": "^4.0.5",
+    "ava": "^3.15.0",
+    "codecov": "^3.8.2",
+    "copyfiles": "^2.4.1",
+    "cspell": "^5.13.1",
+    "npm-run-all": "^4.1.5",
+    "nyc": "^15.1.0",
+    "open-cli": "^7.0.1",
+    "ts-node": "^10.9.1",
+    "typedoc": "^0.23.7",
+    "typescript": "^4.7.4"
+  },
+  "files": [
+    "build/main/index.*",
+    "build/main/lib",
+    "build/module/index.*",
+    "build/module/lib",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md"
+  ],
+  "ava": {
+    "failFast": true,
+    "timeout": "60s",
+    "typescript": {
+      "rewritePaths": {
+        "src/": "build/main/"
+      }
+    },
+    "files": [
+      "!build/module/**"
+    ]
+  },
+  "nyc": {
+    "extends": "@istanbuljs/nyc-config-typescript",
+    "exclude": [
+      "**/_*.*",
+      "**/*.spec.*"
+    ]
+  }
+}

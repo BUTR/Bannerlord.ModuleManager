@@ -49,8 +49,23 @@ namespace Bannerlord.ModuleManager
     {
         public static ApplicationVersionRange Empty => new();
 
-        public ApplicationVersion Min { get; init; } = ApplicationVersion.Empty;
-        public ApplicationVersion Max { get; init; } = ApplicationVersion.Empty;
+        public ApplicationVersion Min
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        } = ApplicationVersion.Empty;
+
+        public ApplicationVersion Max
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        } = ApplicationVersion.Empty;
 
         public ApplicationVersionRange() { }
 

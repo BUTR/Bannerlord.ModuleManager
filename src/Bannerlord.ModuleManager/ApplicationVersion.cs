@@ -49,11 +49,50 @@ namespace Bannerlord.ModuleManager
     {
         public static ApplicationVersion Empty { get; } = new();
 
-        public ApplicationVersionType ApplicationVersionType { get; init; }
-        public int Major { get; init; }
-        public int Minor { get; init; }
-        public int Revision { get; init; }
-        public int ChangeSet { get; init; }
+        public ApplicationVersionType ApplicationVersionType
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        }
+
+        public int Major
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        }
+
+        public int Minor
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        }
+
+        public int Revision
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        }
+
+        public int ChangeSet
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        }
 
         public ApplicationVersion() { }
 

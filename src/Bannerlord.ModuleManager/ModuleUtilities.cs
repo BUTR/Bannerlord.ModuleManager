@@ -51,8 +51,23 @@ namespace Bannerlord.ModuleManager
 # endif
         sealed record ModuleIssue(ModuleInfoExtended Target, string SourceId, ModuleIssueType Type)
     {
-        public string Reason { get; init; }
-        public ApplicationVersionRange SourceVersion { get; init; }
+        public string Reason
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        }
+
+        public ApplicationVersionRange SourceVersion
+        {
+#if REFLECTION_FREE
+            get; set;
+#else
+            get; init;
+#endif
+        }
     }
     
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
