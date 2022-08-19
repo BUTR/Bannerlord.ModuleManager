@@ -13,7 +13,7 @@ on:
 jobs:
   publish:
     name: Publish on NPM and GPR
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3.0.2
         with:
@@ -31,7 +31,7 @@ jobs:
           cache: 'npm'
           cache-dependency-path: src/Bannerlord.ModuleManager.Native.TypeScript/package-lock.json
           
-      - run: dotnet publish -r win-x64 -c Release src/Bannerlord.ModuleManager.Native
+      - run: dotnet publish -r win-x64 --self-contained -c Release src/Bannerlord.ModuleManager.Native
       
       - run: cp ./src/Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/native/Bannerlord.ModuleManager.Native.dll ./src/Bannerlord.ModuleManager.Native.TypeScript/src/lib
       
