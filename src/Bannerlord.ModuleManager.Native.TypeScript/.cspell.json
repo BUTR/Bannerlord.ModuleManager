@@ -32,7 +32,8 @@
     "Singleplayer",
     "transpiled",
     "typedoc",
-    "untracked"
+    "untracked",
+    "blmanager"
   ],
   "flagWords": [],
   "ignorePaths": [

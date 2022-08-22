@@ -2,9 +2,10 @@
   "name": "@butr/blmodulemanagernative",
   "version": "4.0.0",
   "description": "Package of native bindings bundled with TS declarations",
-  "main": "build/main/index.js",
-  "typings": "build/main/index.d.ts",
-  "module": "build/module/index.js",
+  "main": "dist/main/index.js",
+  "typings": "dist/main/index.d.ts",
+  "module": "dist/module/index.js",
+  "gypfile": true,
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com:BUTR/Bannerlord.ModuleManager.git"
@@ -21,8 +22,15 @@
   },
   "scripts": {
     "build": "run-p build:*",
-    "build:main": "tsc -p tsconfig.json && copyfiles -f src/lib/Bannerlord.ModuleManager.Native.dll build/main/lib/",
-    "build:module": "tsc -p tsconfig.module.json && copyfiles -f src/lib/Bannerlord.ModuleManager.Native.dll build/module/lib/",
+    "build:main": "tsc -p tsconfig.json",
+    "build:main-copy": "copyfiles -f Bannerlord.ModuleManager.Native.dll dist/main/lib/",
+    "build:module": "tsc -p tsconfig.module.json",
+    "build:module-copy": "copyfiles -f Bannerlord.ModuleManager.Native.dll dist/module/lib/",
+    "build:bindings": "node-gyp rebuild",
+    "build:bindings-main-copy": "copyfiles -f build/Release/blmanager.node dist/main/lib/",
+    "build:bindings-main-copy2": "copyfiles -f src/blmanager.d.ts dist/main/lib/",
+    "build:bindings-module-copy": "copyfiles -f build/Release/blmanager.node dist/module/lib/",
+    "build:bindings-module-copy2": "copyfiles -f src/blmanager.d.ts dist/module/lib/",
     "test": "run-s build test:*",
     "test:spelling": "cspell \"{README.md,.github/*.md,src/**/*.ts,src/**/*.js}\"",
     "test:unit": "nyc ava",
@@ -33,15 +41,12 @@
     "cov:lcov": "nyc report --reporter=lcov",
     "cov:send": "run-s cov:lcov && codecov",
     "cov:check": "nyc report && nyc check-coverage --lines 100 --functions 100 --branches 100",
-    "doc": "run-s doc:html && open-cli build/docs/index.html",
-    "doc:html": "typedoc src/ --exclude **/*.spec.* --exclude **/_*.* --out build/docs",
-    "doc:json": "typedoc src/ --exclude **/*.spec.* --exclude **/_*.* --json build/docs/typedoc.json"
+    "doc": "run-s doc:html && open-cli dist/docs/index.html",
+    "doc:html": "typedoc src/ --exclude **/*.spec.* --exclude **/_*.* --out dist/docs",
+    "doc:json": "typedoc src/ --exclude **/*.spec.* --exclude **/_*.* --json dist/docs/typedoc.json"
   },
   "engines": {
     "node": ">=10"
-  },
-  "dependencies": {
-    "ffi-napi": "^4.0.3"
   },
   "devDependencies": {
     "@ava/typescript": "^1.1.1",
@@ -51,6 +56,8 @@
     "codecov": "^3.8.2",
     "copyfiles": "^2.4.1",
     "cspell": "^5.13.1",
+    "node-addon-api": "^5.0.0",
+    "node-gyp": "^9.1.0",
     "npm-run-all": "^4.1.5",
     "nyc": "^15.1.0",
     "open-cli": "^7.0.1",
@@ -59,10 +66,10 @@
     "typescript": "^4.7.4"
   },
   "files": [
-    "build/main/index.*",
-    "build/main/lib",
-    "build/module/index.*",
-    "build/module/lib",
+    "dist/main/index.*",
+    "dist/main/lib",
+    "dist/module/index.*",
+    "dist/module/lib",
     "CHANGELOG.md",
     "LICENSE",
     "README.md"
@@ -72,11 +79,11 @@
     "timeout": "60s",
     "typescript": {
       "rewritePaths": {
-        "src/": "build/main/"
+        "src/": "dist/main/"
       }
     },
     "files": [
-      "!build/module/**"
+      "!dist/module/**"
     ]
   },
   "nyc": {

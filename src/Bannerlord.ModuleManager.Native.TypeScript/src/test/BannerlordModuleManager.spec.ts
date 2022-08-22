@@ -1,14 +1,10 @@
 import test from 'ava';
 
 import { harmonyXml, uiExtenderExXml, invalidXml } from './_data';
-import {
-  BannerlordModuleManager, IEnableDisableManager,/*, IValidationManager*/
-  IValidationManager
-} from '../lib/BannerlordModuleManager';
+import { IEnableDisableManager, IValidationManager } from '../lib';
+import * as blmmanager from '../lib';
 
 test('sort', async (t) => {
-  const blmmanager = new BannerlordModuleManager();
-
   const invalid = blmmanager.getModuleInfo(invalidXml);
   if (invalid === null || invalid === undefined) {
     t.fail();

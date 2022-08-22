@@ -1,5 +1,6 @@
 .nyc_output
 build
+dist
 node_modules
 src/lib/dotnet.*
 src/test/**/**.js
@@ -8,4 +9,4 @@ src/test/**/**.js
 coverage
 *.tgz
 *.log
-*.dll
+Bannerlord.ModuleManager.Native.*

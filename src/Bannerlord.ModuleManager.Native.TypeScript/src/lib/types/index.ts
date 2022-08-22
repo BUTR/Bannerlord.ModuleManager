@@ -1,9 +1,8 @@
-export namespace Bannerlord.ModuleManager {
-  export type ModuleInfoExtended = {
+export type ModuleInfoExtended = {
     id: string;
     name: string;
     isOfficial: boolean;
-    version: Bannerlord.ModuleManager.ApplicationVersion;
+    version: ApplicationVersion;
     isSingleplayerModule: boolean;
     isMultiplayerModule: boolean;
     subModules: any;
@@ -12,50 +11,60 @@ export namespace Bannerlord.ModuleManager {
     incompatibleModules: any;
     url: string;
     dependentModuleMetadatas: any;
-  }
-  export type ApplicationVersion = {
-    applicationVersionType: Bannerlord.ModuleManager.ApplicationVersionType;
+}
+export type ApplicationVersion = {
+    applicationVersionType: ApplicationVersionType;
     major: number;
     minor: number;
     revision: number;
     changeSet: number;
-  }
-  export enum ApplicationVersionType {
+}
+export enum ApplicationVersionType {
     Alpha,
     Beta,
     EarlyAccess,
     Release,
     Development,
     Invalid
-  }
-  export type ModuleSorterOptions = {
+}
+export type ModuleSorterOptions = {
     skipOptionals: boolean;
     skipExternalDependencies: boolean;
-  }
-  export type ModuleIssue = {
-    target: Bannerlord.ModuleManager.ModuleInfoExtended;
+}
+export type ModuleIssue = {
+    target: ModuleInfoExtended;
     sourceId: string;
-    type: Bannerlord.ModuleManager.ModuleIssueType;
+    type: ModuleIssueType;
     reason: string;
-    sourceVersion: Bannerlord.ModuleManager.ApplicationVersionRange;
-  }
-  export enum ModuleIssueType {
+    sourceVersion: ApplicationVersionRange;
+}
+export enum ModuleIssueType {
     MissingDependencies,
     DependencyMissingDependencies,
     DependencyValidationError,
     VersionMismatch,
     Incompatible,
     DependencyConflict
-  }
-  export type ApplicationVersionRange = {
-    min: Bannerlord.ModuleManager.ApplicationVersion;
-    max: Bannerlord.ModuleManager.ApplicationVersion;
-  }
-  export type SubModuleInfoExtended = {
+}
+export type ApplicationVersionRange = {
+    min: ApplicationVersion;
+    max: ApplicationVersion;
+}
+export type SubModuleInfoExtended = {
     name: string;
     dLLName: string;
     assemblies: any;
     subModuleClassType: string;
     tags: any;
-  }
+}
+
+export interface IValidationManager {
+    isSelected(moduleId: string): boolean,
+}
+  
+export interface IEnableDisableManager {
+    getSelected(moduleId: string): boolean,
+    setSelected(moduleId: string, value: boolean): void,
+    getDisabled(moduleId: string): boolean,
+    setDisabled(moduleId: string, value: boolean): void,
 }

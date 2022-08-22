@@ -10,5 +10,5 @@ namespace Bannerlord.ModuleManager.Native
     [JsonSerializable(typeof(ModuleInfoExtended[]))]
     [JsonSerializable(typeof(ModuleSorterOptions))]
     [JsonSerializable(typeof(ModuleIssue[]))]
-    public partial class SourceGenerationContext : JsonSerializerContext { }
+    internal partial class SourceGenerationContext : JsonSerializerContext { }
 }

@@ -4,7 +4,7 @@
     "checkJs": false,
     "incremental": true,
     "target": "es2017",
-    "outDir": "build/main",
+    "outDir": "dist/main",
     "rootDir": "src",
     "moduleResolution": "node",
     "module": "UMD",
@@ -39,7 +39,7 @@
     "types": [],
     "typeRoots": [
       "node_modules/@types",
-      "src/types"
+      "src/lib/types"
     ]
   },
   "include": [

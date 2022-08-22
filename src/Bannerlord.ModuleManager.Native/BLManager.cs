@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -9,7 +11,7 @@ using System.Xml;
 
 namespace Bannerlord.ModuleManager.Native
 {
-    public static class Program
+    public static class BLManager
     {
         private static readonly ApplicationVersionComparer _applicationVersionComparer = new();
         private static readonly JsonSerializerOptions _options = new()
@@ -25,13 +27,12 @@ namespace Bannerlord.ModuleManager.Native
         private static readonly SourceGenerationContext _customSourceGenerationContext = new(_options);
 
 
-
         [UnmanagedCallersOnly(EntryPoint = "sort")]
-        public static IntPtr Sort(IntPtr pSourceJson)
+        public static IntPtr Sort(IntPtr p_source_json)
         {
             try
             {
-                var sourceJson = Marshal.PtrToStringAnsi(pSourceJson);
+                var sourceJson = Marshal.PtrToStringAnsi(p_source_json);
                 var source = JsonSerializer.Deserialize<ModuleInfoExtended[]>(sourceJson, _customSourceGenerationContext.ModuleInfoExtendedArray);
 
                 var sorted = ModuleSorter.Sort(source).ToArray();
@@ -45,15 +46,15 @@ namespace Bannerlord.ModuleManager.Native
             }
         }
 
-        [UnmanagedCallersOnly(EntryPoint = "sortWithOptions")]
-        public static IntPtr SortWithOptions(IntPtr pSourceJson, IntPtr pOptionsJson)
+        [UnmanagedCallersOnly(EntryPoint = "sort_with_options")]
+        public static IntPtr SortWithOptions(IntPtr p_source_json, IntPtr p_options_json)
         {
             try
             {
-                var sourceJson = Marshal.PtrToStringAnsi(pSourceJson);
+                var sourceJson = Marshal.PtrToStringAnsi(p_source_json);
                 var source = JsonSerializer.Deserialize<ModuleInfoExtended[]>(sourceJson, _customSourceGenerationContext.ModuleInfoExtendedArray);
 
-                var optionsJson = Marshal.PtrToStringAnsi(pOptionsJson);
+                var optionsJson = Marshal.PtrToStringAnsi(p_options_json);
                 var options = JsonSerializer.Deserialize<ModuleSorterOptions>(optionsJson, _customSourceGenerationContext.ModuleSorterOptions);
 
                 var sorted = ModuleSorter.Sort(source, options).ToArray();
@@ -68,15 +69,15 @@ namespace Bannerlord.ModuleManager.Native
         }
 
 
-        [UnmanagedCallersOnly(EntryPoint = "areAllDependenciesOfModulePresent")]
-        public static bool AreAllDependenciesOfModulePresent(IntPtr pSourceJson, IntPtr pModuleJson)
+        [UnmanagedCallersOnly(EntryPoint = "are_all_dependencies_of_module_present")]
+        public static bool AreAllDependenciesOfModulePresent(IntPtr p_source_json, IntPtr p_module_json)
         {
             try
             {
-                var sourceJson = Marshal.PtrToStringAnsi(pSourceJson);
+                var sourceJson = Marshal.PtrToStringAnsi(p_source_json);
                 var source = JsonSerializer.Deserialize<ModuleInfoExtended[]>(sourceJson, _customSourceGenerationContext.ModuleInfoExtendedArray);
 
-                var moduleJson = Marshal.PtrToStringAnsi(pModuleJson);
+                var moduleJson = Marshal.PtrToStringAnsi(p_module_json);
                 var module = JsonSerializer.Deserialize<ModuleInfoExtended>(moduleJson, _customSourceGenerationContext.ModuleInfoExtended);
 
                 return ModuleUtilities.AreDependenciesPresent(source, module);
@@ -88,15 +89,15 @@ namespace Bannerlord.ModuleManager.Native
         }
 
 
-        [UnmanagedCallersOnly(EntryPoint = "getDependentModulesOf")]
-        public static IntPtr GetDependentModulesOf(IntPtr pSourceJson, IntPtr pModuleJson)
+        [UnmanagedCallersOnly(EntryPoint = "get_dependent_modules_of")]
+        public static IntPtr GetDependentModulesOf(IntPtr p_source_json, IntPtr p_module_json)
         {
             try
             {
-                var sourceJson = Marshal.PtrToStringAnsi(pSourceJson);
+                var sourceJson = Marshal.PtrToStringAnsi(p_source_json);
                 var source = JsonSerializer.Deserialize<ModuleInfoExtended[]>(sourceJson, _customSourceGenerationContext.ModuleInfoExtendedArray);
 
-                var moduleJson = Marshal.PtrToStringAnsi(pModuleJson);
+                var moduleJson = Marshal.PtrToStringAnsi(p_module_json);
                 var module = JsonSerializer.Deserialize<ModuleInfoExtended>(moduleJson, _customSourceGenerationContext.ModuleInfoExtended);
 
                 var gependentModules = ModuleUtilities.GetDependencies(source, module).ToArray();
@@ -110,18 +111,18 @@ namespace Bannerlord.ModuleManager.Native
             }
         }
 
-        [UnmanagedCallersOnly(EntryPoint = "getDependentModulesOfWithOptions")]
-        public static IntPtr GetDependentModulesOfWithOptions(IntPtr pSourceJson, IntPtr pModuleJson, IntPtr pOptionsJson)
+        [UnmanagedCallersOnly(EntryPoint = "get_dependent_modules_of_with_options")]
+        public static IntPtr GetDependentModulesOfWithOptions(IntPtr p_source_json, IntPtr p_module_json, IntPtr p_options_json)
         {
             try
             {
-                var sourceJson = Marshal.PtrToStringAnsi(pSourceJson);
+                var sourceJson = Marshal.PtrToStringAnsi(p_source_json);
                 var source = JsonSerializer.Deserialize<ModuleInfoExtended[]>(sourceJson, _customSourceGenerationContext.ModuleInfoExtendedArray);
 
-                var moduleJson = Marshal.PtrToStringAnsi(pModuleJson);
+                var moduleJson = Marshal.PtrToStringAnsi(p_module_json);
                 var module = JsonSerializer.Deserialize<ModuleInfoExtended>(moduleJson, _customSourceGenerationContext.ModuleInfoExtended);
 
-                var optionsJson = Marshal.PtrToStringAnsi(pOptionsJson);
+                var optionsJson = Marshal.PtrToStringAnsi(p_options_json);
                 var options = JsonSerializer.Deserialize<ModuleSorterOptions>(optionsJson, _customSourceGenerationContext.ModuleSorterOptions);
 
                 var gependentModules = ModuleUtilities.GetDependencies(source, module, options).ToArray();
@@ -136,26 +137,29 @@ namespace Bannerlord.ModuleManager.Native
         }
 
 
-        private delegate bool IsSelected(IntPtr pModuleId);
+        private delegate bool IsSelected(IntPtr p_uuid, IntPtr p_module_id);
 
-        [UnmanagedCallersOnly(EntryPoint = "validateModule")]
-        public static IntPtr ValidateModule(IntPtr pModulesJson, IntPtr pTargetModuleJson, IntPtr pIsSelected)
+        [UnmanagedCallersOnly(EntryPoint = "validate_module")]
+        public static IntPtr ValidateModule(IntPtr p_uuid, IntPtr p_modules_json, IntPtr p_target_module_json, IntPtr p_is_selected)
         {
             try
             {
-                var modulesJson = Marshal.PtrToStringAnsi(pModulesJson);
+                var uuid = Marshal.PtrToStringAnsi(p_uuid);
+
+                var modulesJson = Marshal.PtrToStringAnsi(p_modules_json);
                 var modules = JsonSerializer.Deserialize<ModuleInfoExtended[]>(modulesJson, _customSourceGenerationContext.ModuleInfoExtendedArray);
 
-                var targetModuleJson = Marshal.PtrToStringAnsi(pTargetModuleJson);
+                var targetModuleJson = Marshal.PtrToStringAnsi(p_target_module_json);
                 var targetModule = JsonSerializer.Deserialize<ModuleInfoExtended>(targetModuleJson, _customSourceGenerationContext.ModuleInfoExtended);
 
-                var isSelected = Marshal.GetDelegateForFunctionPointer<IsSelected>(pIsSelected);
+                var isSelected = Marshal.GetDelegateForFunctionPointer<IsSelected>(p_is_selected);
 
                 var issues = ModuleUtilities.ValidateModule(modules, targetModule,
                     module =>
                     {
+                        var pUuid = Marshal.StringToHGlobalAnsi(uuid);
                         var pModuleId = Marshal.StringToHGlobalAnsi(module.Id);
-                        return isSelected(pModuleId);
+                        return isSelected(pUuid, pModuleId);
                     }).ToArray();
                 
                 var issuesJson = JsonSerializer.Serialize<ModuleIssue[]>(issues, _customSourceGenerationContext.ModuleIssueArray);
@@ -167,12 +171,12 @@ namespace Bannerlord.ModuleManager.Native
             }
         }
 
-        [UnmanagedCallersOnly(EntryPoint = "validateModuleDependenciesDeclarations")]
-        public static IntPtr ValidateModuleDependenciesDeclarations(IntPtr pTargetModuleJson)
+        [UnmanagedCallersOnly(EntryPoint = "validate_module_dependencies_declarations")]
+        public static IntPtr ValidateModuleDependenciesDeclarations(IntPtr p_target_module_json)
         {
             try
             {
-                var targetModuleJson = Marshal.PtrToStringAnsi(pTargetModuleJson);
+                var targetModuleJson = Marshal.PtrToStringAnsi(p_target_module_json);
                 var targetModule = JsonSerializer.Deserialize<ModuleInfoExtended>(targetModuleJson, _customSourceGenerationContext.ModuleInfoExtended);
 
                 var moduleIssues = ModuleUtilities.ValidateModuleDependenciesDeclarations(targetModule).ToArray();
@@ -187,47 +191,53 @@ namespace Bannerlord.ModuleManager.Native
         }
 
 
-        private delegate bool GetSelected(IntPtr pModuleId);
-        private delegate void SetSelected(IntPtr pModuleId, bool value);
-        private delegate bool GetDisabled(IntPtr pModuleId);
-        private delegate void SetDisabled(IntPtr pModuleId, bool value);
+        private delegate bool GetSelected(IntPtr p_uuid, IntPtr p_module_id);
+        private delegate void SetSelected(IntPtr p_uuid, IntPtr p_module_id, bool value);
+        private delegate bool GetDisabled(IntPtr p_uuid, IntPtr p_module_id);
+        private delegate void SetDisabled(IntPtr p_uuid, IntPtr p_module_id, bool value);
 
-        [UnmanagedCallersOnly(EntryPoint = "enableModule")]
-        public static IntPtr EnableModule(IntPtr pModulesJson, IntPtr pTargetModuleJson, IntPtr pGetSelected, IntPtr pSetSelected, IntPtr pGetDisabled, IntPtr pSetDisabled)
+        [UnmanagedCallersOnly(EntryPoint = "enable_module")]
+        public static IntPtr EnableModule(IntPtr p_uuid, IntPtr p_module_json, IntPtr p_target_module_json, IntPtr p_get_selected, IntPtr p_set_selected, IntPtr p_get_disabled, IntPtr p_set_disabled)
         {
             try
             {
-                var modulesJson = Marshal.PtrToStringAnsi(pModulesJson);
+                var uuid = Marshal.PtrToStringAnsi(p_uuid);
+
+                var modulesJson = Marshal.PtrToStringAnsi(p_module_json);
                 var modules = JsonSerializer.Deserialize<ModuleInfoExtended[]>(modulesJson, _customSourceGenerationContext.ModuleInfoExtendedArray);
 
-                var targetModuleJson = Marshal.PtrToStringAnsi(pTargetModuleJson);
+                var targetModuleJson = Marshal.PtrToStringAnsi(p_target_module_json);
                 var targetModule = JsonSerializer.Deserialize<ModuleInfoExtended>(targetModuleJson, _customSourceGenerationContext.ModuleInfoExtended);
 
-                var getSelected = Marshal.GetDelegateForFunctionPointer<GetSelected>(pGetSelected);
-                var setSelected = Marshal.GetDelegateForFunctionPointer<SetSelected>(pSetSelected);
-                var getDisabled = Marshal.GetDelegateForFunctionPointer<GetDisabled>(pGetDisabled);
-                var setDisabled = Marshal.GetDelegateForFunctionPointer<SetDisabled>(pSetDisabled);
+                var getSelected = Marshal.GetDelegateForFunctionPointer<GetSelected>(p_get_selected);
+                var setSelected = Marshal.GetDelegateForFunctionPointer<SetSelected>(p_set_selected);
+                var getDisabled = Marshal.GetDelegateForFunctionPointer<GetDisabled>(p_get_disabled);
+                var setDisabled = Marshal.GetDelegateForFunctionPointer<SetDisabled>(p_set_disabled);
 
                 var issues = ModuleUtilities.EnableModule(modules, targetModule,
                     module =>
                     {
+                        var pUuid = Marshal.StringToHGlobalAnsi(uuid);
                         var pModuleId = Marshal.StringToHGlobalAnsi(module.Id);
-                        return getSelected(pModuleId);
+                        return getSelected(pUuid, pModuleId);
                     },
                     (module, value) =>
                     {
+                        var pUuid = Marshal.StringToHGlobalAnsi(uuid);
                         var pModuleId = Marshal.StringToHGlobalAnsi(module.Id);
-                        setSelected(pModuleId, value);
+                        setSelected(pUuid, pModuleId, value);
                     },
                     module =>
                     {
+                        var pUuid = Marshal.StringToHGlobalAnsi(uuid);
                         var pModuleId = Marshal.StringToHGlobalAnsi(module.Id);
-                        return getDisabled(pModuleId);
+                        return getDisabled(pUuid, pModuleId);
                     },
                     (module, value) =>
                     {
+                        var pUuid = Marshal.StringToHGlobalAnsi(uuid);
                         var pModuleId = Marshal.StringToHGlobalAnsi(module.Id);
-                        setDisabled(pModuleId, value);
+                        setDisabled(pUuid, pModuleId, value);
                     }).ToArray();
                 
                 var issuesJson = JsonSerializer.Serialize<ModuleIssue[]>(issues, _customSourceGenerationContext.ModuleIssueArray);
@@ -239,42 +249,48 @@ namespace Bannerlord.ModuleManager.Native
             }
         }
 
-        [UnmanagedCallersOnly(EntryPoint = "disableModule")]
-        public static IntPtr DisableModule(IntPtr pModulesJson, IntPtr pTargetModuleJson, IntPtr pGetSelected, IntPtr pSetSelected, IntPtr pGetDisabled, IntPtr pSetDisabled)
+        [UnmanagedCallersOnly(EntryPoint = "disable_module")]
+        public static IntPtr DisableModule(IntPtr p_uuid, IntPtr p_module_json, IntPtr p_target_module_json, IntPtr p_get_selected, IntPtr p_set_selected, IntPtr p_get_disabled, IntPtr p_set_disabled)
         {
             try
             {
-                var modulesJson = Marshal.PtrToStringAnsi(pModulesJson);
+                var uuid = Marshal.PtrToStringAnsi(p_uuid);
+
+                var modulesJson = Marshal.PtrToStringAnsi(p_module_json);
                 var modules = JsonSerializer.Deserialize<ModuleInfoExtended[]>(modulesJson, _customSourceGenerationContext.ModuleInfoExtendedArray);
 
-                var targetModuleJson = Marshal.PtrToStringAnsi(pTargetModuleJson);
+                var targetModuleJson = Marshal.PtrToStringAnsi(p_target_module_json);
                 var targetModule = JsonSerializer.Deserialize<ModuleInfoExtended>(targetModuleJson, _customSourceGenerationContext.ModuleInfoExtended);
 
-                var getSelected = Marshal.GetDelegateForFunctionPointer<GetSelected>(pGetSelected);
-                var setSelected = Marshal.GetDelegateForFunctionPointer<SetSelected>(pSetSelected);
-                var getDisabled = Marshal.GetDelegateForFunctionPointer<GetDisabled>(pGetDisabled);
-                var setDisabled = Marshal.GetDelegateForFunctionPointer<SetDisabled>(pSetDisabled);
+                var getSelected = Marshal.GetDelegateForFunctionPointer<GetSelected>(p_get_selected);
+                var setSelected = Marshal.GetDelegateForFunctionPointer<SetSelected>(p_set_selected);
+                var getDisabled = Marshal.GetDelegateForFunctionPointer<GetDisabled>(p_get_disabled);
+                var setDisabled = Marshal.GetDelegateForFunctionPointer<SetDisabled>(p_set_disabled);
 
                 var issues = ModuleUtilities.DisableModule(modules, targetModule,
                     module =>
                     {
+                        var pUuid = Marshal.StringToHGlobalAnsi(uuid);
                         var pModuleId = Marshal.StringToHGlobalAnsi(module.Id);
-                        return getSelected(pModuleId);
+                        return getSelected(pUuid, pModuleId);
                     },
                     (module, value) =>
                     {
+                        var pUuid = Marshal.StringToHGlobalAnsi(uuid);
                         var pModuleId = Marshal.StringToHGlobalAnsi(module.Id);
-                        setSelected(pModuleId, value);
+                        setSelected(pUuid, pModuleId, value);
                     },
                     module =>
                     {
+                        var pUuid = Marshal.StringToHGlobalAnsi(uuid);
                         var pModuleId = Marshal.StringToHGlobalAnsi(module.Id);
-                        return getDisabled(pModuleId);
+                        return getDisabled(pUuid, pModuleId);
                     },
                     (module, value) =>
                     {
+                        var pUuid = Marshal.StringToHGlobalAnsi(uuid);
                         var pModuleId = Marshal.StringToHGlobalAnsi(module.Id);
-                        setDisabled(pModuleId, value);
+                        setDisabled(pUuid, pModuleId, value);
                     }).ToArray();
                 
                 var issuesJson = JsonSerializer.Serialize<ModuleIssue[]>(issues, _customSourceGenerationContext.ModuleIssueArray);
@@ -287,15 +303,16 @@ namespace Bannerlord.ModuleManager.Native
         }
 
 
-        [UnmanagedCallersOnly(EntryPoint = "getModuleInfo")]
-        public static IntPtr GetModuleInfo(IntPtr pXmlContent)
+        [UnmanagedCallersOnly(EntryPoint = "get_module_info")]
+        public static IntPtr GetModuleInfo(IntPtr p_xml_content)
         {
             try
             {
-                var xmlContent = Marshal.PtrToStringAnsi(pXmlContent);
+                var xmlContent = Marshal.PtrToStringAnsi(p_xml_content);
+                var xml = Utils.UnescapeString(xmlContent);
 
                 var doc = new XmlDocument();
-                doc.LoadXml(xmlContent);
+                doc.LoadXml(xml);
 
                 var module = ModuleInfoExtended.FromXml(doc);
 
@@ -308,15 +325,16 @@ namespace Bannerlord.ModuleManager.Native
             }
         }
 
-        [UnmanagedCallersOnly(EntryPoint = "getSubModuleInfo")]
-        public static IntPtr GetSubModuleInfo(IntPtr pXmlContent)
+        [UnmanagedCallersOnly(EntryPoint = "get_sub_module_info")]
+        public static IntPtr GetSubModuleInfo(IntPtr p_xml_content)
         {
             try
             {
-                var xmlContent = Marshal.PtrToStringAnsi(pXmlContent);
+                var xmlContent = Marshal.PtrToStringAnsi(p_xml_content);
+                var xml = Utils.UnescapeString(xmlContent);
 
                 var doc = new XmlDocument();
-                doc.LoadXml(xmlContent);
+                doc.LoadXml(xml);
 
                 var module = SubModuleInfoExtended.FromXml(doc);
 
@@ -330,15 +348,15 @@ namespace Bannerlord.ModuleManager.Native
         }
 
 
-        [UnmanagedCallersOnly(EntryPoint = "compareVersions")]
-        public static int CompareVersions(IntPtr pXJson, IntPtr pYJson)
+        [UnmanagedCallersOnly(EntryPoint = "compare_versions")]
+        public static int CompareVersions(IntPtr p_x_json, IntPtr p_y_json)
         {
             try
             {
-                var xJson = Marshal.PtrToStringAnsi(pXJson);
+                var xJson = Marshal.PtrToStringAnsi(p_x_json);
                 var x = JsonSerializer.Deserialize<ApplicationVersion>(xJson, _customSourceGenerationContext.ApplicationVersion);
 
-                var yJson = Marshal.PtrToStringAnsi(pYJson);
+                var yJson = Marshal.PtrToStringAnsi(p_y_json);
                 var y = JsonSerializer.Deserialize<ApplicationVersion>(yJson, _customSourceGenerationContext.ApplicationVersion);
 
                 return _applicationVersionComparer.Compare(x, y);
