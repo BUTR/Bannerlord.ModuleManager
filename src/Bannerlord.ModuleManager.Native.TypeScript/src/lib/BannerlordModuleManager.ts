@@ -1,6 +1,6 @@
-import blmanager from "blmanager.node";
 import {
     ApplicationVersion,
+    IBannerlordModuleManager,
     IEnableDisableManager,
     IValidationManager,
     ModuleInfoExtended,
@@ -9,11 +9,15 @@ import {
     SubModuleInfoExtended
 } from "./types";
 
-export class BannerlordModuleManager {
+const blmanager: IBannerlordModuleManager = require('./blmanager.node');
+
+export class BannerlordModuleManager implements IBannerlordModuleManager {
     static async createAsync(): Promise<BannerlordModuleManager> {
         const lib = new BannerlordModuleManager();
         return lib;
     }
+
+    private constructor() { }
 
     sort(unsorted: ModuleInfoExtended[]): ModuleInfoExtended[] {
         return blmanager.sort(unsorted);

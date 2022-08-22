@@ -1,1 +1,2 @@
-export * from './blmanager.node';
+export * from './BannerlordModuleManager';
+export * from './types';

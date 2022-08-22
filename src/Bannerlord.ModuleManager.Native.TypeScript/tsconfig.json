@@ -36,7 +36,9 @@
     "lib": [
       "es2017"
     ],
-    "types": [],
+    "types": [
+      "node"
+    ],
     "typeRoots": [
       "node_modules/@types",
       "src/lib/types"
