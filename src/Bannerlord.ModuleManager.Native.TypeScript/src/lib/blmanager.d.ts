@@ -1,4 +1,5 @@
 declare module "*blmanager.node" {
+
     export type ModuleInfoExtended = {
         id: string;
         name: string;
