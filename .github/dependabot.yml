@@ -19,3 +19,8 @@ updates:
     directory: "src/Bannerlord.ModuleManager.TypeScript"
     schedule:
       interval: "daily"
+
+  - package-ecosystem: "npm"
+    directory: "src/Bannerlord.ModuleManager.Native.TypeScript"
+    schedule:
+      interval: "daily"
