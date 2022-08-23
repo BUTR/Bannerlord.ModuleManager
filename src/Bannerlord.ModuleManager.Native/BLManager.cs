@@ -36,7 +36,7 @@ namespace Bannerlord.ModuleManager.Native
                 var source = JsonSerializer.Deserialize<ModuleInfoExtended[]>(sourceJson, _customSourceGenerationContext.ModuleInfoExtendedArray);
 
                 var sorted = ModuleSorter.Sort(source).ToArray();
-                
+
                 var sortedJson = JsonSerializer.Serialize<ModuleInfoExtended[]>(sorted, _customSourceGenerationContext.ModuleInfoExtendedArray);
                 return Marshal.StringToHGlobalAnsi(sortedJson);
             }
@@ -161,7 +161,7 @@ namespace Bannerlord.ModuleManager.Native
                         var pModuleId = Marshal.StringToHGlobalAnsi(module.Id);
                         return isSelected(pUuid, pModuleId);
                     }).ToArray();
-                
+
                 var issuesJson = JsonSerializer.Serialize<ModuleIssue[]>(issues, _customSourceGenerationContext.ModuleIssueArray);
                 return Marshal.StringToHGlobalAnsi(issuesJson);
             }
@@ -239,7 +239,7 @@ namespace Bannerlord.ModuleManager.Native
                         var pModuleId = Marshal.StringToHGlobalAnsi(module.Id);
                         setDisabled(pUuid, pModuleId, value);
                     }).ToArray();
-                
+
                 var issuesJson = JsonSerializer.Serialize<ModuleIssue[]>(issues, _customSourceGenerationContext.ModuleIssueArray);
                 return Marshal.StringToHGlobalAnsi(issuesJson);
             }
@@ -292,7 +292,7 @@ namespace Bannerlord.ModuleManager.Native
                         var pModuleId = Marshal.StringToHGlobalAnsi(module.Id);
                         setDisabled(pUuid, pModuleId, value);
                     }).ToArray();
-                
+
                 var issuesJson = JsonSerializer.Serialize<ModuleIssue[]>(issues, _customSourceGenerationContext.ModuleIssueArray);
                 return Marshal.StringToHGlobalAnsi(issuesJson);
             }
