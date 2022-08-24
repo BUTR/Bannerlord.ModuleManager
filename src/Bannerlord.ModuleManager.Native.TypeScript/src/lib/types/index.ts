@@ -5,12 +5,12 @@ export interface ModuleInfoExtended {
     version: ApplicationVersion;
     isSingleplayerModule: boolean;
     isMultiplayerModule: boolean;
-    subModules: any;
-    dependentModules: any;
-    modulesToLoadAfterThis: any;
-    incompatibleModules: any;
+    subModules: Array<SubModuleInfoExtended>;
+    dependentModules: Array<DependentModule>;
+    modulesToLoadAfterThis: Array<DependentModule>;
+    incompatibleModules: Array<DependentModule>;
     url: string;
-    dependentModuleMetadatas: any;
+    dependentModuleMetadatas: Array<DependentModuleMetadata>;
 }
 export interface ApplicationVersion {
     applicationVersionType: ApplicationVersionType;
@@ -26,6 +26,35 @@ export enum ApplicationVersionType {
     Release,
     Development,
     Invalid
+}
+export interface SubModuleInfoExtended {
+    name: string;
+    dLLName: string;
+    assemblies: Array<string>;
+    subModuleClassType: string;
+    tags: Map<string, Array<string>>;
+}
+export interface DependentModule {
+    id: string;
+    version: ApplicationVersion;
+    isOptional: boolean;
+}
+export interface DependentModuleMetadata {
+    id: string;
+    loadType: LoadType;
+    isOptional: boolean;
+    isIncompatible: boolean;
+    version: ApplicationVersion;
+    versionRange: ApplicationVersionRange;
+}
+export enum LoadType {
+    None,
+    LoadAfterThis,
+    LoadBeforeThis
+}
+export interface ApplicationVersionRange {
+    min: ApplicationVersion;
+    max: ApplicationVersion;
 }
 export interface ModuleSorterOptions {
     skipOptionals: boolean;
@@ -46,17 +75,6 @@ export enum ModuleIssueType {
     Incompatible,
     DependencyConflict
 }
-export interface ApplicationVersionRange {
-    min: ApplicationVersion;
-    max: ApplicationVersion;
-}
-export interface SubModuleInfoExtended {
-    name: string;
-    dLLName: string;
-    assemblies: any;
-    subModuleClassType: string;
-    tags: any;
-}
 
 export interface IValidationManager {
     isSelected(moduleId: string): boolean,
@@ -70,19 +88,19 @@ export interface IEnableDisableManager {
 }
 
 export interface IBannerlordModuleManager {
-    sort(unsorted: ModuleInfoExtended[]): ModuleInfoExtended[];
-    sortWithOptions(unsorted: ModuleInfoExtended[], options: ModuleSorterOptions): ModuleInfoExtended[];
+    sort(unsorted: Array<ModuleInfoExtended>): Array<ModuleInfoExtended>;
+    sortWithOptions(unsorted: Array<ModuleInfoExtended>, options: ModuleSorterOptions): Array<ModuleInfoExtended>;
 
-    areAllDependenciesOfModulePresent(unsorted: ModuleInfoExtended[], module: ModuleInfoExtended): boolean;
+    areAllDependenciesOfModulePresent(unsorted: Array<ModuleInfoExtended>, module: ModuleInfoExtended): boolean;
 
-    getDependentModulesOf(source: ModuleInfoExtended[], module: ModuleInfoExtended): ModuleInfoExtended[];
-    getDependentModulesOfWithOptions(source: ModuleInfoExtended[], module: ModuleInfoExtended, options: ModuleSorterOptions): ModuleInfoExtended[];
+    getDependentModulesOf(source: Array<ModuleInfoExtended>, module: ModuleInfoExtended): Array<ModuleInfoExtended>;
+    getDependentModulesOfWithOptions(source: Array<ModuleInfoExtended>, module: ModuleInfoExtended, options: ModuleSorterOptions): Array<ModuleInfoExtended>;
 
-    validateModuleDependenciesDeclarations(module: ModuleInfoExtended): ModuleIssue[];
-    validateModule(modules: ModuleInfoExtended[], targetModule: ModuleInfoExtended, manager: IValidationManager): ModuleIssue[];
+    validateModuleDependenciesDeclarations(module: ModuleInfoExtended): Array<ModuleIssue>;
+    validateModule(modules: Array<ModuleInfoExtended>, targetModule: ModuleInfoExtended, manager: IValidationManager): Array<ModuleIssue>;
 
-    enableModule(modules: ModuleInfoExtended[], targetModule: ModuleInfoExtended, manager: IEnableDisableManager): ModuleIssue[];
-    disableModule(modules: ModuleInfoExtended[], targetModule: ModuleInfoExtended, manager: IEnableDisableManager): ModuleIssue[];
+    enableModule(modules: Array<ModuleInfoExtended>, targetModule: ModuleInfoExtended, manager: IEnableDisableManager): Array<ModuleIssue>;
+    disableModule(modules: Array<ModuleInfoExtended>, targetModule: ModuleInfoExtended, manager: IEnableDisableManager): Array<ModuleIssue>;
 
     getModuleInfo(xml: string): ModuleInfoExtended | undefined;
     getSubModuleInfo(xml: string): SubModuleInfoExtended | undefined;
