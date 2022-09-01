@@ -68,6 +68,8 @@
     "dist/main/lib",
     "dist/module/index.*",
     "dist/module/lib",
+    "dist/Bannerlord.ModuleManager.Native.dll",
+    "dist/blmanager.node",
     "CHANGELOG.md",
     "LICENSE",
     "README.md"
