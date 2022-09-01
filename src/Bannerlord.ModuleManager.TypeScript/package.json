@@ -45,7 +45,7 @@
     "@ava/typescript": "^1.1.1",
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@types/emscripten": "^1.39.6",
-    "ava": "^3.15.0",
+    "ava": "^4.3.3",
     "codecov": "^3.8.2",
     "copyfiles": "^2.4.1",
     "cspell": "^5.13.1",
