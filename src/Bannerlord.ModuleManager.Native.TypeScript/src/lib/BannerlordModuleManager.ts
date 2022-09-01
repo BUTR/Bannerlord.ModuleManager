@@ -9,7 +9,7 @@ import {
     SubModuleInfoExtended
 } from "./types";
 
-const blmanager: IBannerlordModuleManager = require('./blmanager.node');
+const blmanager: IBannerlordModuleManager = require('./../../blmanager.node');
 
 export class BannerlordModuleManager implements IBannerlordModuleManager {
     static async createAsync(): Promise<BannerlordModuleManager> {
