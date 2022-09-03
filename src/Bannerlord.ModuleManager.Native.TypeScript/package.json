@@ -2,9 +2,9 @@
   "name": "@butr/blmodulemanagernative",
   "version": "4.0.0",
   "description": "Package of native bindings bundled with TS declarations",
-  "main": "dist/main/index.js",
-  "typings": "dist/main/index.d.ts",
-  "module": "dist/module/index.js",
+  "main": "dist/main/lib/index.js",
+  "typings": "dist/main/lib/index.d.ts",
+  "module": "dist/module/lib/index.js",
   "gypfile": true,
   "repository": {
     "type": "git",
