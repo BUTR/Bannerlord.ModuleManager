@@ -51,22 +51,14 @@ namespace Bannerlord.ModuleManager
 # endif
         sealed record ModuleSorterOptions
     {
-        public bool SkipOptionals
-        {
-#if REFLECTION_FREE
-            get; set;
-#else
-            get; init;
-#endif
-        }
+        public bool SkipOptionals { get; set; }
+        public bool SkipExternalDependencies { get; set; }
 
-        public bool SkipExternalDependencies
+        public ModuleSorterOptions() { }
+        public ModuleSorterOptions(bool skipOptionals, bool skipExternalDependencies)
         {
-#if REFLECTION_FREE
-            get; set;
-#else
-            get; init;
-#endif
+            SkipOptionals = skipOptionals;
+            SkipExternalDependencies = skipExternalDependencies;
         }
     }
 

@@ -2,19 +2,12 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1;net5;net6</TargetFrameworks>
-    <LangVersion>10.0</LangVersion>
+    <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
     <VersionOverride>0</VersionOverride>
     <Version>4.0.$(VersionOverride)</Version>
     <DefineConstants>$(DefineConstants);BANNERLORDBUTRMODULEMANAGER_PUBLIC;</DefineConstants>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Condition="$(TargetFramework) == 'netstandard2.0' OR $(TargetFramework) == 'netstandard2.1'" Include="IsExternalInit" Version="1.0.3">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
 
   <!--NuGet Package-->
   <PropertyGroup>
@@ -62,11 +55,5 @@
     <PackageFile Include="../../resources/Butter.png" PackagePath="Butter.png" />
   </ItemGroup>
   <!--NuGet Package-->
-
-  <Target Name="SetReflectionFree">
-    <PropertyGroup>
-      <DefineConstants>$(DefineConstants);REFLECTION_FREE;</DefineConstants>
-    </PropertyGroup>
-  </Target>
 
 </Project>

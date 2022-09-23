@@ -55,113 +55,18 @@ namespace Bannerlord.ModuleManager
         private static readonly string NativeModuleId = "Native";
         private static readonly string[] OfficialModuleIds = { NativeModuleId, "SandBox", "SandBoxCore", "StoryMode", "CustomBattle" };
 
-        public string Id
-        {
-#if REFLECTION_FREE
-            get; set;
-#else
-            get; init;
-#endif
-        } = string.Empty;
-
-        public string Name
-        {
-#if REFLECTION_FREE
-            get; set;
-#else
-            get; init;
-#endif
-        } = string.Empty;
-
-        public bool IsOfficial
-        {
-#if REFLECTION_FREE
-            get; set;
-#else
-            get; init;
-#endif
-        }
-
-        public ApplicationVersion Version
-        {
-#if REFLECTION_FREE
-            get; set;
-#else
-            get; init;
-#endif
-        } = ApplicationVersion.Empty;
-
-        public bool IsSingleplayerModule
-        {
-#if REFLECTION_FREE
-            get; set;
-#else
-            get; init;
-#endif
-        }
-
-        public bool IsMultiplayerModule
-        {
-#if REFLECTION_FREE
-            get; set;
-#else
-            get; init;
-#endif
-        }
-
-        public IReadOnlyList<SubModuleInfoExtended> SubModules
-        {
-#if REFLECTION_FREE
-            get; set;
-#else
-            get; init;
-#endif
-        } = Array.Empty<SubModuleInfoExtended>();
-
-        public IReadOnlyList<DependentModule> DependentModules
-        {
-#if REFLECTION_FREE
-            get; set;
-#else
-            get; init;
-#endif
-        } = Array.Empty<DependentModule>();
-
-        public IReadOnlyList<DependentModule> ModulesToLoadAfterThis
-        {
-#if REFLECTION_FREE
-            get; set;
-#else
-            get; init;
-#endif
-        } = Array.Empty<DependentModule>();
-
-        public IReadOnlyList<DependentModule> IncompatibleModules
-        {
-#if REFLECTION_FREE
-            get; set;
-#else
-            get; init;
-#endif
-        } = Array.Empty<DependentModule>();
-
-        public string Url
-        {
-#if REFLECTION_FREE
-            get; set;
-#else
-            get; init;
-#endif
-        } = string.Empty;
-
-        public IReadOnlyList<DependentModuleMetadata> DependentModuleMetadatas
-        {
-#if REFLECTION_FREE
-            get; set;
-#else
-            get; init;
-#endif
-        } = Array.Empty<DependentModuleMetadata>();
+        public string Id { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public bool IsOfficial { get; set; }
+        public ApplicationVersion Version { get; set; } = ApplicationVersion.Empty;
+        public bool IsSingleplayerModule { get; set; }
+        public bool IsMultiplayerModule { get; set; }
+        public IReadOnlyList<SubModuleInfoExtended> SubModules { get; set; } = Array.Empty<SubModuleInfoExtended>();
+        public IReadOnlyList<DependentModule> DependentModules { get; set; } = Array.Empty<DependentModule>();
+        public IReadOnlyList<DependentModule> ModulesToLoadAfterThis { get; set; } = Array.Empty<DependentModule>();
+        public IReadOnlyList<DependentModule> IncompatibleModules { get; set; } = Array.Empty<DependentModule>();
+        public string Url { get; set; } = string.Empty;
+        public IReadOnlyList<DependentModuleMetadata> DependentModuleMetadatas { get; set; } = Array.Empty<DependentModuleMetadata>();
 
         public static ModuleInfoExtended? FromXml(XmlDocument? xmlDocument)
         {
@@ -360,6 +265,25 @@ namespace Bannerlord.ModuleManager
                 Url = url,
                 DependentModuleMetadatas = dependentModuleMetadatas
             };
+        }
+
+        public ModuleInfoExtended() { }
+        public ModuleInfoExtended(string id, string name, bool isOfficial, ApplicationVersion version, bool isSingleplayerModule, bool isMultiplayerModule,
+            IReadOnlyList<SubModuleInfoExtended> subModules, IReadOnlyList<DependentModule> dependentModules, IReadOnlyList<DependentModule> modulesToLoadAfterThis,
+            IReadOnlyList<DependentModule> incompatibleModules, IReadOnlyList<DependentModuleMetadata> dependentModuleMetadatas, string url)
+        {
+            Id = id;
+            Name = name;
+            IsOfficial = isOfficial;
+            Version = version;
+            IsSingleplayerModule = isSingleplayerModule;
+            IsMultiplayerModule = isMultiplayerModule;
+            SubModules = subModules;
+            DependentModules = dependentModules;
+            ModulesToLoadAfterThis = modulesToLoadAfterThis;
+            IncompatibleModules = incompatibleModules;
+            DependentModuleMetadatas = dependentModuleMetadatas;
+            Url = url;
         }
 
         public bool IsNative() => Id.Equals(NativeModuleId, StringComparison.OrdinalIgnoreCase);

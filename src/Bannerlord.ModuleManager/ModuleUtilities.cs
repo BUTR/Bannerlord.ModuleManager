@@ -49,24 +49,24 @@ namespace Bannerlord.ModuleManager
 #else
     public
 # endif
-        sealed record ModuleIssue(ModuleInfoExtended Target, string SourceId, ModuleIssueType Type)
+        sealed record ModuleIssue
     {
-        public string Reason
-        {
-#if REFLECTION_FREE
-            get; set;
-#else
-            get; init;
-#endif
-        }
+        public ModuleInfoExtended Target { get; set; }
+        public string SourceId { get; set; }
+        public ModuleIssueType Type { get; set; }
+        public string Reason { get; set; }
+        public ApplicationVersionRange SourceVersion { get; set; }
 
-        public ApplicationVersionRange SourceVersion
+        public ModuleIssue(ModuleInfoExtended target, string sourceId, ModuleIssueType type)
         {
-#if REFLECTION_FREE
-            get; set;
-#else
-            get; init;
-#endif
+            Target = target;
+            SourceId = sourceId;
+            Type = type;
+        }
+        public ModuleIssue(ModuleInfoExtended target, string sourceId, ModuleIssueType type, string reason, ApplicationVersionRange sourceVersion) : this(target, sourceId, type)
+        {
+            Reason = reason;
+            SourceVersion = sourceVersion;
         }
     }
     

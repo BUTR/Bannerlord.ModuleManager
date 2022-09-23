@@ -47,32 +47,9 @@ namespace Bannerlord.ModuleManager
 # endif
         sealed record DependentModule
     {
-        public string Id
-        {
-#if REFLECTION_FREE
-            get; set;
-#else
-            get; init;
-#endif
-        } = string.Empty;
-
-        public ApplicationVersion Version
-        {
-#if REFLECTION_FREE
-            get; set;
-#else
-            get; init;
-#endif
-        } = ApplicationVersion.Empty;
-
-        public bool IsOptional
-        {
-#if REFLECTION_FREE
-            get; set;
-#else
-            get; init;
-#endif
-        } = false;
+        public string Id { get; set; } = string.Empty;
+        public ApplicationVersion Version { get; set; } = ApplicationVersion.Empty;
+        public bool IsOptional { get; set; } = false;
 
         public DependentModule() { }
         public DependentModule(string id, ApplicationVersion version, bool isOptional)
