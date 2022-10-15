@@ -45,7 +45,7 @@ namespace Bannerlord.ModuleManager
 #else
     public
 # endif
-        sealed record DependentModuleMetadata
+        record DependentModuleMetadata
     {
         public string Id { get; set; } = string.Empty;
         public LoadType LoadType { get; set; }

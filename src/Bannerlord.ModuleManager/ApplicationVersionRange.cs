@@ -45,7 +45,7 @@ namespace Bannerlord.ModuleManager
 #else
     public
 # endif
-        sealed record ApplicationVersionRange
+        record ApplicationVersionRange
     {
         public static ApplicationVersionRange Empty => new();
 

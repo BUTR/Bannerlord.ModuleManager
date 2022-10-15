@@ -50,7 +50,7 @@ namespace Bannerlord.ModuleManager
 #else
     public
 # endif
-        sealed record ModuleInfoExtended
+        record ModuleInfoExtended
     {
         private static readonly string NativeModuleId = "Native";
         private static readonly string[] OfficialModuleIds = { NativeModuleId, "SandBox", "SandBoxCore", "StoryMode", "CustomBattle" };
@@ -290,7 +290,7 @@ namespace Bannerlord.ModuleManager
 
         public override string ToString() => $"{Id} - {Version}";
 
-        public bool Equals(ModuleInfoExtended? other)
+        public virtual bool Equals(ModuleInfoExtended? other)
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;

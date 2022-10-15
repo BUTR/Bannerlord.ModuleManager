@@ -51,7 +51,7 @@ namespace Bannerlord.ModuleManager
 #else
     public
 # endif
-        sealed record SubModuleInfoExtended
+        record SubModuleInfoExtended
     {
         public string Name { get; set; } = string.Empty;
         public string DLLName { get; set; } = string.Empty;
@@ -117,7 +117,7 @@ namespace Bannerlord.ModuleManager
 
         public override string ToString() => $"{Name} - {DLLName}";
 
-        public bool Equals(SubModuleInfoExtended? other)
+        public virtual bool Equals(SubModuleInfoExtended? other)
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;

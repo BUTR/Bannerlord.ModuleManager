@@ -45,7 +45,7 @@ namespace Bannerlord.ModuleManager
 #else
     public
 # endif
-        sealed record DependentModule
+        record DependentModule
     {
         public string Id { get; set; } = string.Empty;
         public ApplicationVersion Version { get; set; } = ApplicationVersion.Empty;
