@@ -81,7 +81,9 @@ namespace Bannerlord.ModuleManager
             var name = moduleNode?.SelectSingleNode("Name")?.Attributes?["value"]?.InnerText ?? string.Empty;
             ApplicationVersion.TryParse(moduleNode?.SelectSingleNode("Version")?.Attributes?["value"]?.InnerText, out var version);
 
-            var isOfficial = moduleNode?.SelectSingleNode("Official")?.Attributes?["value"]?.InnerText.Equals("true") == true;
+            var moduleType = moduleNode?.SelectSingleNode("ModuleType")?.Attributes?["value"].InnerText;
+            var isOfficial = moduleNode?.SelectSingleNode("Official")?.Attributes?["value"]?.InnerText.Equals("true") == true
+                             || moduleType == "Official"|| moduleType == "OfficialOptional";
             var isSingleplayerModule = moduleNode?.SelectSingleNode("SingleplayerModule")?.Attributes?["value"]?.InnerText.Equals("true") == true;
             var isMultiplayerModule = moduleNode?.SelectSingleNode("MultiplayerModule")?.Attributes?["value"]?.InnerText.Equals("true") == true;
 
