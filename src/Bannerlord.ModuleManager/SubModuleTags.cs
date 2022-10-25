@@ -51,7 +51,9 @@ namespace Bannerlord.ModuleManager
         ExclusivePlatform,
         DedicatedServerType,
         IsNoRenderModeElement,
-        DependantRuntimeLibrary
+        DependantRuntimeLibrary,
+        PlayerHostedDedicatedServer,
+        EngineType
     }
 #pragma warning restore
 #nullable restore
