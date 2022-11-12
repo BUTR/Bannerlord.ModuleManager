@@ -59,34 +59,22 @@ namespace Bannerlord.ModuleManager
         /// <inheritdoc/>
         public int Compare(string? s1, string? s2)
         {
-            if (s1 is null && s2 is null)
-                return 0;
-            if (s1 is null)
-                return -1;
-            if (s2 is null)
-                return 1;
+            if (s1 is null && s2 is null) return 0;
+            if (s1 is null) return -1;
+            if (s2 is null) return 1;
 
             var len1 = s1.Length;
             var len2 = s2.Length;
-            if (len1 == 0 && len2 == 0)
-                return 0;
-            if (len1 == 0)
-                return -1;
-            if (len2 == 0)
-                return 1;
+            if (len1 == 0 && len2 == 0) return 0;
+            if (len1 == 0) return -1;
+            if (len2 == 0) return 1;
 
             var marker1 = 0;
             var marker2 = 0;
             while (marker1 < len1 || marker2 < len2)
             {
-                if (marker1 >= len1)
-                {
-                    return -1;
-                }
-                if (marker2 >= len2)
-                {
-                    return 1;
-                }
+                if (marker1 >= len1) return -1;
+                if (marker2 >= len2) return 1;
                 var ch1 = s1[marker1];
                 var ch2 = s2[marker2];
 
@@ -111,25 +99,22 @@ namespace Bannerlord.ModuleManager
                         ch2 = s2[marker2];
                 }
 
-                var result = 0;
                 // If both chunks contain numeric characters, sort them numerically
                 if (char.IsDigit(chunk1[0]) && char.IsDigit(chunk2[0]))
                 {
                     var numericChunk1 = Convert.ToInt32(chunk1.ToString());
                     var numericChunk2 = Convert.ToInt32(chunk2.ToString());
 
-                    if (numericChunk1 < numericChunk2)
-                        result = -1;
-                    if (numericChunk1 > numericChunk2)
-                        result = 1;
+                    if (numericChunk1 < numericChunk2) return -1;
+                    if (numericChunk1 > numericChunk2) return 1;
                 }
                 else
                 {
-                    result = string.CompareOrdinal(chunk1.ToString(), chunk2.ToString());
+                    var result = string.CompareOrdinal(chunk1.ToString(), chunk2.ToString());
+                    // Normalize for cases when the code can't handle 2 or -2 and futher
+                    if (result >= 1) return 1;
+                    if (result <= -1) return -1;
                 }
-
-                if (result != 0)
-                    return result;
             }
 
             return 0;
