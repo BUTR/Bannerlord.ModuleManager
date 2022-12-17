@@ -73,7 +73,8 @@ namespace Bannerlord.ModuleManager
         {
             var correctModules = source
                 .Where(x => ModuleUtilities.AreDependenciesPresent(source, x))
-                .OrderByDescending(mim => mim.Id, new AlphanumComparatorFast())
+                .OrderByDescending(x => x.IsOfficial)
+                .ThenByDescending(mim => mim.Id, new AlphanumComparatorFast())
                 .ToArray();
 
             return TopologySort(correctModules, module => ModuleUtilities.GetDependencies(correctModules, module));
@@ -82,7 +83,8 @@ namespace Bannerlord.ModuleManager
         {
             var correctModules = source
                 .Where(x => ModuleUtilities.AreDependenciesPresent(source, x))
-                .OrderByDescending(mim => mim.Id, new AlphanumComparatorFast())
+                .OrderByDescending(x => x.IsOfficial)
+                .ThenByDescending(mim => mim.Id, new AlphanumComparatorFast())
                 .ToArray();
 
             return TopologySort(correctModules, module => ModuleUtilities.GetDependencies(correctModules, module, options));
