@@ -61,6 +61,7 @@ namespace Bannerlord.ModuleManager
         public ApplicationVersion Version { get; set; } = ApplicationVersion.Empty;
         public bool IsSingleplayerModule { get; set; }
         public bool IsMultiplayerModule { get; set; }
+        public bool IsServerModule { get; set; }
         public IReadOnlyList<SubModuleInfoExtended> SubModules { get; set; } = Array.Empty<SubModuleInfoExtended>();
         public IReadOnlyList<DependentModule> DependentModules { get; set; } = Array.Empty<DependentModule>();
         public IReadOnlyList<DependentModule> ModulesToLoadAfterThis { get; set; } = Array.Empty<DependentModule>();
@@ -90,6 +91,7 @@ namespace Bannerlord.ModuleManager
                                        moduleCategory == "Singleplayer";
             var isMultiplayerModule = moduleNode?.SelectSingleNode("MultiplayerModule")?.Attributes?["value"]?.InnerText.Equals("true") == true ||
                                       moduleCategory == "Multiplayer";
+            var isServerModule = moduleCategory == "Server";
 
             var dependentModulesNode = moduleNode?.SelectSingleNode("DependedModules");
             var dependentModulesList = dependentModulesNode?.SelectNodes("DependedModule");
@@ -264,6 +266,7 @@ namespace Bannerlord.ModuleManager
                 Version = version,
                 IsSingleplayerModule = isSingleplayerModule,
                 IsMultiplayerModule = isMultiplayerModule,
+                IsServerModule = isServerModule,
                 SubModules = subModules,
                 DependentModules = dependentModules,
                 ModulesToLoadAfterThis = modulesToLoadAfterThis,
