@@ -88,10 +88,10 @@ namespace Bannerlord.ModuleManager
 
             var moduleCategory = moduleNode?.SelectSingleNode("ModuleCategory")?.Attributes?["value"]?.InnerText;
             var isSingleplayerModule = moduleNode?.SelectSingleNode("SingleplayerModule")?.Attributes?["value"]?.InnerText.Equals("true") == true ||
-                                       moduleCategory == "Singleplayer";
+                                       moduleCategory == "Singleplayer" || moduleCategory == "SingleplayerOptional";
             var isMultiplayerModule = moduleNode?.SelectSingleNode("MultiplayerModule")?.Attributes?["value"]?.InnerText.Equals("true") == true ||
-                                      moduleCategory == "Multiplayer";
-            var isServerModule = moduleCategory == "Server";
+                                      moduleCategory == "Multiplayer" || moduleCategory == "MultiplayerOptional";
+            var isServerModule = moduleCategory == "Server" || moduleCategory == "ServerOptional";
 
             var dependentModulesNode = moduleNode?.SelectSingleNode("DependedModules");
             var dependentModulesList = dependentModulesNode?.SelectNodes("DependedModule");
