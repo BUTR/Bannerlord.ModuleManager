@@ -82,10 +82,14 @@ namespace Bannerlord.ModuleManager
             ApplicationVersion.TryParse(moduleNode?.SelectSingleNode("Version")?.Attributes?["value"]?.InnerText, out var version);
 
             var moduleType = moduleNode?.SelectSingleNode("ModuleType")?.Attributes?["value"].InnerText;
-            var isOfficial = moduleNode?.SelectSingleNode("Official")?.Attributes?["value"]?.InnerText.Equals("true") == true
-                             || moduleType == "Official"|| moduleType == "OfficialOptional";
-            var isSingleplayerModule = moduleNode?.SelectSingleNode("SingleplayerModule")?.Attributes?["value"]?.InnerText.Equals("true") == true;
-            var isMultiplayerModule = moduleNode?.SelectSingleNode("MultiplayerModule")?.Attributes?["value"]?.InnerText.Equals("true") == true;
+            var isOfficial = moduleNode?.SelectSingleNode("Official")?.Attributes?["value"]?.InnerText.Equals("true") == true ||
+                             moduleType == "Official" || moduleType == "OfficialOptional";
+
+            var moduleCategory = moduleNode?.SelectSingleNode("ModuleCategory")?.Attributes?["value"]?.InnerText;
+            var isSingleplayerModule = moduleNode?.SelectSingleNode("SingleplayerModule")?.Attributes?["value"]?.InnerText.Equals("true") == true ||
+                                       moduleCategory == "Singleplayer";
+            var isMultiplayerModule = moduleNode?.SelectSingleNode("MultiplayerModule")?.Attributes?["value"]?.InnerText.Equals("true") == true ||
+                                      moduleCategory == "Multiplayer";
 
             var dependentModulesNode = moduleNode?.SelectSingleNode("DependedModules");
             var dependentModulesList = dependentModulesNode?.SelectNodes("DependedModule");
