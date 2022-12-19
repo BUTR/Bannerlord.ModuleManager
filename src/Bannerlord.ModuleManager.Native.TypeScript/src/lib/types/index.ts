@@ -91,12 +91,12 @@ export interface IBannerlordModuleManager {
     sort(unsorted: Array<ModuleInfoExtended>): Array<ModuleInfoExtended>;
     sortWithOptions(unsorted: Array<ModuleInfoExtended>, options: ModuleSorterOptions): Array<ModuleInfoExtended>;
 
-    areAllDependenciesOfModulePresent(unsorted: Array<ModuleInfoExtended>, module: ModuleInfoExtended): boolean;
+    areAllDependenciesOfModulePresent(unsorted: Array<ModuleInfoExtended>, targetModule: ModuleInfoExtended): boolean;
 
-    getDependentModulesOf(source: Array<ModuleInfoExtended>, module: ModuleInfoExtended): Array<ModuleInfoExtended>;
-    getDependentModulesOfWithOptions(source: Array<ModuleInfoExtended>, module: ModuleInfoExtended, options: ModuleSorterOptions): Array<ModuleInfoExtended>;
+    getDependentModulesOf(source: Array<ModuleInfoExtended>, targetModule: ModuleInfoExtended): Array<ModuleInfoExtended>;
+    getDependentModulesOfWithOptions(source: Array<ModuleInfoExtended>, targetModule: ModuleInfoExtended, options: ModuleSorterOptions): Array<ModuleInfoExtended>;
 
-    validateModuleDependenciesDeclarations(module: ModuleInfoExtended): Array<ModuleIssue>;
+    validateLoadOrder(modules: Array<ModuleInfoExtended>, targetModule: ModuleInfoExtended): Array<ModuleIssue>;
     validateModule(modules: Array<ModuleInfoExtended>, targetModule: ModuleInfoExtended, manager: IValidationManager): Array<ModuleIssue>;
 
     enableModule(modules: Array<ModuleInfoExtended>, targetModule: ModuleInfoExtended, manager: IEnableDisableManager): void;

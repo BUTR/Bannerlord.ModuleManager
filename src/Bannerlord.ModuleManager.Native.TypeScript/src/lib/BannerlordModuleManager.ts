@@ -27,20 +27,20 @@ export class BannerlordModuleManager implements IBannerlordModuleManager {
         return blmanager.sortWithOptions(unsorted, options);
     }
 
-    areAllDependenciesOfModulePresent(unsorted: ModuleInfoExtended[], module: ModuleInfoExtended): boolean {
-        return blmanager.areAllDependenciesOfModulePresent(unsorted, module);
+    areAllDependenciesOfModulePresent(unsorted: ModuleInfoExtended[], targetModule: ModuleInfoExtended): boolean {
+        return blmanager.areAllDependenciesOfModulePresent(unsorted, targetModule);
     }
 
-    getDependentModulesOf(source: ModuleInfoExtended[], module: ModuleInfoExtended): ModuleInfoExtended[] {
-        return blmanager.getDependentModulesOf(source, module);
+    getDependentModulesOf(source: ModuleInfoExtended[], targetModule: ModuleInfoExtended): ModuleInfoExtended[] {
+        return blmanager.getDependentModulesOf(source, targetModule);
     }
 
-    getDependentModulesOfWithOptions(source: ModuleInfoExtended[], module: ModuleInfoExtended, options: ModuleSorterOptions): ModuleInfoExtended[] {
-        return blmanager.getDependentModulesOfWithOptions(source, module, options);
+    getDependentModulesOfWithOptions(source: ModuleInfoExtended[], targetModule: ModuleInfoExtended, options: ModuleSorterOptions): ModuleInfoExtended[] {
+        return blmanager.getDependentModulesOfWithOptions(source, targetModule, options);
     }
 
-    validateModuleDependenciesDeclarations(module: ModuleInfoExtended): ModuleIssue[] {
-        return blmanager.validateModuleDependenciesDeclarations(module);
+    validateLoadOrder(source: ModuleInfoExtended[], targetModule: ModuleInfoExtended): ModuleIssue[] {
+        return blmanager.validateLoadOrder(source, targetModule);
     }
 
     validateModule(modules: ModuleInfoExtended[], targetModule: ModuleInfoExtended, manager: IValidationManager): ModuleIssue[] {

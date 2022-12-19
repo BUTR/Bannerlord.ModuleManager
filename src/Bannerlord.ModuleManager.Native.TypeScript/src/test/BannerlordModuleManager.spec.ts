@@ -38,20 +38,8 @@ test('sort', async (t) => {
     return;
   }
 
-  const validationResult = blmmanager.validateModuleDependenciesDeclarations(harmony);
+  const validationResult = blmmanager.validateLoadOrder(sorted, harmony);
   if (validationResult === null || !Array.isArray(validationResult)) {
-    t.fail();
-    return;
-  }
-
-  const validationResult2 = blmmanager.validateModuleDependenciesDeclarations(uiExtenderEx);
-  if (validationResult2 === null || !Array.isArray(validationResult2)) {
-    t.fail();
-    return;
-  }
-
-  const validationResult3 = blmmanager.validateModuleDependenciesDeclarations(invalid);
-  if (validationResult3 === null || !Array.isArray(validationResult3) || validationResult3.length != 1) {
     t.fail();
     return;
   }

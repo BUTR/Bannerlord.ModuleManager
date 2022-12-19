@@ -50,19 +50,19 @@ export class BannerlordModuleManager {
         return dotnet.Bannerlord.ModuleManager.GetDependentModulesOfWithOptions(source, module, options);
     }
 
-    validateModuleDependenciesDeclarations(module: ModuleInfoExtended): ModuleIssue[] {
-        return dotnet.Bannerlord.ModuleManager.ValidateModuleDependenciesDeclarations(module);
+    ValidateLoadOrder(source: ModuleInfoExtended[], module: ModuleInfoExtended): ModuleIssue[] {
+        return dotnet.Bannerlord.ModuleManager.ValidateLoadOrder(source, module);
     }
 
     validateModule(modules: ModuleInfoExtended[], targetModule: ModuleInfoExtended, manager: IValidationManager): ModuleIssue[] {
         return dotnet.Bannerlord.ModuleManager.ValidateModule(modules, targetModule, createObjectReference(manager));
     }
 
-    enableModule(modules: ModuleInfoExtended[], targetModule: ModuleInfoExtended, manager: IEnableDisableManager): ModuleIssue[] {
+    enableModule(modules: ModuleInfoExtended[], targetModule: ModuleInfoExtended, manager: IEnableDisableManager): void {
         return dotnet.Bannerlord.ModuleManager.EnableModule(modules, targetModule, createObjectReference(manager));
     }
 
-    disableModule(modules: ModuleInfoExtended[], targetModule: ModuleInfoExtended, manager: IEnableDisableManager): ModuleIssue[] {
+    disableModule(modules: ModuleInfoExtended[], targetModule: ModuleInfoExtended, manager: IEnableDisableManager): void {
         return dotnet.Bannerlord.ModuleManager.DisableModule(modules, targetModule, createObjectReference(manager));
     }
 
