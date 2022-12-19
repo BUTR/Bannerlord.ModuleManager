@@ -48,11 +48,11 @@ export class BannerlordModuleManager implements IBannerlordModuleManager {
     }
 
     enableModule(modules: ModuleInfoExtended[], targetModule: ModuleInfoExtended, manager: IEnableDisableManager): void {
-        return blmanager.enableModule(modules, targetModule, manager);
+        blmanager.enableModule(modules, targetModule, manager);
     }
 
     disableModule(modules: ModuleInfoExtended[], targetModule: ModuleInfoExtended, manager: IEnableDisableManager): void {
-        return blmanager.disableModule(modules, targetModule, manager);
+        blmanager.disableModule(modules, targetModule, manager);
     }
 
     getModuleInfo(xml: string): ModuleInfoExtended | undefined {
