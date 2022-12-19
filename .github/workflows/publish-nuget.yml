@@ -18,6 +18,11 @@ jobs:
         with:
           fetch-depth: 0
       
+      - name: Setup .NET 6
+        uses: actions/setup-dotnet@master
+        with:
+          dotnet-version: 6.x.x
+      
       - name: Setup .NET 7
         uses: actions/setup-dotnet@master
         with:
