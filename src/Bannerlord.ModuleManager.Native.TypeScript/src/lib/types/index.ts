@@ -99,8 +99,8 @@ export interface IBannerlordModuleManager {
     validateModuleDependenciesDeclarations(module: ModuleInfoExtended): Array<ModuleIssue>;
     validateModule(modules: Array<ModuleInfoExtended>, targetModule: ModuleInfoExtended, manager: IValidationManager): Array<ModuleIssue>;
 
-    enableModule(modules: Array<ModuleInfoExtended>, targetModule: ModuleInfoExtended, manager: IEnableDisableManager): Array<ModuleIssue>;
-    disableModule(modules: Array<ModuleInfoExtended>, targetModule: ModuleInfoExtended, manager: IEnableDisableManager): Array<ModuleIssue>;
+    enableModule(modules: Array<ModuleInfoExtended>, targetModule: ModuleInfoExtended, manager: IEnableDisableManager): void;
+    disableModule(modules: Array<ModuleInfoExtended>, targetModule: ModuleInfoExtended, manager: IEnableDisableManager): void;
 
     getModuleInfo(xml: string): ModuleInfoExtended | undefined;
     getSubModuleInfo(xml: string): SubModuleInfoExtended | undefined;

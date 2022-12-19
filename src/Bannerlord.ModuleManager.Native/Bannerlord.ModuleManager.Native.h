@@ -1,38 +1,51 @@
-#ifndef SRC_BLMANAGER_BINDINGS_H_
-#define SRC_BLMANAGER_BINDINGS_H_
+#ifndef SRC_MODULEMANAGER_BINDINGS_H_
+#define SRC_MODULEMANAGER_BINDINGS_H_
 
-namespace Bannerlord {
-    namespace ModuleManager {
-        namespace Native {
+#include "Common.Native.h"
 
-        #ifdef __cplusplus
-            extern "C" {
-        #endif
-                // We work with ANSI strings. Escape any non ASII symbol (> 127) as a unicode codepoint (\u0000)
-                const char* sort(const char* p_source_json);
-                const char* sort_with_options(const char* p_source_json, const char* p_options_json);
+using namespace Common;
 
-                bool are_all_dependencies_of_module_present(const char* p_source_json, const char* p_module_json);
+namespace Bannerlord::ModuleManager {
 
-                const char* get_dependent_modules_of(const char* p_source_json, const char* p_module_json);
-                const char* get_dependent_modules_of_with_options(const char* p_source_json, const char* p_module_json, const char* p_options_json);
+#ifdef __cplusplus
+    extern "C" {
+#endif
 
-                const char* validate_module(const char* p_uuid, const char* p_modules_json, const char* p_target_module_json, bool (*p_is_selected)(const char*, const char*));
-                const char* validate_module_dependencies_declarations(const char* p_target_module_json);
+        // All char16_t* parameters do not transfer ownership to the callee
+        // All char16_t* returns pass their ownership to the callee
 
-                const char* enable_module(const char* p_uuid, const char* p_modules_json, const char* p_target_module_json, bool (*p_get_selected)(const char*, const char*), void (*p_set_selected)(const char*, const char*, bool), bool (*p_get_disabled)(const char*, const char*), void (*p_set_disabled)(const char*, const char*, bool));
-                const char* disable_module(const char* p_uuid, const char* p_modules_json, const char* p_target_module_json, bool (*p_get_selected)(const char*, const char*), void (*p_set_selected)(const char*, const char*, bool), bool (*p_get_disabled)(const char*, const char*), void (*p_set_disabled)(const char*, const char*, bool));
+        return_value_json* __cdecl bmm_sort(const param_json* p_source);
+        return_value_json* __cdecl bmm_sort_with_options(const param_json* p_source, const param_json* p_options);
 
-                const char* get_module_info(const char* p_xml_content);
-                const char* get_sub_module_info(const char* p_xml_content);
+        return_value_bool* __cdecl bmm_are_all_dependencies_of_module_present(const param_json* p_source, const param_json* p_module);
 
-                int compare_versions(const char* p_x_json, const char* p_y_json);
-        #ifdef __cplusplus
-            }
-        #endif
+        return_value_json* __cdecl bmm_get_dependent_modules_of(const param_json* p_source, const param_json* p_module);
+        return_value_json* __cdecl bmm_get_dependent_modules_of_with_options(const param_json* p_source, const param_json* p_module, const param_json* p_options);
 
-        }
+        return_value_json* __cdecl bmm_validate_module_dependencies_declarations(const param_json* p_target_module);
+        return_value_json* __cdecl bmm_validate_module(const void* p_owner, const param_json* p_modules, const param_json* p_target_module
+            , return_value_bool* (__cdecl *p_is_selected)(const void* p_owner, const param_string* p_module_id));
+
+        return_value_json* __cdecl bmm_enable_module(const void* p_owner, const param_json* p_modules, const param_json* p_target_module
+            , return_value_bool* (__cdecl *p_get_selected)(const void* p_owner, const param_string* p_module_id)
+            , return_value_void* (__cdecl *p_set_selected)(const void* p_owner, const param_string* p_module_id, bool value)
+            , return_value_bool* (__cdecl *p_get_disabled)(const void* p_owner, const param_string* p_module_id)
+            , return_value_void* (__cdecl *p_set_disabled)(const void* p_owner, const param_string* p_module_id, bool value));
+        return_value_json* __cdecl bmm_disable_module(const void* p_owner, const param_json* p_modules, const param_json* p_target_module
+            , return_value_bool* (__cdecl *p_get_selected)(const void* p_owner, const param_string* p_module_id)
+            , return_value_void* (__cdecl *p_set_selected)(const void* p_owner, const param_string* p_module_id, bool value)
+            , return_value_bool* (__cdecl *p_get_disabled)(const void* p_owner, const param_string* p_module_id)
+            , return_value_void* (__cdecl *p_set_disabled)(const void* p_owner, const param_string* p_module_id, bool value));
+
+        return_value_json* __cdecl bmm_get_module_info(const param_string* p_xml_content);
+        return_value_json* __cdecl bmm_get_sub_module_info(const param_string* p_xml_content);
+
+        return_value_int32* __cdecl bmm_compare_versions(const param_json* p_x, const param_json* p_y);
+
+#ifdef __cplusplus
     }
+#endif
+
 }
 
 #endif

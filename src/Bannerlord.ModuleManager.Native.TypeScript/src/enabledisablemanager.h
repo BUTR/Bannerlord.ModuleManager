@@ -60,19 +60,17 @@ namespace Bannerlord {
                             _map.insert({ _uuid, this });
                         }
 
-                        const Object EnableModule() {
+                        void EnableModule() {
                             const auto source       = (std::string) JSONStringify(_env, _source);
                             const auto targetModule = (std::string) JSONStringify(_env, _targetModule);
 
-                            const auto result = Bannerlord::ModuleManager::Native::enable_module(escapeString(_uuid).c_str(), escapeString(source).c_str(), escapeString(targetModule).c_str(), &getSelected, &setSelected, &getDisabled, &setDisabled);
-                            return JSONParse(_env, String::New(_env, unescapeString(result)));
+                            Bannerlord::ModuleManager::Native::enable_module(escapeString(_uuid).c_str(), escapeString(source).c_str(), escapeString(targetModule).c_str(), &getSelected, &setSelected, &getDisabled, &setDisabled);
                         }
-                        const Object DisableModule() {
+                        void DisableModule() {
                             const auto source       = (std::string) JSONStringify(_env, _source);
                             const auto targetModule = (std::string) JSONStringify(_env, _targetModule);
 
-                            const auto result = Bannerlord::ModuleManager::Native::disable_module(escapeString(_uuid).c_str(), escapeString(source).c_str(), escapeString(targetModule).c_str(), &getSelected, &setSelected, &getDisabled, &setDisabled);
-                            return JSONParse(_env, String::New(_env, unescapeString(result)));
+                            Bannerlord::ModuleManager::Native::disable_module(escapeString(_uuid).c_str(), escapeString(source).c_str(), escapeString(targetModule).c_str(), &getSelected, &setSelected, &getDisabled, &setDisabled);
                         }
 
                         ~EnableDisableManager() {

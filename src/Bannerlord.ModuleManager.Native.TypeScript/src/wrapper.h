@@ -67,14 +67,15 @@ namespace Bannerlord {
                     return validationManager.ValidateModule();
                 }
 
-                const Object validateModuleDependenciesDeclarationsWrapped(const CallbackInfo& info) {
+                const Object validateLoadOrder(const CallbackInfo& info) {
                     const auto env          = info.Env();
-                    const auto targetModule = JSONStringify(env, info[0].As<Object>()).Utf8Value();
-                    const auto result       = Bannerlord::ModuleManager::Native::validate_module_dependencies_declarations(escapeString(targetModule).c_str());
+                    const auto source       = JSONStringify(env, info[0].As<Object>()).Utf8Value();
+                    const auto targetModule = JSONStringify(env, info[1].As<Object>()).Utf8Value();
+                    const auto result       = Bannerlord::ModuleManager::Native::validate_load_order(escapeString(source).c_str(), escapeString(targetModule).c_str());
                     return JSONParse(env, String::New(env, unescapeString(result)));
                 }
 
-                const Object enableModuleWrapped(const CallbackInfo& info) {
+                void enableModuleWrapped(const CallbackInfo& info) {
                     const auto env           = info.Env();
                     const auto source        = info[0].As<Object>();
                     const auto targetModule  = info[1].As<Object>();
@@ -84,9 +85,9 @@ namespace Bannerlord {
                     const auto getDisabled   = manager.Get("getDisabled").As<Function>();
                     const auto setDisabled   = manager.Get("setDisabled").As<Function>();
                     auto enableDisableManager = EnableDisableManager{ env, source, targetModule, getSelected, setSelected, getDisabled, setDisabled};
-                    return enableDisableManager.EnableModule();
+                    enableDisableManager.EnableModule();
                 }
-                const Object disableModuleWrapped(const CallbackInfo& info) {
+                void disableModuleWrapped(const CallbackInfo& info) {
                     const auto env           = info.Env();
                     const auto source        = info[0].As<Object>();
                     const auto targetModule  = info[1].As<Object>();
@@ -96,7 +97,7 @@ namespace Bannerlord {
                     const auto getDisabled   = manager.Get("getDisabled").As<Function>();
                     const auto setDisabled   = manager.Get("setDisabled").As<Function>();
                     auto enableDisableManager = EnableDisableManager{ env, source, targetModule, getSelected, setSelected, getDisabled, setDisabled};
-                    return enableDisableManager.DisableModule();
+                    enableDisableManager.DisableModule();
                 }
 
                 const Object getModuleInfoWrapped(const CallbackInfo& info) {
@@ -131,7 +132,7 @@ namespace Bannerlord {
                     exports.Set("getDependentModulesOfWithOptions", Function::New(env, getDependentModulesOfWithOptionsWrapped));
 
                     exports.Set("validateModule", Function::New(env, validateModuleWrapped));
-                    exports.Set("validateModuleDependenciesDeclarations", Function::New(env, validateModuleDependenciesDeclarationsWrapped));
+                    exports.Set("validateLoadOrder", Function::New(env, validateLoadOrder));
 
                     exports.Set("enableModule", Function::New(env, enableModuleWrapped));
                     exports.Set("disableModule", Function::New(env, disableModuleWrapped));

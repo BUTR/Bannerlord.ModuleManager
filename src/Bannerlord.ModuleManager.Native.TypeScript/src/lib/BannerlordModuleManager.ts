@@ -47,11 +47,11 @@ export class BannerlordModuleManager implements IBannerlordModuleManager {
         return blmanager.validateModule(modules, targetModule, manager);
     }
 
-    enableModule(modules: ModuleInfoExtended[], targetModule: ModuleInfoExtended, manager: IEnableDisableManager): ModuleIssue[] {
+    enableModule(modules: ModuleInfoExtended[], targetModule: ModuleInfoExtended, manager: IEnableDisableManager): void {
         return blmanager.enableModule(modules, targetModule, manager);
     }
 
-    disableModule(modules: ModuleInfoExtended[], targetModule: ModuleInfoExtended, manager: IEnableDisableManager): ModuleIssue[] {
+    disableModule(modules: ModuleInfoExtended[], targetModule: ModuleInfoExtended, manager: IEnableDisableManager): void {
         return blmanager.disableModule(modules, targetModule, manager);
     }
 

@@ -36,15 +36,15 @@
 // SOFTWARE.
 #endregion
 
+#nullable enable
+#pragma warning disable
+
 namespace Bannerlord.ModuleManager
 {
     using global::System;
     using global::System.Collections;
     using global::System.Collections.Generic;
     using global::System.Text;
-
-#nullable enable
-#pragma warning disable
 
     /// <summary>
     /// Alphanumeric sort. This sorting algorithm logically handles numbers in strings. It makes sense to humans.
@@ -136,6 +136,6 @@ namespace Bannerlord.ModuleManager
             Numeric
         }
     }
+}
 #pragma warning restore
 #nullable restore
-}

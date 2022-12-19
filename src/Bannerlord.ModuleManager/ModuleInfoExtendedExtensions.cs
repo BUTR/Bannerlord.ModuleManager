@@ -51,49 +51,16 @@ namespace Bannerlord.ModuleManager
 # endif
         static class ModuleInfoExtendedExtensions
     {
+        public static IEnumerable<DependentModuleMetadata> DependenciesAllDistinct(this ModuleInfoExtended module) => DependenciesAll(module).DistinctBy(x => x.Id);
         public static IEnumerable<DependentModuleMetadata> DependenciesAll(this ModuleInfoExtended module)
         {
-            foreach (var metadata in module.DependentModules)
-            {
-                yield return new DependentModuleMetadata()
-                {
-                    Id = metadata.Id,
-                    LoadType = LoadType.LoadBeforeThis,
-                    IsOptional = metadata.IsOptional,
-                    Version = metadata.Version
-                };
-            }
-            foreach (var metadata in module.ModulesToLoadAfterThis)
-            {
-                yield return new DependentModuleMetadata()
-                {
-                    Id = metadata.Id,
-                    LoadType = LoadType.LoadAfterThis,
-                    IsOptional = metadata.IsOptional,
-                    Version = metadata.Version
-                };
-            }
-            foreach (var metadata in module.IncompatibleModules)
-            {
-                yield return new DependentModuleMetadata()
-                {
-                    Id = metadata.Id,
-                    IsIncompatible = true,
-                    IsOptional = metadata.IsOptional,
-                    Version = metadata.Version
-                };
-            }
             foreach (var metadata in module.DependentModuleMetadatas)
             {
                 yield return metadata;
             }
-        }
-        
-        public static IEnumerable<DependentModuleMetadata> DependenciesToLoad(this ModuleInfoExtended module)
-        {
             foreach (var metadata in module.DependentModules)
             {
-                yield return new DependentModuleMetadata()
+                yield return new DependentModuleMetadata
                 {
                     Id = metadata.Id,
                     LoadType = LoadType.LoadBeforeThis,
@@ -103,7 +70,7 @@ namespace Bannerlord.ModuleManager
             }
             foreach (var metadata in module.ModulesToLoadAfterThis)
             {
-                yield return new DependentModuleMetadata()
+                yield return new DependentModuleMetadata
                 {
                     Id = metadata.Id,
                     LoadType = LoadType.LoadAfterThis,
@@ -111,53 +78,9 @@ namespace Bannerlord.ModuleManager
                     Version = metadata.Version
                 };
             }
-            foreach (var metadata in module.DependentModuleMetadatas.Where(x => !x.IsIncompatible))
-            {
-                yield return metadata;
-            }
-        }
-        
-        public static IEnumerable<DependentModuleMetadata> DependenciesLoadBeforeThis(this ModuleInfoExtended module)
-        {
-            foreach (var metadata in module.DependentModules)
-            {
-                yield return new DependentModuleMetadata()
-                {
-                    Id = metadata.Id,
-                    LoadType = LoadType.LoadBeforeThis,
-                    IsOptional = metadata.IsOptional,
-                    Version = metadata.Version
-                };
-            }
-            foreach (var metadata in module.DependentModuleMetadatas.Where(x => x.LoadType == LoadType.LoadBeforeThis))
-            {
-                yield return metadata;
-            }
-        }
-        
-        public static IEnumerable<DependentModuleMetadata> DependenciesLoadAfterThis(this ModuleInfoExtended module)
-        {
-            foreach (var metadata in module.ModulesToLoadAfterThis)
-            {
-                yield return new DependentModuleMetadata()
-                {
-                    Id = metadata.Id,
-                    LoadType = LoadType.LoadAfterThis,
-                    IsOptional = metadata.IsOptional,
-                    Version = metadata.Version
-                };
-            }
-            foreach (var metadata in module.DependentModuleMetadatas.Where(x => x.LoadType == LoadType.LoadAfterThis))
-            {
-                yield return metadata;
-            }
-        }
-        
-        public static IEnumerable<DependentModuleMetadata> DependenciesIncompatibles(this ModuleInfoExtended module)
-        {
             foreach (var metadata in module.IncompatibleModules)
             {
-                yield return new DependentModuleMetadata()
+                yield return new DependentModuleMetadata
                 {
                     Id = metadata.Id,
                     IsIncompatible = true,
@@ -165,9 +88,91 @@ namespace Bannerlord.ModuleManager
                     Version = metadata.Version
                 };
             }
+        }
+        
+        public static IEnumerable<DependentModuleMetadata> DependenciesToLoadDistinct(this ModuleInfoExtended module) => DependenciesToLoad(module).DistinctBy(x => x.Id);
+        public static IEnumerable<DependentModuleMetadata> DependenciesToLoad(this ModuleInfoExtended module)
+        {
+            foreach (var metadata in module.DependentModuleMetadatas.Where(x => !x.IsIncompatible))
+            {
+                yield return metadata;
+            }
+            foreach (var metadata in module.DependentModules)
+            {
+                yield return new DependentModuleMetadata
+                {
+                    Id = metadata.Id,
+                    LoadType = LoadType.LoadBeforeThis,
+                    IsOptional = metadata.IsOptional,
+                    Version = metadata.Version
+                };
+            }
+            foreach (var metadata in module.ModulesToLoadAfterThis)
+            {
+                yield return new DependentModuleMetadata
+                {
+                    Id = metadata.Id,
+                    LoadType = LoadType.LoadAfterThis,
+                    IsOptional = metadata.IsOptional,
+                    Version = metadata.Version
+                };
+            }
+        }
+        
+        public static IEnumerable<DependentModuleMetadata> DependenciesLoadBeforeThisDistinct(this ModuleInfoExtended module) => DependenciesLoadBeforeThis(module).DistinctBy(x => x.Id);
+        public static IEnumerable<DependentModuleMetadata> DependenciesLoadBeforeThis(this ModuleInfoExtended module)
+        {
+            foreach (var metadata in module.DependentModuleMetadatas.Where(x => x.LoadType == LoadType.LoadBeforeThis))
+            {
+                yield return metadata;
+            }
+            foreach (var metadata in module.DependentModules)
+            {
+                yield return new DependentModuleMetadata
+                {
+                    Id = metadata.Id,
+                    LoadType = LoadType.LoadBeforeThis,
+                    IsOptional = metadata.IsOptional,
+                    Version = metadata.Version
+                };
+            }
+        }
+        
+        public static IEnumerable<DependentModuleMetadata> DependenciesLoadAfterThisDistinct(this ModuleInfoExtended module) => DependenciesLoadAfterThis(module).DistinctBy(x => x.Id);
+        public static IEnumerable<DependentModuleMetadata> DependenciesLoadAfterThis(this ModuleInfoExtended module)
+        {
+            foreach (var metadata in module.DependentModuleMetadatas.Where(x => x.LoadType == LoadType.LoadAfterThis))
+            {
+                yield return metadata;
+            }
+            foreach (var metadata in module.ModulesToLoadAfterThis)
+            {
+                yield return new DependentModuleMetadata
+                {
+                    Id = metadata.Id,
+                    LoadType = LoadType.LoadAfterThis,
+                    IsOptional = metadata.IsOptional,
+                    Version = metadata.Version
+                };
+            }
+        }
+        
+        public static IEnumerable<DependentModuleMetadata> DependenciesIncompatiblesDistinct(this ModuleInfoExtended module) => DependenciesIncompatibles(module).DistinctBy(x => x.Id);
+        public static IEnumerable<DependentModuleMetadata> DependenciesIncompatibles(this ModuleInfoExtended module)
+        {
             foreach (var metadata in module.DependentModuleMetadatas.Where(x => x.IsIncompatible))
             {
                 yield return metadata;
+            }
+            foreach (var metadata in module.IncompatibleModules)
+            {
+                yield return new DependentModuleMetadata
+                {
+                    Id = metadata.Id,
+                    IsIncompatible = true,
+                    IsOptional = metadata.IsOptional,
+                    Version = metadata.Version
+                };
             }
         }
     }

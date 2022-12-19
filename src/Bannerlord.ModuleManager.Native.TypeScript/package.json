@@ -1,6 +1,6 @@
 {
   "name": "@butr/blmodulemanagernative",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "Package of native bindings bundled with TS declarations",
   "main": "dist/main/lib/index.js",
   "typings": "dist/main/lib/index.d.ts",

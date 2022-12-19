@@ -170,34 +170,20 @@ namespace Bannerlord.ModuleManager
             {
                 if (dependentModuleMetadatasList?[i]?.Attributes?["id"] is { } idAttr)
                 {
+                    var order = dependentModuleMetadatasList[i]?.Attributes?["order"] is { } orderAttr && Enum.TryParse<LoadTypeParse>(orderAttr.InnerText, out var loadType) ? (LoadType) loadType : LoadType.None;
+                    var optional = dependentModuleMetadatasList[i]?.Attributes?["optional"]?.InnerText.Equals("true") ?? false;
                     var incompatible = dependentModuleMetadatasList[i]?.Attributes?["incompatible"]?.InnerText.Equals("true") ?? false;
-                    if (incompatible)
+                    var dVersion = ApplicationVersion.TryParse(dependentModuleMetadatasList[i]?.Attributes?["version"]?.InnerText, out var v) ? v : ApplicationVersion.Empty;
+                    var dVersionRange = ApplicationVersionRange.TryParse(dependentModuleMetadatasList[i]?.Attributes?["version"]?.InnerText ?? string.Empty, out var vr) ? vr : ApplicationVersionRange.Empty;
+                    dependentModuleMetadatas.Add(new DependentModuleMetadata
                     {
-                        dependentModuleMetadatas.Add(new DependentModuleMetadata
-                        {
-                            Id = idAttr.InnerText,
-                            LoadType = LoadType.None,
-                            IsOptional = false,
-                            IsIncompatible = incompatible,
-                            Version = ApplicationVersion.Empty,
-                            VersionRange = ApplicationVersionRange.Empty
-                        });
-                    }
-                    else if (dependentModuleMetadatasList[i]?.Attributes?["order"] is { } orderAttr && Enum.TryParse<LoadTypeParse>(orderAttr.InnerText, out var order))
-                    {
-                        var optional = dependentModuleMetadatasList[i]?.Attributes?["optional"]?.InnerText.Equals("true") ?? false;
-                        var dVersion = ApplicationVersion.TryParse(dependentModuleMetadatasList[i]?.Attributes?["version"]?.InnerText, out var v) ? v : ApplicationVersion.Empty;
-                        var dVersionRange = ApplicationVersionRange.TryParse(dependentModuleMetadatasList[i]?.Attributes?["version"]?.InnerText ?? string.Empty, out var vr) ? vr : ApplicationVersionRange.Empty;
-                        dependentModuleMetadatas.Add(new DependentModuleMetadata
-                        {
-                            Id = idAttr.InnerText,
-                            LoadType = (LoadType) order,
-                            IsOptional = optional,
-                            IsIncompatible = incompatible,
-                            Version = dVersion,
-                            VersionRange = dVersionRange
-                        });
-                    }
+                        Id = idAttr.InnerText,
+                        LoadType = (LoadType) order,
+                        IsOptional = optional,
+                        IsIncompatible = incompatible,
+                        Version = dVersion,
+                        VersionRange = dVersionRange
+                    });
                 }
             }
             for (var i = 0; i < loadAfterModuleList?.Count; i++)

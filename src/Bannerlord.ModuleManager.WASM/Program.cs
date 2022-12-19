@@ -44,21 +44,21 @@ namespace Bannerlord.ModuleManager.WASM
             ModuleUtilities.ValidateModule(modules, targetModule, module => manager.Invoke<bool>("isSelected", module.Id)).ToArray();
 
         [JSInvokable]
-        public static ModuleIssue[] ValidateModuleDependenciesDeclarations(ModuleInfoExtended targetModule) =>
-            ModuleUtilities.ValidateModuleDependenciesDeclarations(targetModule).ToArray();
+        public static ModuleIssue[] ValidateLoadOrder(ModuleInfoExtended[] modules, ModuleInfoExtended targetModule) =>
+            ModuleUtilities.ValidateLoadOrder(modules, targetModule).ToArray();
 
 
         [JSInvokable]
-        public static ModuleIssue[] EnableModule(ModuleInfoExtended[] modules, ModuleInfoExtended targetModule, IJSUnmarshalledObjectReference manager) =>
+        public static void EnableModule(ModuleInfoExtended[] modules, ModuleInfoExtended targetModule, IJSUnmarshalledObjectReference manager) =>
             ModuleUtilities.EnableModule(modules, targetModule,
                 module => manager.Invoke<bool>("getSelected", module.Id), (module, value) => manager.InvokeVoid("setSelected", module.Id, value),
-                module => manager.Invoke<bool>("getDisabled", module.Id), (module, value) => manager.InvokeVoid("setDisabled", module.Id, value)).ToArray();
+                module => manager.Invoke<bool>("getDisabled", module.Id), (module, value) => manager.InvokeVoid("setDisabled", module.Id, value));
 
         [JSInvokable]
-        public static ModuleIssue[] DisableModule(ModuleInfoExtended[] modules, ModuleInfoExtended targetModule, IJSUnmarshalledObjectReference manager) =>
+        public static void DisableModule(ModuleInfoExtended[] modules, ModuleInfoExtended targetModule, IJSUnmarshalledObjectReference manager) =>
             ModuleUtilities.DisableModule(modules, targetModule,
                 module => manager.Invoke<bool>("getSelected", module.Id), (module, value) => manager.InvokeVoid("setSelected", module.Id, value),
-                module => manager.Invoke<bool>("getDisabled", module.Id), (module, value) => manager.InvokeVoid("setDisabled", module.Id, value)).ToArray();
+                module => manager.Invoke<bool>("getDisabled", module.Id), (module, value) => manager.InvokeVoid("setDisabled", module.Id, value));
 
 
         [JSInvokable]
