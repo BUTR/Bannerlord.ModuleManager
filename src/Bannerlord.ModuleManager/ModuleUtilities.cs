@@ -36,8 +36,8 @@
 // SOFTWARE.
 #endregion
 
-#if !BANNERLORDBUTRMODULEMANAGER_ENABLE_WARNING
 #nullable enable
+#if !BANNERLORDBUTRMODULEMANAGER_ENABLE_WARNING
 #pragma warning disable
 #endif
 
@@ -65,6 +65,8 @@ namespace Bannerlord.ModuleManager
             Target = target;
             SourceId = sourceId;
             Type = type;
+            Reason = string.Empty;
+            SourceVersion = ApplicationVersionRange.Empty;
         }
         public ModuleIssue(ModuleInfoExtended target, string sourceId, ModuleIssueType type, string reason, ApplicationVersionRange sourceVersion) : this(target, sourceId, type)
         {
@@ -368,11 +370,11 @@ namespace Bannerlord.ModuleManager
                 if (metadata.Version != ApplicationVersion.Empty)
                 {
                     // dependedModuleMetadata.Version > dependedModule.Version
-                    if (!metadata.IsOptional && (comparer.Compare(metadata.Version, metadataModule?.Version) > 0))
+                    if (!metadata.IsOptional && (comparer.Compare(metadata.Version, metadataModule.Version) > 0))
                     {
-                        yield return new ModuleIssue(targetModule, metadataModule?.Id, ModuleIssueType.VersionMismatch)
+                        yield return new ModuleIssue(targetModule, metadataModule.Id, ModuleIssueType.VersionMismatch)
                         {
-                            Reason = $"'{metadataModule?.Id}' wrong version <= {metadata.Version}",
+                            Reason = $"'{metadataModule.Id}' wrong version <= {metadata.Version}",
                             SourceVersion = new(metadata.Version, metadata.Version)
                         };
                         continue;
@@ -384,20 +386,20 @@ namespace Bannerlord.ModuleManager
                     // dependedModuleMetadata.Version < dependedModule.VersionRange.Max
                     if (!metadata.IsOptional)
                     {
-                        if (comparer.Compare(metadata.VersionRange.Min, metadataModule?.Version) > 0)
+                        if (comparer.Compare(metadata.VersionRange.Min, metadataModule.Version) > 0)
                         {
-                            yield return new ModuleIssue(targetModule, metadataModule?.Id, ModuleIssueType.VersionMismatch)
+                            yield return new ModuleIssue(targetModule, metadataModule.Id, ModuleIssueType.VersionMismatch)
                             {
                                 Reason = $"'{metadataModule?.Id}' wrong version < [{metadata.VersionRange}]",
                                 SourceVersion = metadata.VersionRange
                             };
                             continue;
                         }
-                        if (comparer.Compare(metadata.VersionRange.Max, metadataModule?.Version) < 0)
+                        if (comparer.Compare(metadata.VersionRange.Max, metadataModule.Version) < 0)
                         {
-                            yield return new ModuleIssue(targetModule, metadataModule?.Id, ModuleIssueType.VersionMismatch)
+                            yield return new ModuleIssue(targetModule, metadataModule.Id, ModuleIssueType.VersionMismatch)
                             {
-                                Reason = $"'{metadataModule?.Id}' wrong version > [{metadata.VersionRange}]",
+                                Reason = $"'{metadataModule.Id}' wrong version > [{metadata.VersionRange}]",
                                 SourceVersion = metadata.VersionRange
                             };
                             continue;
@@ -665,7 +667,7 @@ namespace Bannerlord.ModuleManager
         }
     }
 }
+#nullable restore
 #if !BANNERLORDBUTRMODULEMANAGER_ENABLE_WARNING
 #pragma warning restore
-#nullable restore
 #endif

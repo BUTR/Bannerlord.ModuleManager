@@ -36,8 +36,8 @@
 // SOFTWARE.
 #endregion
 
-#if !BANNERLORDBUTRMODULEMANAGER_ENABLE_WARNING
 #nullable enable
+#if !BANNERLORDBUTRMODULEMANAGER_ENABLE_WARNING
 #pragma warning disable
 #endif
 
@@ -58,7 +58,7 @@ namespace Bannerlord.ModuleManager
         Invalid
     }
 }
+#nullable restore
 #if !BANNERLORDBUTRMODULEMANAGER_ENABLE_WARNING
 #pragma warning restore
-#nullable restore
 #endif
