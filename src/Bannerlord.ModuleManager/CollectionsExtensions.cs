@@ -36,13 +36,16 @@
 // SOFTWARE.
 #endregion
 
+#if !BANNERLORDBUTRMODULEMANAGER_ENABLE_WARNING
+#nullable enable
+#pragma warning disable
+#endif
+
 namespace Bannerlord.ModuleManager
 {
     using global::System;
     using global::System.Collections.Generic;
-    
-#nullable enable
-#pragma warning disable
+
     internal static class CollectionsExtensions
     {
         public static int IndexOf<T>(this IReadOnlyList<T> self, T elementToFind)
@@ -93,7 +96,8 @@ namespace Bannerlord.ModuleManager
             }
         }
     }
-
+}
+#if !BANNERLORDBUTRMODULEMANAGER_ENABLE_WARNING
 #pragma warning restore
 #nullable restore
-}
+#endif

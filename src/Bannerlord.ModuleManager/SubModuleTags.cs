@@ -36,10 +36,13 @@
 // SOFTWARE.
 #endregion
 
-namespace Bannerlord.ModuleManager
-{
+#if !BANNERLORDBUTRMODULEMANAGER_ENABLE_WARNING
 #nullable enable
 #pragma warning disable
+#endif
+
+namespace Bannerlord.ModuleManager
+{
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
     internal
 #else
@@ -55,6 +58,8 @@ namespace Bannerlord.ModuleManager
         PlayerHostedDedicatedServer,
         EngineType
     }
+}
+#if !BANNERLORDBUTRMODULEMANAGER_ENABLE_WARNING
 #pragma warning restore
 #nullable restore
-}
+#endif

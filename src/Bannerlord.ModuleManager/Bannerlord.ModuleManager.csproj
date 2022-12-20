@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <VersionOverride>0</VersionOverride>
     <Version>5.0.$(VersionOverride)</Version>
-    <DefineConstants>$(DefineConstants);BANNERLORDBUTRMODULEMANAGER_PUBLIC;</DefineConstants>
+    <DefineConstants>$(DefineConstants);BANNERLORDBUTRMODULEMANAGER_PUBLIC;BANNERLORDBUTRMODULEMANAGER_ENABLE_WARNING;</DefineConstants>
   </PropertyGroup>
 
   <!--NuGet Package-->
