@@ -10,3 +10,4 @@ coverage
 *.tgz
 *.log
 Bannerlord.ModuleManager.Native.*
+Common.Native.*

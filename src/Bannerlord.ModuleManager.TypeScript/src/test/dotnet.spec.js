@@ -6,8 +6,8 @@ test.beforeEach("init", async (t) => {
   await boot();
 });
 
-test.afterEach.always("cleanup", (t) => {
-  terminate();
+test.afterEach.always("cleanup", async (t) => {
+  await terminate();
 });
 
 test("api available", async (t) => {

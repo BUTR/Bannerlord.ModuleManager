@@ -22,7 +22,7 @@ namespace Bannerlord::ModuleManager {
         return_value_json* __cdecl bmm_get_dependent_modules_of(const param_json* p_source, const param_json* p_module);
         return_value_json* __cdecl bmm_get_dependent_modules_of_with_options(const param_json* p_source, const param_json* p_module, const param_json* p_options);
 
-        return_value_json* __cdecl bmm_validate_module_dependencies_declarations(const param_json* p_target_module);
+        return_value_json* __cdecl bmm_validate_load_order(const param_json* p_source, const param_json* p_target_module);
         return_value_json* __cdecl bmm_validate_module(const void* p_owner, const param_json* p_modules, const param_json* p_target_module
             , return_value_bool* (__cdecl *p_is_selected)(const void* p_owner, const param_string* p_module_id));
 

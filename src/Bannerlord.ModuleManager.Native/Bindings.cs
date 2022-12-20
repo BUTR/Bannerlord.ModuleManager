@@ -38,7 +38,7 @@ namespace Bannerlord.ModuleManager.Native
         private static readonly SourceGenerationContext _customSourceGenerationContext = new(_options);
 
 
-        [UnmanagedCallersOnly(EntryPoint = "sort")]
+        [UnmanagedCallersOnly(EntryPoint = "bmm_sort")]
         public static return_value_json* Sort(param_json* p_source)
         {
             try
@@ -55,7 +55,7 @@ namespace Bannerlord.ModuleManager.Native
             }
         }
 
-        [UnmanagedCallersOnly(EntryPoint = "sort_with_options")]
+        [UnmanagedCallersOnly(EntryPoint = "bmm_sort_with_options")]
         public static return_value_json* SortWithOptions(param_json* p_source, param_json* p_options)
         {
             try
@@ -74,7 +74,7 @@ namespace Bannerlord.ModuleManager.Native
         }
 
 
-        [UnmanagedCallersOnly(EntryPoint = "are_all_dependencies_of_module_present")]
+        [UnmanagedCallersOnly(EntryPoint = "bmm_are_all_dependencies_of_module_present")]
         public static return_value_bool* AreAllDependenciesOfModulePresent(param_json* p_source, param_json* p_module)
         {
             try
@@ -93,7 +93,7 @@ namespace Bannerlord.ModuleManager.Native
         }
 
 
-        [UnmanagedCallersOnly(EntryPoint = "get_dependent_modules_of")]
+        [UnmanagedCallersOnly(EntryPoint = "bmm_get_dependent_modules_of")]
         public static return_value_json* GetDependentModulesOf(param_json* p_source, param_json* p_module)
         {
             try
@@ -111,7 +111,7 @@ namespace Bannerlord.ModuleManager.Native
             }
         }
 
-        [UnmanagedCallersOnly(EntryPoint = "get_dependent_modules_of_with_options")]
+        [UnmanagedCallersOnly(EntryPoint = "bmm_get_dependent_modules_of_with_options")]
         public static return_value_json* GetDependentModulesOfWithOptions(param_json* p_source, param_json* p_module, param_json* p_options)
         {
             try
@@ -131,7 +131,7 @@ namespace Bannerlord.ModuleManager.Native
         }
 
 
-        [UnmanagedCallersOnly(EntryPoint = "validate_module")]
+        [UnmanagedCallersOnly(EntryPoint = "bmm_validate_module")]
         public static return_value_json* ValidateModule(
             void* p_owner,
             param_json* p_modules,
@@ -162,7 +162,7 @@ namespace Bannerlord.ModuleManager.Native
             }
         }
 
-        [UnmanagedCallersOnly(EntryPoint = "validate_load_order")]
+        [UnmanagedCallersOnly(EntryPoint = "bmm_validate_load_order")]
         public static return_value_json* ValidateLoadOrder(param_json* p_modules, param_json* p_target_module)
         {
             try
@@ -181,7 +181,7 @@ namespace Bannerlord.ModuleManager.Native
         }
 
 
-        [UnmanagedCallersOnly(EntryPoint = "enable_module")]
+        [UnmanagedCallersOnly(EntryPoint = "bmm_enable_module")]
         public static return_value_void* EnableModule(
             void* p_owner,
             param_json* p_module,
@@ -239,7 +239,7 @@ namespace Bannerlord.ModuleManager.Native
             }
         }
 
-        [UnmanagedCallersOnly(EntryPoint = "disable_module")]
+        [UnmanagedCallersOnly(EntryPoint = "bmm_disable_module")]
         public static return_value_void* DisableModule(
             void* p_owner,
             param_json* p_module,
@@ -298,7 +298,7 @@ namespace Bannerlord.ModuleManager.Native
         }
 
 
-        [UnmanagedCallersOnly(EntryPoint = "get_module_info")]
+        [UnmanagedCallersOnly(EntryPoint = "bmm_get_module_info")]
         public static return_value_json* GetModuleInfo(param_string* p_xml_content)
         {
             try
@@ -307,6 +307,8 @@ namespace Bannerlord.ModuleManager.Native
                 doc.LoadXml(new string(param_string.ToSpan(p_xml_content)));
 
                 var result = ModuleInfoExtended.FromXml(doc);
+                if (result is null)
+                    return return_value_json.AsError(Utils.Copy(new InvalidOperationException("Invalid xml content!").ToString()));
 
                 return return_value_json.AsValue<ModuleInfoExtended>(result, _customSourceGenerationContext.ModuleInfoExtended);
             }
@@ -316,7 +318,7 @@ namespace Bannerlord.ModuleManager.Native
             }
         }
 
-        [UnmanagedCallersOnly(EntryPoint = "get_sub_module_info")]
+        [UnmanagedCallersOnly(EntryPoint = "bmm_get_sub_module_info")]
         public static return_value_json* GetSubModuleInfo(param_string* p_xml_content)
         {
             try
@@ -325,6 +327,8 @@ namespace Bannerlord.ModuleManager.Native
                 doc.LoadXml(new string(param_string.ToSpan(p_xml_content)));
 
                 var result = SubModuleInfoExtended.FromXml(doc);
+                if (result is null)
+                    return return_value_json.AsError(Utils.Copy(new InvalidOperationException("Invalid xml content!").ToString()));
 
                 return return_value_json.AsValue<SubModuleInfoExtended>(result, _customSourceGenerationContext.SubModuleInfoExtended);
             }
@@ -335,7 +339,7 @@ namespace Bannerlord.ModuleManager.Native
         }
 
 
-        [UnmanagedCallersOnly(EntryPoint = "compare_versions")]
+        [UnmanagedCallersOnly(EntryPoint = "bmm_compare_versions")]
         public static return_value_int32* CompareVersions(param_json* p_x, param_json* p_y)
         {
             try

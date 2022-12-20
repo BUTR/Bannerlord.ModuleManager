@@ -43,10 +43,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BUTR.NativeAOT.Shared.Source" Version="1.0.4">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="BUTR.NativeAOT.Shared.Source" Version="1.0.4" GeneratePathProperty="true" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive"/>
   </ItemGroup>
+
+  <Target Name="CopyHeaders" AfterTargets="AfterBuild">
+    <Copy SourceFiles="$(PkgBUTR_NativeAOT_Shared_Source)\include\butrnativeaotshared\Common.Native.h" DestinationFolder="$(OutputPath)"/>
+  </Target>
 
 </Project>

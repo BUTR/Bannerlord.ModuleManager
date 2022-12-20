@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <LangVersion>10.0</LangVersion>
     <Nullable>enable</Nullable>
     <AssemblyName>BannerlordModuleManager</AssemblyName>
@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Bannerlord.ModuleManager\Bannerlord.ModuleManager.csproj"/>
+    <ProjectReference Include="..\Bannerlord.ModuleManager\Bannerlord.ModuleManager.csproj" />
   </ItemGroup>
 
 </Project>

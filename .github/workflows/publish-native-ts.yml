@@ -37,6 +37,7 @@ jobs:
           cp ./src/Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/native/Bannerlord.ModuleManager.Native.dll ./src/Bannerlord.ModuleManager.Native.TypeScript/
           cp ./src/Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/native/Bannerlord.ModuleManager.Native.lib ./src/Bannerlord.ModuleManager.Native.TypeScript/
           cp ./src/Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/Bannerlord.ModuleManager.Native.h ./src/Bannerlord.ModuleManager.Native.TypeScript/
+          cp ./src/Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/Common.Native.h ./src/Bannerlord.ModuleManager.Native.TypeScript/
 
       - run: |
           cd ./src/Bannerlord.ModuleManager.Native.TypeScript && `

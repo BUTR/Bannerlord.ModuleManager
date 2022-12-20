@@ -257,7 +257,7 @@ namespace Bannerlord.ModuleManager
             foreach (var module in targetModule.DependenciesToLoadDistinct().Where(x => x.LoadType != LoadType.None))
             {
                 var moduleInfo = modules.FirstOrDefault(x => string.Equals(x.Id, module.Id, StringComparison.Ordinal));
-                if (moduleInfo.DependenciesToLoadDistinct().Where(x => x.LoadType != LoadType.None).FirstOrDefault(x => string.Equals(x.Id, targetModule.Id, StringComparison.Ordinal)) is { } metadata)
+                if (moduleInfo?.DependenciesToLoadDistinct().Where(x => x.LoadType != LoadType.None).FirstOrDefault(x => string.Equals(x.Id, targetModule.Id, StringComparison.Ordinal)) is { } metadata)
                 {
                     if (metadata.LoadType == module.LoadType)
                     {
