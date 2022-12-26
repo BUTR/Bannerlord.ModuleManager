@@ -268,7 +268,7 @@ namespace Bannerlord.ModuleManager
                     {
                         yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.DependencyConflict)
                         {
-                            Reason = $"Circular dependencies. {targetModule.Id} and {moduleInfo.Id} depend on each other"
+                            Reason = $"Circular dependencies. '{targetModule.Id}' and '{moduleInfo.Id}' depend on each other"
                         };
                     }
                 }
@@ -294,7 +294,7 @@ namespace Bannerlord.ModuleManager
                     {
                         yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.MissingDependencies)
                         {
-                            Reason = $"Missing {metadata.Id} {metadata.Version}",
+                            Reason = $"Missing '{metadata.Id}' {metadata.Version}",
                             SourceVersion = new(metadata.Version, metadata.Version)
                         };
                     }
@@ -302,7 +302,7 @@ namespace Bannerlord.ModuleManager
                     {
                         yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.MissingDependencies)
                         {
-                            Reason = $"Missing {metadata.Id} {metadata.VersionRange}",
+                            Reason = $"Missing '{metadata.Id}' {metadata.VersionRange}",
                             SourceVersion = metadata.VersionRange
                         };
                     }
@@ -310,7 +310,7 @@ namespace Bannerlord.ModuleManager
                     {
                         yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.MissingDependencies)
                         {
-                            Reason = $"Missing {metadata.Id}"
+                            Reason = $"Missing '{metadata.Id}'"
                         };
                     }
                     yield break;
@@ -474,7 +474,7 @@ namespace Bannerlord.ModuleManager
             {
                 yield return new ModuleIssue(targetModule, targetModule.Id, ModuleIssueType.Missing)
                 {
-                    Reason = $"Missing {targetModule.Id} {targetModule.Version} in modules list",
+                    Reason = $"Missing '{targetModule.Id}' {targetModule.Version} in modules list",
                     SourceVersion = new(targetModule.Version, targetModule.Version)
                 };
                 yield break;
@@ -492,7 +492,7 @@ namespace Bannerlord.ModuleManager
                         {
                             yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.MissingDependencies)
                             {
-                                Reason = $"Missing {metadata.Id} {metadata.Version}",
+                                Reason = $"Missing '{metadata.Id}' {metadata.Version}",
                                 SourceVersion = new(metadata.Version, metadata.Version)
                             };
                         }
@@ -500,7 +500,7 @@ namespace Bannerlord.ModuleManager
                         {
                             yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.MissingDependencies)
                             {
-                                Reason = $"Missing {metadata.Id} {metadata.VersionRange}",
+                                Reason = $"Missing '{metadata.Id}' {metadata.VersionRange}",
                                 SourceVersion = metadata.VersionRange
                             };
                         }
@@ -508,7 +508,7 @@ namespace Bannerlord.ModuleManager
                         {
                             yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.MissingDependencies)
                             {
-                                Reason = $"Missing {metadata.Id}"
+                                Reason = $"Missing '{metadata.Id}'"
                             };
                         }
                     }
@@ -519,7 +519,7 @@ namespace Bannerlord.ModuleManager
                 {
                     yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.DependencyNotLoadedBeforeThis)
                     {
-                        Reason = $"'{targetModule.Id}' should be loaded before {metadata.Id} ({metadataIdx} > {targetModuleIdx})"
+                        Reason = $"'{targetModule.Id}' should be loaded before '{metadata.Id}'"
                     };
                 }
 
@@ -527,7 +527,7 @@ namespace Bannerlord.ModuleManager
                 {
                     yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.DependencyNotLoadedBeforeThis)
                     {
-                        Reason = $"'{targetModule.Id}' should be loaded after {metadata.Id} {metadata.Id} ({metadataIdx} < {targetModuleIdx})"
+                        Reason = $"'{targetModule.Id}' should be loaded after '{metadata.Id}'"
                     };
                 }
             }
