@@ -86,9 +86,13 @@ namespace Bannerlord.ModuleManager
         MissingDependencies,
         DependencyMissingDependencies,
         DependencyValidationError,
-        VersionMismatch,
+        VersionMismatchLessThanOrEqual,
+        VersionMismatchLessThan,
+        VersionMismatchGreaterThan,
         Incompatible,
-        DependencyConflict,
+        DependencyConflictDependentAndIncompatible,
+        DependencyConflictDependentLoadBeforeAndAfter,
+        DependencyConflictCircular,
 
         DependencyNotLoadedBeforeThis,
         DependencyNotLoadedAfterThis,
@@ -232,7 +236,7 @@ namespace Bannerlord.ModuleManager
             // Any Incompatible module is depended on
             foreach (var moduleId in targetModule.DependenciesToLoadDistinct().Select(x => x.Id).Intersect(targetModule.DependenciesIncompatiblesDistinct().Select(x => x.Id)))
             {
-                yield return new ModuleIssue(targetModule, moduleId, ModuleIssueType.DependencyConflict)
+                yield return new ModuleIssue(targetModule, moduleId, ModuleIssueType.DependencyConflictDependentAndIncompatible)
                 {
                     Reason = $"Module '{moduleId}' is both depended upon and marked as incompatible"
                 };
@@ -240,7 +244,7 @@ namespace Bannerlord.ModuleManager
             // Check raw metadata too
             foreach (var dependency in targetModule.DependentModuleMetadatas.Where(x => x.IsIncompatible && x.LoadType != LoadType.None))
             {
-                yield return new ModuleIssue(targetModule, dependency.Id, ModuleIssueType.DependencyConflict)
+                yield return new ModuleIssue(targetModule, dependency.Id, ModuleIssueType.DependencyConflictDependentAndIncompatible)
                 {
                     Reason = $"Module '{dependency.Id}' is both depended upon and marked as incompatible"
                 };
@@ -251,7 +255,7 @@ namespace Bannerlord.ModuleManager
             {
                 if (targetModule.DependenciesLoadAfterThisDistinct().FirstOrDefault(x => string.Equals(x.Id, module.Id, StringComparison.Ordinal)) is { } metadata)
                 {
-                    yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.DependencyConflict)
+                    yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.DependencyConflictDependentLoadBeforeAndAfter)
                     {
                         Reason = $"Module '{metadata.Id}' is both depended upon as LoadBefore and LoadAfter"
                     };
@@ -266,7 +270,7 @@ namespace Bannerlord.ModuleManager
                 {
                     if (metadata.LoadType == module.LoadType)
                     {
-                        yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.DependencyConflict)
+                        yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.DependencyConflictCircular)
                         {
                             Reason = $"Circular dependencies. '{targetModule.Id}' and '{moduleInfo.Id}' depend on each other"
                         };
@@ -372,7 +376,7 @@ namespace Bannerlord.ModuleManager
                     // dependedModuleMetadata.Version > dependedModule.Version
                     if (!metadata.IsOptional && (comparer.Compare(metadata.Version, metadataModule.Version) > 0))
                     {
-                        yield return new ModuleIssue(targetModule, metadataModule.Id, ModuleIssueType.VersionMismatch)
+                        yield return new ModuleIssue(targetModule, metadataModule.Id, ModuleIssueType.VersionMismatchLessThanOrEqual)
                         {
                             Reason = $"'{metadataModule.Id}' wrong version <= {metadata.Version}",
                             SourceVersion = new(metadata.Version, metadata.Version)
@@ -388,7 +392,7 @@ namespace Bannerlord.ModuleManager
                     {
                         if (comparer.Compare(metadata.VersionRange.Min, metadataModule.Version) > 0)
                         {
-                            yield return new ModuleIssue(targetModule, metadataModule.Id, ModuleIssueType.VersionMismatch)
+                            yield return new ModuleIssue(targetModule, metadataModule.Id, ModuleIssueType.VersionMismatchLessThan)
                             {
                                 Reason = $"'{metadataModule?.Id}' wrong version < [{metadata.VersionRange}]",
                                 SourceVersion = metadata.VersionRange
@@ -397,7 +401,7 @@ namespace Bannerlord.ModuleManager
                         }
                         if (comparer.Compare(metadata.VersionRange.Max, metadataModule.Version) < 0)
                         {
-                            yield return new ModuleIssue(targetModule, metadataModule.Id, ModuleIssueType.VersionMismatch)
+                            yield return new ModuleIssue(targetModule, metadataModule.Id, ModuleIssueType.VersionMismatchGreaterThan)
                             {
                                 Reason = $"'{metadataModule.Id}' wrong version > [{metadata.VersionRange}]",
                                 SourceVersion = metadata.VersionRange
@@ -525,7 +529,7 @@ namespace Bannerlord.ModuleManager
 
                 if (metadata.LoadType == LoadType.LoadAfterThis && metadataIdx < targetModuleIdx)
                 {
-                    yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.DependencyNotLoadedBeforeThis)
+                    yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.DependencyNotLoadedAfterThis)
                     {
                         Reason = $"'{targetModule.Id}' should be loaded after '{metadata.Id}'"
                     };
