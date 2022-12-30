@@ -232,7 +232,7 @@ namespace Bannerlord.ModuleManager
             // Any Incompatible module is depended on
             foreach (var moduleId in targetModule.DependenciesToLoadDistinct().Select(x => x.Id).Intersect(targetModule.DependenciesIncompatiblesDistinct().Select(x => x.Id)))
             {
-                yield return new ModuleIssue(targetModule, targetModule.Id, ModuleIssueType.DependencyConflict)
+                yield return new ModuleIssue(targetModule, moduleId, ModuleIssueType.DependencyConflict)
                 {
                     Reason = $"Module '{moduleId}' is both depended upon and marked as incompatible"
                 };
@@ -240,7 +240,7 @@ namespace Bannerlord.ModuleManager
             // Check raw metadata too
             foreach (var dependency in targetModule.DependentModuleMetadatas.Where(x => x.IsIncompatible && x.LoadType != LoadType.None))
             {
-                yield return new ModuleIssue(targetModule, targetModule.Id, ModuleIssueType.DependencyConflict)
+                yield return new ModuleIssue(targetModule, dependency.Id, ModuleIssueType.DependencyConflict)
                 {
                     Reason = $"Module '{dependency.Id}' is both depended upon and marked as incompatible"
                 };
