@@ -12,6 +12,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{2D0B1C0E-1519-47CD-96AA-728A6A1F6BC0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8F14632F-6637-4E24-9C0E-D776516D4AC1}"
+	ProjectSection(SolutionItems) = preProject
+		Bannerlord.ModuleManager.props = Bannerlord.ModuleManager.props
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{8AA497C6-5F1B-45C4-BFBA-C542E134A4B2}"
 	ProjectSection(SolutionItems) = preProject
@@ -21,12 +24,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{16F53495-2C0C-4101-A965-ACB8227DF822}"
 	ProjectSection(SolutionItems) = preProject
 		..\.github\workflows\dotnet-format-daily.yml = ..\.github\workflows\dotnet-format-daily.yml
+		..\.github\workflows\publish-native-ts.yml = ..\.github\workflows\publish-native-ts.yml
 		..\.github\workflows\publish-nuget.yml = ..\.github\workflows\publish-nuget.yml
 		..\.github\workflows\publish-wasm.yml = ..\.github\workflows\publish-wasm.yml
-		..\.github\workflows\publish-native-ts.yml = ..\.github\workflows\publish-native-ts.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bannerlord.ModuleManager.Native", "Bannerlord.ModuleManager.Native\Bannerlord.ModuleManager.Native.csproj", "{F91F0C16-57B3-4BCC-A721-2C86029B2C44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bannerlord.ModuleManager.Native", "Bannerlord.ModuleManager.Native\Bannerlord.ModuleManager.Native.csproj", "{F91F0C16-57B3-4BCC-A721-2C86029B2C44}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
