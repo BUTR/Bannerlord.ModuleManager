@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{2D0B1C0E-1
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8F14632F-6637-4E24-9C0E-D776516D4AC1}"
 	ProjectSection(SolutionItems) = preProject
-		Bannerlord.ModuleManager.props = Bannerlord.ModuleManager.props
+		Bannerlord.ModuleManager.Source.props = Bannerlord.ModuleManager.Source.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{8AA497C6-5F1B-45C4-BFBA-C542E134A4B2}"
