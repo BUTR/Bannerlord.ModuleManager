@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <LangVersion>10.0</LangVersion>
+    <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
@@ -33,21 +33,22 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Bannerlord.ModuleManager\Bannerlord.ModuleManager.csproj"/>
+    <ProjectReference Include="..\Bannerlord.ModuleManager\Bannerlord.ModuleManager.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="Bannerlord.ModuleManager.Native.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="$(PkgBUTR_NativeAOT_Shared_Source)\include\butrnativeaotshared\Common.Native.h" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BUTR.NativeAOT.Shared.Source" Version="1.0.4" GeneratePathProperty="true" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive"/>
+    <PackageReference Include="BUTR.NativeAOT.Shared.Source" Version="1.0.6" GeneratePathProperty="true" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
   </ItemGroup>
 
   <Target Name="CopyHeaders" AfterTargets="AfterBuild">
-    <Copy SourceFiles="$(PkgBUTR_NativeAOT_Shared_Source)\include\butrnativeaotshared\Common.Native.h" DestinationFolder="$(OutputPath)"/>
+    <Copy SourceFiles="$(PkgBUTR_NativeAOT_Shared_Source)\include\butrnativeaotshared\Common.Native.h" DestinationFolder="$(OutputPath)" />
   </Target>
 
 </Project>

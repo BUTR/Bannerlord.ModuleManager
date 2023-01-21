@@ -29,11 +29,7 @@ jobs:
           node-version: 16
           cache: 'npm'
           cache-dependency-path: src/Bannerlord.ModuleManager.TypeScript/package-lock.json
-          
-      - run: dotnet publish -c Release src/Bannerlord.ModuleManager.WASM
-      
-      - run: cp ./src/Bannerlord.ModuleManager.WASM/bin/dotnet.* ./src/Bannerlord.ModuleManager.TypeScript/src/lib
-      
+
       - run: |
           cd ./src/Bannerlord.ModuleManager.TypeScript && \
           npm version $(node -p "require('./package.json').version = \

@@ -23,7 +23,8 @@ namespace Bannerlord.ModuleManager.Native
         private delegate return_value_bool* N_GetDisabled(void* p_owner, param_string* p_module_id);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate return_value_void* N_SetDisabled(void* p_owner, param_string* p_module_id, [MarshalAs(UnmanagedType.U1)] bool value);
-
+        
+        
         private static readonly ApplicationVersionComparer _applicationVersionComparer = new();
         private static readonly JsonSerializerOptions _options = new()
         {
@@ -35,22 +36,25 @@ namespace Bannerlord.ModuleManager.Native
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin)
         };
-        private static readonly SourceGenerationContext _customSourceGenerationContext = new(_options);
+        internal static readonly SourceGenerationContext CustomSourceGenerationContext = new(_options);
 
 
         [UnmanagedCallersOnly(EntryPoint = "bmm_sort")]
         public static return_value_json* Sort(param_json* p_source)
         {
+            Logger.LogInput(p_source);
             try
             {
-                var source = Utils.DeserializeJson<ModuleInfoExtended[]>(p_source, _customSourceGenerationContext.ModuleInfoExtendedArray);
+                var source = Utils.DeserializeJson(p_source, CustomSourceGenerationContext.ModuleInfoExtendedArray);
 
                 var result = ModuleSorter.Sort(source).ToArray();
 
-                return return_value_json.AsValue<ModuleInfoExtended[]>(result, _customSourceGenerationContext.ModuleInfoExtendedArray);
+                Logger.LogOutputManaged(result);
+                return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleInfoExtendedArray);
             }
             catch (Exception e)
             {
+                Logger.LogException(e);
                 return return_value_json.AsError(Utils.Copy(e.ToString()));
             }
         }
@@ -58,17 +62,20 @@ namespace Bannerlord.ModuleManager.Native
         [UnmanagedCallersOnly(EntryPoint = "bmm_sort_with_options")]
         public static return_value_json* SortWithOptions(param_json* p_source, param_json* p_options)
         {
+            Logger.LogInput(p_source, p_options);
             try
             {
-                var source = Utils.DeserializeJson<ModuleInfoExtended[]>(p_source, _customSourceGenerationContext.ModuleInfoExtendedArray);
-                var options = Utils.DeserializeJson<ModuleSorterOptions>(p_options, _customSourceGenerationContext.ModuleSorterOptions);
+                var source = Utils.DeserializeJson(p_source, CustomSourceGenerationContext.ModuleInfoExtendedArray);
+                var options = Utils.DeserializeJson(p_options, CustomSourceGenerationContext.ModuleSorterOptions);
 
                 var result = ModuleSorter.Sort(source, options).ToArray();
 
-                return return_value_json.AsValue<ModuleInfoExtended[]>(result, _customSourceGenerationContext.ModuleInfoExtendedArray);
+                Logger.LogOutputManaged(result);
+                return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleInfoExtendedArray);
             }
             catch (Exception e)
             {
+                Logger.LogException(e);
                 return return_value_json.AsError(Utils.Copy(e.ToString()));
             }
         }
@@ -77,17 +84,20 @@ namespace Bannerlord.ModuleManager.Native
         [UnmanagedCallersOnly(EntryPoint = "bmm_are_all_dependencies_of_module_present")]
         public static return_value_bool* AreAllDependenciesOfModulePresent(param_json* p_source, param_json* p_module)
         {
+            Logger.LogInput(p_source, p_module);
             try
             {
-                var source = Utils.DeserializeJson<ModuleInfoExtended[]>(p_source, _customSourceGenerationContext.ModuleInfoExtendedArray);
-                var module = Utils.DeserializeJson<ModuleInfoExtended>(p_module, _customSourceGenerationContext.ModuleInfoExtended);
+                var source = Utils.DeserializeJson(p_source, CustomSourceGenerationContext.ModuleInfoExtendedArray);
+                var module = Utils.DeserializeJson(p_module, CustomSourceGenerationContext.ModuleInfoExtended);
 
                 var result = ModuleUtilities.AreDependenciesPresent(source, module);
 
+                Logger.LogOutputPrimitive(result);
                 return return_value_bool.AsValue(result);
             }
             catch (Exception e)
             {
+                Logger.LogException(e);
                 return return_value_bool.AsError(Utils.Copy(e.ToString()));
             }
         }
@@ -96,17 +106,20 @@ namespace Bannerlord.ModuleManager.Native
         [UnmanagedCallersOnly(EntryPoint = "bmm_get_dependent_modules_of")]
         public static return_value_json* GetDependentModulesOf(param_json* p_source, param_json* p_module)
         {
+            Logger.LogInput(p_source, p_module);
             try
             {
-                var source = Utils.DeserializeJson<ModuleInfoExtended[]>(p_source, _customSourceGenerationContext.ModuleInfoExtendedArray);
-                var module = Utils.DeserializeJson<ModuleInfoExtended>(p_module, _customSourceGenerationContext.ModuleInfoExtended);
+                var source = Utils.DeserializeJson(p_source, CustomSourceGenerationContext.ModuleInfoExtendedArray);
+                var module = Utils.DeserializeJson(p_module, CustomSourceGenerationContext.ModuleInfoExtended);
 
                 var result = ModuleUtilities.GetDependencies(source, module).ToArray();
 
-                return return_value_json.AsValue<ModuleInfoExtended[]>(result, _customSourceGenerationContext.ModuleInfoExtendedArray);
+                Logger.LogOutputManaged(result);
+                return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleInfoExtendedArray);
             }
             catch (Exception e)
             {
+                Logger.LogException(e);
                 return return_value_json.AsError(Utils.Copy(e.ToString()));
             }
         }
@@ -114,18 +127,21 @@ namespace Bannerlord.ModuleManager.Native
         [UnmanagedCallersOnly(EntryPoint = "bmm_get_dependent_modules_of_with_options")]
         public static return_value_json* GetDependentModulesOfWithOptions(param_json* p_source, param_json* p_module, param_json* p_options)
         {
+            Logger.LogInput(p_source, p_module, p_options);
             try
             {
-                var source = Utils.DeserializeJson<ModuleInfoExtended[]>(p_source, _customSourceGenerationContext.ModuleInfoExtendedArray);
-                var module = Utils.DeserializeJson<ModuleInfoExtended>(p_module, _customSourceGenerationContext.ModuleInfoExtended);
-                var options = Utils.DeserializeJson<ModuleSorterOptions>(p_options, _customSourceGenerationContext.ModuleSorterOptions);
+                var source = Utils.DeserializeJson(p_source, CustomSourceGenerationContext.ModuleInfoExtendedArray);
+                var module = Utils.DeserializeJson(p_module, CustomSourceGenerationContext.ModuleInfoExtended);
+                var options = Utils.DeserializeJson(p_options, CustomSourceGenerationContext.ModuleSorterOptions);
 
                 var result = ModuleUtilities.GetDependencies(source, module, options).ToArray();
 
-                return return_value_json.AsValue<ModuleInfoExtended[]>(result, _customSourceGenerationContext.ModuleInfoExtendedArray);
+                Logger.LogOutputManaged(result);
+                return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleInfoExtendedArray);
             }
             catch (Exception e)
             {
+                Logger.LogException(e);
                 return return_value_json.AsError(Utils.Copy(e.ToString()));
             }
         }
@@ -138,10 +154,11 @@ namespace Bannerlord.ModuleManager.Native
             param_json* p_target_module,
             delegate* unmanaged[Cdecl]<return_value_bool*, void*, param_string*> p_is_selected)
         {
+            Logger.LogInput(p_modules, p_target_module);
             try
             {
-                var modules = Utils.DeserializeJson<ModuleInfoExtended[]>(p_modules, _customSourceGenerationContext.ModuleInfoExtendedArray);
-                var targetModule = Utils.DeserializeJson<ModuleInfoExtended>(p_target_module, _customSourceGenerationContext.ModuleInfoExtended);
+                var modules = Utils.DeserializeJson(p_modules, CustomSourceGenerationContext.ModuleInfoExtendedArray);
+                var targetModule = Utils.DeserializeJson(p_target_module, CustomSourceGenerationContext.ModuleInfoExtended);
 
                 var isSelected = Marshal.GetDelegateForFunctionPointer<N_IsSelected>(new IntPtr(p_is_selected));
 
@@ -154,10 +171,12 @@ namespace Bannerlord.ModuleManager.Native
                     }
                 }).ToArray();
 
-                return return_value_json.AsValue<ModuleIssue[]>(result, _customSourceGenerationContext.ModuleIssueArray);
+                Logger.LogOutputManaged(result);
+                return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleIssueArray);
             }
             catch (Exception e)
             {
+                Logger.LogException(e);
                 return return_value_json.AsError(Utils.Copy(e.ToString()));
             }
         }
@@ -165,17 +184,20 @@ namespace Bannerlord.ModuleManager.Native
         [UnmanagedCallersOnly(EntryPoint = "bmm_validate_load_order")]
         public static return_value_json* ValidateLoadOrder(param_json* p_modules, param_json* p_target_module)
         {
+            Logger.LogInput(p_modules, p_target_module);
             try
             {
-                var modules = Utils.DeserializeJson<ModuleInfoExtended[]>(p_modules, _customSourceGenerationContext.ModuleInfoExtendedArray);
-                var targetModule = Utils.DeserializeJson<ModuleInfoExtended>(p_target_module, _customSourceGenerationContext.ModuleInfoExtended);
+                var modules = Utils.DeserializeJson(p_modules, CustomSourceGenerationContext.ModuleInfoExtendedArray);
+                var targetModule = Utils.DeserializeJson(p_target_module, CustomSourceGenerationContext.ModuleInfoExtended);
 
                 var result = ModuleUtilities.ValidateLoadOrder(modules, targetModule).ToArray();
 
-                return return_value_json.AsValue<ModuleIssue[]>(result, _customSourceGenerationContext.ModuleIssueArray);
+                Logger.LogOutputManaged(result);
+                return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleIssueArray);
             }
             catch (Exception e)
             {
+                Logger.LogException(e);
                 return return_value_json.AsError(Utils.Copy(e.ToString()));
             }
         }
@@ -191,10 +213,11 @@ namespace Bannerlord.ModuleManager.Native
             delegate* unmanaged[Cdecl]<return_value_bool*, void*, param_string*> p_get_disabled,
             delegate* unmanaged[Cdecl]<return_value_void*, void*, param_string*, bool> p_set_disabled)
         {
+            Logger.LogInput(p_module, p_target_module);
             try
             {
-                var modules = Utils.DeserializeJson<ModuleInfoExtended[]>(p_module, _customSourceGenerationContext.ModuleInfoExtendedArray);
-                var targetModule = Utils.DeserializeJson<ModuleInfoExtended>(p_target_module, _customSourceGenerationContext.ModuleInfoExtended);
+                var modules = Utils.DeserializeJson(p_module, CustomSourceGenerationContext.ModuleInfoExtendedArray);
+                var targetModule = Utils.DeserializeJson(p_target_module, CustomSourceGenerationContext.ModuleInfoExtended);
 
                 var getSelected = Marshal.GetDelegateForFunctionPointer<N_GetSelected>(new IntPtr(p_get_selected));
                 var setSelected = Marshal.GetDelegateForFunctionPointer<N_SetSelected>(new IntPtr(p_set_selected));
@@ -203,38 +226,54 @@ namespace Bannerlord.ModuleManager.Native
 
                 ModuleUtilities.EnableModule(modules, targetModule, module =>
                 {
+                    Logger.LogInput();
                     fixed (char* pModuleId = module.Id)
                     {
-                        using var result = SafeStructMallocHandle.Create(getSelected(p_owner, (param_string*) pModuleId));
-                        return result.ValueAsBool();
+                        Logger.LogInputChar(pModuleId);
+
+                        var result = SafeStructMallocHandle.Create(getSelected(p_owner, (param_string*) pModuleId)).ValueAsBool();
+                        Logger.LogOutputPrimitive(result);
+                        return result;
                     }
                 }, (module, value) =>
                 {
+                    Logger.LogInput();
                     fixed (char* pModuleId = module.Id)
                     {
-                        var result = SafeStructMallocHandle.Create(setSelected(p_owner, (param_string*) pModuleId, value));
-                        result.ValueAsVoid();
+                        Logger.LogInputChar(pModuleId);
+
+                        SafeStructMallocHandle.Create(setSelected(p_owner, (param_string*) pModuleId, value)).ValueAsVoid();
+                        Logger.LogOutput();
                     }
                 }, module =>
                 {
+                    Logger.LogInput();
                     fixed (char* pModuleId = module.Id)
                     {
-                        using var result = SafeStructMallocHandle.Create(getDisabled(p_owner, (param_string*) pModuleId));
-                        return result.ValueAsBool();
+                        Logger.LogInputChar(pModuleId);
+
+                        var result = SafeStructMallocHandle.Create(getDisabled(p_owner, (param_string*) pModuleId)).ValueAsBool();
+                        Logger.LogOutputPrimitive(result);
+                        return result;
                     }
                 }, (module, value) =>
                 {
+                    Logger.LogInput();
                     fixed (char* pModuleId = module.Id)
                     {
-                        var result = SafeStructMallocHandle.Create(setDisabled(p_owner, (param_string*) pModuleId, value));
-                        result.ValueAsVoid();
+                        Logger.LogInputChar(pModuleId);
+
+                        SafeStructMallocHandle.Create(setDisabled(p_owner, (param_string*) pModuleId, value)).ValueAsVoid();
+                        Logger.LogOutput();
                     }
                 });
 
+                Logger.LogOutput();
                 return return_value_void.AsValue();
             }
             catch (Exception e)
             {
+                Logger.LogException(e);
                 return return_value_void.AsError(Utils.Copy(e.ToString()));
             }
         }
@@ -249,10 +288,11 @@ namespace Bannerlord.ModuleManager.Native
             delegate* unmanaged[Cdecl]<return_value_bool*, void*, param_string*> p_get_disabled,
             delegate* unmanaged[Cdecl]<return_value_void*, void*, param_string*, bool> p_set_disabled)
         {
+            Logger.LogInput(p_module, p_target_module);
             try
             {
-                var modules = Utils.DeserializeJson<ModuleInfoExtended[]>(p_module, _customSourceGenerationContext.ModuleInfoExtendedArray);
-                var targetModule = Utils.DeserializeJson<ModuleInfoExtended>(p_target_module, _customSourceGenerationContext.ModuleInfoExtended);
+                var modules = Utils.DeserializeJson(p_module, CustomSourceGenerationContext.ModuleInfoExtendedArray);
+                var targetModule = Utils.DeserializeJson(p_target_module, CustomSourceGenerationContext.ModuleInfoExtended);
 
                 var getSelected = Marshal.GetDelegateForFunctionPointer<N_GetSelected>(new IntPtr(p_get_selected));
                 var setSelected = Marshal.GetDelegateForFunctionPointer<N_SetSelected>(new IntPtr(p_set_selected));
@@ -261,38 +301,54 @@ namespace Bannerlord.ModuleManager.Native
 
                 ModuleUtilities.DisableModule(modules, targetModule, module =>
                 {
+                    Logger.LogInput();
                     fixed (char* pModuleId = module.Id)
                     {
-                        using var result = SafeStructMallocHandle.Create(getSelected(p_owner, (param_string*) pModuleId));
-                        return result.ValueAsBool();
+                        Logger.LogInputChar(pModuleId);
+
+                        var result = SafeStructMallocHandle.Create(getSelected(p_owner, (param_string*) pModuleId)).ValueAsBool();
+                        Logger.LogOutputPrimitive(result);
+                        return result;
                     }
                 }, (module, value) =>
                 {
+                    Logger.LogInput();
                     fixed (char* pModuleId = module.Id)
                     {
-                        var result = SafeStructMallocHandle.Create(setSelected(p_owner, (param_string*) pModuleId, value));
-                        result.ValueAsVoid();
+                        Logger.LogInputChar(pModuleId);
+
+                        SafeStructMallocHandle.Create(setSelected(p_owner, (param_string*) pModuleId, value)).ValueAsVoid();
+                        Logger.LogOutput();
                     }
                 }, module =>
                 {
+                    Logger.LogInput();
                     fixed (char* pModuleId = module.Id)
                     {
-                        using var result = SafeStructMallocHandle.Create(getDisabled(p_owner, (param_string*) pModuleId));
-                        return result.ValueAsBool();
+                        Logger.LogInputChar(pModuleId);
+
+                        var result = SafeStructMallocHandle.Create(getDisabled(p_owner, (param_string*) pModuleId)).ValueAsBool();
+                        Logger.LogOutputPrimitive(result);
+                        return result;
                     }
                 }, (module, value) =>
                 {
+                    Logger.LogInput();
                     fixed (char* pModuleId = module.Id)
                     {
-                        var result = SafeStructMallocHandle.Create(setDisabled(p_owner, (param_string*) pModuleId, value));
-                        result.ValueAsVoid();
+                        Logger.LogInputChar(pModuleId);
+
+                        SafeStructMallocHandle.Create(setDisabled(p_owner, (param_string*) pModuleId, value)).ValueAsVoid();
+                        Logger.LogOutput();
                     }
                 });
 
+                Logger.LogOutput();
                 return return_value_void.AsValue();
             }
             catch (Exception e)
             {
+                Logger.LogException(e);
                 return return_value_void.AsError(Utils.Copy(e.ToString()));
             }
         }
@@ -301,6 +357,7 @@ namespace Bannerlord.ModuleManager.Native
         [UnmanagedCallersOnly(EntryPoint = "bmm_get_module_info")]
         public static return_value_json* GetModuleInfo(param_string* p_xml_content)
         {
+            Logger.LogInput(p_xml_content);
             try
             {
                 var doc = new XmlDocument();
@@ -308,12 +365,18 @@ namespace Bannerlord.ModuleManager.Native
 
                 var result = ModuleInfoExtended.FromXml(doc);
                 if (result is null)
-                    return return_value_json.AsError(Utils.Copy(new InvalidOperationException("Invalid xml content!").ToString()));
+                {
+                    var e = new InvalidOperationException("Invalid xml content!");
+                    Logger.LogException(e);
+                    return return_value_json.AsError(Utils.Copy(e.ToString()));
+                }
 
-                return return_value_json.AsValue<ModuleInfoExtended>(result, _customSourceGenerationContext.ModuleInfoExtended);
+                Logger.LogOutputManaged(result);
+                return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleInfoExtended);
             }
             catch (Exception e)
             {
+                Logger.LogException(e);
                 return return_value_json.AsError(Utils.Copy(e.ToString()));
             }
         }
@@ -321,6 +384,7 @@ namespace Bannerlord.ModuleManager.Native
         [UnmanagedCallersOnly(EntryPoint = "bmm_get_sub_module_info")]
         public static return_value_json* GetSubModuleInfo(param_string* p_xml_content)
         {
+            Logger.LogInput(p_xml_content);
             try
             {
                 var doc = new XmlDocument();
@@ -328,12 +392,17 @@ namespace Bannerlord.ModuleManager.Native
 
                 var result = SubModuleInfoExtended.FromXml(doc);
                 if (result is null)
-                    return return_value_json.AsError(Utils.Copy(new InvalidOperationException("Invalid xml content!").ToString()));
+                {
+                    var e = new InvalidOperationException("Invalid xml content!");
+                    Logger.LogException(e);
+                    return return_value_json.AsError(Utils.Copy(e.ToString()));
+                }
 
-                return return_value_json.AsValue<SubModuleInfoExtended>(result, _customSourceGenerationContext.SubModuleInfoExtended);
+                return return_value_json.AsValue(result, CustomSourceGenerationContext.SubModuleInfoExtended);
             }
             catch (Exception e)
             {
+                Logger.LogException(e);
                 return return_value_json.AsError(Utils.Copy(e.ToString()));
             }
         }
@@ -342,19 +411,22 @@ namespace Bannerlord.ModuleManager.Native
         [UnmanagedCallersOnly(EntryPoint = "bmm_compare_versions")]
         public static return_value_int32* CompareVersions(param_json* p_x, param_json* p_y)
         {
+            Logger.LogInput(p_x, p_y);
             try
             {
-                var x = Utils.DeserializeJson<ApplicationVersion>(p_x, _customSourceGenerationContext.ApplicationVersion);
-                var y = Utils.DeserializeJson<ApplicationVersion>(p_y, _customSourceGenerationContext.ApplicationVersion);
+                var x = Utils.DeserializeJson(p_x, CustomSourceGenerationContext.ApplicationVersion);
+                var y = Utils.DeserializeJson(p_y, CustomSourceGenerationContext.ApplicationVersion);
 
                 var result = _applicationVersionComparer.Compare(x, y);
 
+                Logger.LogOutputPrimitive(result);
                 return return_value_int32.AsValue(result);
             }
             catch (Exception e)
             {
+                Logger.LogException(e);
                 return return_value_int32.AsError(Utils.Copy(e.ToString()));
             }
-        }
+        }   
     }
 }

@@ -30,15 +30,7 @@ jobs:
           node-version: 16
           cache: 'npm'
           cache-dependency-path: src/Bannerlord.ModuleManager.Native.TypeScript/package-lock.json
-          
-      - run: dotnet publish -r win-x64 --self-contained -c Release src/Bannerlord.ModuleManager.Native
-      
-      - run: |
-          cp ./src/Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/native/Bannerlord.ModuleManager.Native.dll ./src/Bannerlord.ModuleManager.Native.TypeScript/
-          cp ./src/Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/native/Bannerlord.ModuleManager.Native.lib ./src/Bannerlord.ModuleManager.Native.TypeScript/
-          cp ./src/Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/Bannerlord.ModuleManager.Native.h ./src/Bannerlord.ModuleManager.Native.TypeScript/
-          cp ./src/Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/Common.Native.h ./src/Bannerlord.ModuleManager.Native.TypeScript/
-
+     
       - run: |
           cd ./src/Bannerlord.ModuleManager.Native.TypeScript && `
           npm version $(node -p "require('./package.json').version = `
