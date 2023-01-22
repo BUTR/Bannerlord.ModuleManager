@@ -7,7 +7,7 @@ namespace Bannerlord.ModuleManager.Native.Tests;
 
 public partial class Tests
 {
-    private const string DllPath = "C:/Users/vitalii.mikhailov/Git/Level0/Bannerlord.ModuleManager/src/Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/native/Bannerlord.ModuleManager.Native.dll";
+    private const string DllPath = "../../../../../src/Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/native/Bannerlord.ModuleManager.Native.dll";
     
     [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
     private static unsafe partial return_value_json* bmm_sort(param_json* p_source);
