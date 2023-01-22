@@ -28,7 +28,7 @@ jobs:
         
       - run: dotnet test test/Bannerlord.ModuleManager.Native.Tests
       
-      - uses: actions/setup-node@v3.4.1
+      - uses: actions/setup-node@v3.6.0
         with:
           node-version: 16
           cache: 'npm'
@@ -47,7 +47,7 @@ jobs:
       
       - run: cd ./src/Bannerlord.ModuleManager.Native.TypeScript && npm run test
       
-      - uses: actions/setup-node@v3.4.1
+      - uses: actions/setup-node@v3.6.0
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org/
@@ -57,7 +57,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{secrets.PUBLISH_NPM_TOKEN}}
 
-      - uses: actions/setup-node@v3.4.1
+      - uses: actions/setup-node@v3.6.0
         with:
           node-version: 16
           registry-url: https://npm.pkg.github.com/
