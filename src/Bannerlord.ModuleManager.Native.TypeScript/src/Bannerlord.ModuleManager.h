@@ -211,7 +211,7 @@ namespace Bannerlord::ModuleManager
         return ThrowOrReturnJson(env, result);
     }
 
-    Value EnableModule(const CallbackInfo &info)
+    void EnableModule(const CallbackInfo &info)
     {
         const auto env = info.Env();
         const auto source = JSONStringify(env, info[0].As<Object>());
@@ -229,9 +229,9 @@ namespace Bannerlord::ModuleManager
         const auto data = EnableDisableData{env, fGetSelected, fSetSelected, fGetDisabled, fSetDisabled};
 
         const auto result = Bannerlord::ModuleManager::bmm_enable_module(&data, sourceCopy.get(), targetModuleCopy.get(), getSelected, setSelected, getDisabled, setDisabled);
-        return ThrowOrReturnJson(env, result);
+        return ThrowOrReturn(env, result);
     }
-    Value DisableModule(const CallbackInfo &info)
+    void DisableModule(const CallbackInfo &info)
     {
         const auto env = info.Env();
         const auto source = JSONStringify(env, info[0].As<Object>());
@@ -249,7 +249,7 @@ namespace Bannerlord::ModuleManager
         const auto data = EnableDisableData{env, FGetSelected, FSetSelected, FGetDisabled, FSetDisabled};
 
         const auto result = Bannerlord::ModuleManager::bmm_disable_module(&data, sourceCopy.get(), targetModuleCopy.get(), getSelected, setSelected, getDisabled, setDisabled);
-        return ThrowOrReturnJson(env, result);
+        return ThrowOrReturn(env, result);
     }
 
     Value GetModuleInfo(const CallbackInfo &info)

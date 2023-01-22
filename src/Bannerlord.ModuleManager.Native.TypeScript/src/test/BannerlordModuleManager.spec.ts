@@ -12,13 +12,13 @@ test('sort', async (t) => {
     t.fail();
     return;
   }
-  const uiExtenderEx = blmmanager.getModuleInfo(uiExtenderExXml);
-  if (uiExtenderEx === null || uiExtenderEx === undefined) {
+  const harmony = blmmanager.getModuleInfo(harmonyXml);
+  if (harmony === null || harmony === undefined) {
     t.fail();
     return;
   }
-  const harmony = blmmanager.getModuleInfo(harmonyXml);
-  if (harmony === null || harmony === undefined) {
+  const uiExtenderEx = blmmanager.getModuleInfo(uiExtenderExXml);
+  if (uiExtenderEx === null || uiExtenderEx === undefined) {
     t.fail();
     return;
   }
@@ -52,8 +52,8 @@ test('sort', async (t) => {
       return false;
     }
   };
-  const validationResult4 = blmmanager.validateModule(unsortedInvalid, uiExtenderEx, validationManager);
-  if (validationResult4 === null || !Array.isArray(validationResult4)) {
+  const validationResult1 = blmmanager.validateModule(unsortedInvalid, uiExtenderEx, validationManager);
+  if (validationResult1 === null || !Array.isArray(validationResult1)) {
     t.fail();
     return;
   }
@@ -62,8 +62,8 @@ test('sort', async (t) => {
     return;
   }
 
-  const validationResult5 = blmmanager.validateModule(unsortedInvalid, invalid, validationManager);
-  if (validationResult5 === null || !Array.isArray(validationResult5) || validationResult5.length != 1) {
+  const validationResult2 = blmmanager.validateModule(unsortedInvalid, invalid, validationManager);
+  if (validationResult2 === null || !Array.isArray(validationResult2) || validationResult2.length != 1) {
     t.fail();
     return;
   }
