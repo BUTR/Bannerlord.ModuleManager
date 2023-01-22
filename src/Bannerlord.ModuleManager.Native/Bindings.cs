@@ -23,8 +23,8 @@ namespace Bannerlord.ModuleManager.Native
         private delegate return_value_bool* N_GetDisabled(void* p_owner, param_string* p_module_id);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate return_value_void* N_SetDisabled(void* p_owner, param_string* p_module_id, [MarshalAs(UnmanagedType.U1)] bool value);
-        
-        
+
+
         private static readonly ApplicationVersionComparer _applicationVersionComparer = new();
         private static readonly JsonSerializerOptions _options = new()
         {
@@ -427,6 +427,6 @@ namespace Bannerlord.ModuleManager.Native
                 Logger.LogException(e);
                 return return_value_int32.AsError(Utils.Copy(e.ToString()));
             }
-        }   
+        }
     }
 }
