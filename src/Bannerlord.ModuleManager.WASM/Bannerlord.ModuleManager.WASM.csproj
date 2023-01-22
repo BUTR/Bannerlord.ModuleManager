@@ -1,18 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <LangVersion>10.0</LangVersion>
-    <Nullable>enable</Nullable>
-    <AssemblyName>BannerlordModuleManager</AssemblyName>
+    <TargetFramework>net7.0</TargetFramework>
+    <RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
+    <WasmMainJSPath>main.mjs</WasmMainJSPath>
+    <OutputType>Exe</OutputType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="DotNetJS" Version="0.21.0" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Bannerlord.ModuleManager\Bannerlord.ModuleManager.csproj" />
   </ItemGroup>
-
 </Project>

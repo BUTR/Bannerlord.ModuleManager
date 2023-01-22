@@ -33,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bannerlord.ModuleManager.Na
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bannerlord.ModuleManager.Native.Tests", "..\test\Bannerlord.ModuleManager.Native.Tests\Bannerlord.ModuleManager.Native.Tests.csproj", "{74074D6D-EF2B-4575-9A1F-839EEEBEDAE4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bannerlord.ModuleManager.DotNetJS", "Bannerlord.ModuleManager.DotNetJS\Bannerlord.ModuleManager.DotNetJS.csproj", "{3F49CC2C-D5A7-4C5F-A4C3-2F98CBF6461B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{74074D6D-EF2B-4575-9A1F-839EEEBEDAE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74074D6D-EF2B-4575-9A1F-839EEEBEDAE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74074D6D-EF2B-4575-9A1F-839EEEBEDAE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F49CC2C-D5A7-4C5F-A4C3-2F98CBF6461B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F49CC2C-D5A7-4C5F-A4C3-2F98CBF6461B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F49CC2C-D5A7-4C5F-A4C3-2F98CBF6461B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F49CC2C-D5A7-4C5F-A4C3-2F98CBF6461B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -72,6 +78,7 @@ Global
 		{16F53495-2C0C-4101-A965-ACB8227DF822} = {2D0B1C0E-1519-47CD-96AA-728A6A1F6BC0}
 		{F91F0C16-57B3-4BCC-A721-2C86029B2C44} = {8F14632F-6637-4E24-9C0E-D776516D4AC1}
 		{74074D6D-EF2B-4575-9A1F-839EEEBEDAE4} = {8F14632F-6637-4E24-9C0E-D776516D4AC1}
+		{3F49CC2C-D5A7-4C5F-A4C3-2F98CBF6461B} = {8F14632F-6637-4E24-9C0E-D776516D4AC1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5E629D17-E1D7-4E87-88BE-55D34F95D796}

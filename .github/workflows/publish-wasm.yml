@@ -6,7 +6,7 @@ on:
       - master
     paths:
       - '.github/workflows/publish-wasm.yml'
-      - 'src/Bannerlord.ModuleManager.WASM/**.*'
+      - 'src/Bannerlord.ModuleManager.DotNetJS/**.*'
       - 'src/Bannerlord.ModuleManager.TypeScript/**.*'
   workflow_dispatch:
 
