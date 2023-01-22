@@ -12,7 +12,7 @@
 
     <ItemGroup>
         <PackageReference Include="Bannerlord.ModuleManager.Source" Version="5.0.170" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
-        <PackageReference Include="BUTR.NativeAOT.Shared.Source" Version="1.0.6"  PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
+        <PackageReference Include="BUTR.NativeAOT.Shared.Source" Version="1.0.7"  PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
         <PackageReference Include="NUnit" Version="3.13.3" />
         <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
