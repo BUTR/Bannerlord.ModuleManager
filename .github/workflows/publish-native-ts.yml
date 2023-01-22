@@ -23,6 +23,10 @@ jobs:
         uses: actions/setup-dotnet@master
         with:
           dotnet-version: 7.x.x
+
+      - run: dotnet publish -r win-x64 --self-contained -c Release src/Bannerlord.ModuleManager.Native
+        
+      - run: dotnet test test/Bannerlord.ModuleManager.Native.Tests
       
       - uses: actions/setup-node@v3.4.1
         with:

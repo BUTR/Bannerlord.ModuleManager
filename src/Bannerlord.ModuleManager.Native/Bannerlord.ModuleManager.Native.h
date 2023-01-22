@@ -26,12 +26,12 @@ namespace Bannerlord::ModuleManager {
         return_value_json* __cdecl bmm_validate_module(const void* p_owner, const param_json* p_modules, const param_json* p_target_module
             , return_value_bool* (__cdecl *p_is_selected)(const void* p_owner, const param_string* p_module_id));
 
-        return_value_json* __cdecl bmm_enable_module(const void* p_owner, const param_json* p_modules, const param_json* p_target_module
+        return_value_void* __cdecl bmm_enable_module(const void* p_owner, const param_json* p_modules, const param_json* p_target_module
             , return_value_bool* (__cdecl *p_get_selected)(const void* p_owner, const param_string* p_module_id)
             , return_value_void* (__cdecl *p_set_selected)(const void* p_owner, const param_string* p_module_id, bool value)
             , return_value_bool* (__cdecl *p_get_disabled)(const void* p_owner, const param_string* p_module_id)
             , return_value_void* (__cdecl *p_set_disabled)(const void* p_owner, const param_string* p_module_id, bool value));
-        return_value_json* __cdecl bmm_disable_module(const void* p_owner, const param_json* p_modules, const param_json* p_target_module
+        return_value_void* __cdecl bmm_disable_module(const void* p_owner, const param_json* p_modules, const param_json* p_target_module
             , return_value_bool* (__cdecl *p_get_selected)(const void* p_owner, const param_string* p_module_id)
             , return_value_void* (__cdecl *p_set_selected)(const void* p_owner, const param_string* p_module_id, bool value)
             , return_value_bool* (__cdecl *p_get_disabled)(const void* p_owner, const param_string* p_module_id)
