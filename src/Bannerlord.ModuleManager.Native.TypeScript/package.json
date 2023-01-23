@@ -28,6 +28,8 @@
     "native:4": "copyfiles -f ../Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/Bannerlord.ModuleManager.Native.h .",
     "preinstall" : "npm run native:0 && npm run native:1 && npm run native:2 && npm run native:3 && npm run native:4",
     "build": "run-s native:* && run-s build:*",
+    "build-ts": "run-s build:*",
+    "build-native": "run-s native:*",
     "build:bindings": "node-gyp rebuild",
     "build:main": "tsc -p tsconfig.json",
     "build:module": "tsc -p tsconfig.module.json",
