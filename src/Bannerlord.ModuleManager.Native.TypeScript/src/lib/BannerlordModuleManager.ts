@@ -1,72 +1,55 @@
-import {
-    ApplicationVersion,
-    IBannerlordModuleManager,
-    IEnableDisableManager,
-    IValidationManager,
-    ModuleInfoExtended,
-    ModuleIssue,
-    ModuleSorterOptions,
-    SubModuleInfoExtended
-} from "./types";
+import * as types from "./types";
 
-const blmanager: IBannerlordModuleManager = require('./../../blmanager.node');
+const blmanager: types.IBannerlordModuleManager = require('./../../blmanager.node');
 
-export class BannerlordModuleManager implements IBannerlordModuleManager {
-    static async createAsync(): Promise<BannerlordModuleManager> {
-        const lib = new BannerlordModuleManager();
-        return lib;
-    }
-
+export class BannerlordModuleManager {
     private constructor() { }
 
-    sort(unsorted: ModuleInfoExtended[]): ModuleInfoExtended[] {
+    static sort(unsorted: types.ModuleInfoExtended[]): types.ModuleInfoExtended[] {
         return blmanager.sort(unsorted);
     }
 
-    sortWithOptions(unsorted: ModuleInfoExtended[], options: ModuleSorterOptions): ModuleInfoExtended[] {
+    static sortWithOptions(unsorted: types.ModuleInfoExtended[], options: types.ModuleSorterOptions): types.ModuleInfoExtended[] {
         return blmanager.sortWithOptions(unsorted, options);
     }
 
-    areAllDependenciesOfModulePresent(unsorted: ModuleInfoExtended[], targetModule: ModuleInfoExtended): boolean {
-        return blmanager.areAllDependenciesOfModulePresent(unsorted, targetModule);
+    static areAllDependenciesOfModulePresent(unsorted: types.ModuleInfoExtended[], module: types.ModuleInfoExtended): boolean {
+        return blmanager.areAllDependenciesOfModulePresent(unsorted, module);
     }
 
-    getDependentModulesOf(source: ModuleInfoExtended[], targetModule: ModuleInfoExtended): ModuleInfoExtended[] {
-        return blmanager.getDependentModulesOf(source, targetModule);
+    static getDependentModulesOf(source: types.ModuleInfoExtended[], module: types.ModuleInfoExtended): types.ModuleInfoExtended[] {
+        return blmanager.getDependentModulesOf(source, module);
     }
 
-    getDependentModulesOfWithOptions(source: ModuleInfoExtended[], targetModule: ModuleInfoExtended, options: ModuleSorterOptions): ModuleInfoExtended[] {
-        return blmanager.getDependentModulesOfWithOptions(source, targetModule, options);
+    static getDependentModulesOfWithOptions(source: types.ModuleInfoExtended[], module: types.ModuleInfoExtended, options: types.ModuleSorterOptions): types.ModuleInfoExtended[] {
+        return blmanager.getDependentModulesOfWithOptions(source, module, options);
     }
 
-    validateLoadOrder(source: ModuleInfoExtended[], targetModule: ModuleInfoExtended): ModuleIssue[] {
+    static validateLoadOrder(source: types.ModuleInfoExtended[], targetModule: types.ModuleInfoExtended): types.ModuleIssue[] {
         return blmanager.validateLoadOrder(source, targetModule);
     }
 
-    validateModule(modules: ModuleInfoExtended[], targetModule: ModuleInfoExtended, manager: IValidationManager): ModuleIssue[] {
+    static validateModule(modules: types.ModuleInfoExtended[], targetModule: types.ModuleInfoExtended, manager: types.IValidationManager): types.ModuleIssue[] {
         return blmanager.validateModule(modules, targetModule, manager);
     }
 
-    enableModule(modules: ModuleInfoExtended[], targetModule: ModuleInfoExtended, manager: IEnableDisableManager): void {
-        blmanager.enableModule(modules, targetModule, manager);
+    static enableModule(modules: types.ModuleInfoExtended[], targetModule: types.ModuleInfoExtended, manager: types.IEnableDisableManager): void {
+        return blmanager.enableModule(modules, targetModule, manager);
     }
 
-    disableModule(modules: ModuleInfoExtended[], targetModule: ModuleInfoExtended, manager: IEnableDisableManager): void {
-        blmanager.disableModule(modules, targetModule, manager);
+    static disableModule(modules: types.ModuleInfoExtended[], targetModule: types.ModuleInfoExtended, manager: types.IEnableDisableManager): void {
+        return blmanager.disableModule(modules, targetModule, manager);
     }
 
-    getModuleInfo(xml: string): ModuleInfoExtended | undefined {
+    static getModuleInfo(xml: string): types.ModuleInfoExtended | undefined {
         return blmanager.getModuleInfo(xml);
     }
 
-    getSubModuleInfo(xml: string): SubModuleInfoExtended | undefined {
+    static getSubModuleInfo(xml: string): types.SubModuleInfoExtended | undefined {
         return blmanager.getSubModuleInfo(xml);
     }
 
-    compareVersions(x: ApplicationVersion, y: ApplicationVersion): number {
+    static compareVersions(x: types.ApplicationVersion, y: types.ApplicationVersion): number {
         return blmanager.compareVersions(x, y);
-    }
-
-    async dispose(): Promise<void> {
     }
 }

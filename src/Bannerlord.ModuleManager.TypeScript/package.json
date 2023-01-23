@@ -27,6 +27,8 @@
     "native:3": "copyfiles -f ../Bannerlord.ModuleManager.DotNetJS/bin/dotnet.d.ts src/lib",
     "preinstall": "npm run native:0 && npm run native:1 && npm run native:2 && npm run native:3",
     "build": "run-s native:* && run-p build:*",
+    "build-ts": "run-p build:*",
+    "build-native": "run-s native:*",
     "build:main": "tsc -p tsconfig.json && copyfiles -f src/lib/dotnet.d.ts build/main/lib/",
     "build:module": "tsc -p tsconfig.module.json && copyfiles -f src/lib/dotnet.d.ts build/module/lib/",
     "test": "run-s build test:*",

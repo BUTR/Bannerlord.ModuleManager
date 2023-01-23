@@ -105,4 +105,6 @@ test('sort', async (t) => {
   t.deepEqual(sorted[1].id, uiExtenderEx.id);
 
   await blmmanager.dispose();
+
+  t.pass();
 });

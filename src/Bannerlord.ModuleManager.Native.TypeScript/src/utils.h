@@ -1,5 +1,5 @@
-#ifndef VE_UTILS_GUARD_H_
-#define VE_UTILS_GUARD_H_
+#ifndef BMM_UTILS_GUARD_H_
+#define BMM_UTILS_GUARD_H_
 
 #include <Common.Native.h>
 #include <napi.h>

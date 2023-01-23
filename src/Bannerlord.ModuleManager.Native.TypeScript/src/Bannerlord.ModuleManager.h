@@ -1,7 +1,8 @@
-#ifndef VE_BLMANAGER_GUARD_H_
-#define VE_BLMANAGER_GUARD_H_
+#ifndef BMM_BLMANAGER_GUARD_H_
+#define BMM_BLMANAGER_GUARD_H_
 
 #include "utils.h"
+#include "Common.Native.h"
 #include "Bannerlord.ModuleManager.Native.h"
 #include <codecvt>
 
@@ -25,7 +26,7 @@ namespace Bannerlord::ModuleManager
             const auto data = (ValidationData *)p_owner;
             const auto env = data->Env;
 
-            const auto moduleId = String::New(env, p_module_id);
+            const auto moduleId = String::New(env, Copy(p_module_id));
 
             return Create(return_value_bool{nullptr, data->FIsSelected({moduleId}).As<Boolean>()});
         }
@@ -51,7 +52,7 @@ namespace Bannerlord::ModuleManager
             const auto data = (EnableDisableData *)p_owner;
             const auto env = data->Env;
 
-            const auto moduleId = String::New(env, p_module_id);
+            const auto moduleId = String::New(env, Copy(p_module_id));
 
             return Create(return_value_bool{nullptr, data->FGetSelected({moduleId}).As<Boolean>()});
         }
@@ -68,7 +69,7 @@ namespace Bannerlord::ModuleManager
             const auto data = (EnableDisableData *)p_owner;
             const auto env = data->Env;
 
-            const auto moduleId = String::New(env, p_module_id);
+            const auto moduleId = String::New(env, Copy(p_module_id));
             const auto value = Boolean::New(env, value_raw);
 
             data->FSetSelected({moduleId, value});
@@ -87,7 +88,7 @@ namespace Bannerlord::ModuleManager
             const auto data = (EnableDisableData *)p_owner;
             const auto env = data->Env;
 
-            const auto moduleId = String::New(env, p_module_id);
+            const auto moduleId = String::New(env, Copy(p_module_id));
 
             return Create(return_value_bool{nullptr, data->FGetDisabled({moduleId}).As<Boolean>()});
         }
@@ -104,7 +105,7 @@ namespace Bannerlord::ModuleManager
             const auto data = (EnableDisableData *)p_owner;
             const auto env = data->Env;
 
-            const auto moduleId = String::New(env, p_module_id);
+            const auto moduleId = String::New(env, Copy(p_module_id));
             const auto value = Boolean::New(env, value_raw);
 
             data->FSetDisabled({moduleId, value});
@@ -229,7 +230,7 @@ namespace Bannerlord::ModuleManager
         const auto data = EnableDisableData{env, fGetSelected, fSetSelected, fGetDisabled, fSetDisabled};
 
         const auto result = Bannerlord::ModuleManager::bmm_enable_module(&data, sourceCopy.get(), targetModuleCopy.get(), getSelected, setSelected, getDisabled, setDisabled);
-        return ThrowOrReturn(env, result);
+        ThrowOrReturn(env, result);
     }
     void DisableModule(const CallbackInfo &info)
     {
@@ -249,7 +250,7 @@ namespace Bannerlord::ModuleManager
         const auto data = EnableDisableData{env, FGetSelected, FSetSelected, FGetDisabled, FSetDisabled};
 
         const auto result = Bannerlord::ModuleManager::bmm_disable_module(&data, sourceCopy.get(), targetModuleCopy.get(), getSelected, setSelected, getDisabled, setDisabled);
-        return ThrowOrReturn(env, result);
+        ThrowOrReturn(env, result);
     }
 
     Value GetModuleInfo(const CallbackInfo &info)
