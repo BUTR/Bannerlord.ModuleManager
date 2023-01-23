@@ -9,27 +9,21 @@
 
   <PropertyGroup>
     <PublishAot>true</PublishAot>
-    <TrimMode>link</TrimMode>
-    <InvariantGlobalization>true</InvariantGlobalization>
-    <UseSystemResourceKeys>true</UseSystemResourceKeys>
-    <StripSymbols>true</StripSymbols>
+    <TrimMode>full</TrimMode>
     <DebugType>none</DebugType>
-    <GenerateRuntimeConfigurationFiles>false</GenerateRuntimeConfigurationFiles>
-
-    <IlcTrimMetadata>true</IlcTrimMetadata>
-    <IlcOptimizationPreference>Size</IlcOptimizationPreference>
-    <IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
-    <IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
-    <!--<IlcDisableUnhandledExceptionExperience>true</IlcDisableUnhandledExceptionExperience>-->
-    <!--<IlcInvariantGlobalization>true</IlcInvariantGlobalization>-->
-    <!--<IlcDisableReflection>true</IlcDisableReflection>-->
-
+    <NativeLib>Shared</NativeLib>
+  </PropertyGroup>
+  <PropertyGroup>
     <DebuggerSupport>false</DebuggerSupport>
-    <!--<EnableUnsafeBinaryFormatterSerialization>false</EnableUnsafeBinaryFormatterSerialization>-->
-    <!--<EnableUnsafeUTF7Encoding>false</EnableUnsafeUTF7Encoding>-->
+    <AutoreleasePoolSupport>false</AutoreleasePoolSupport>
+    <EnableUnsafeUTF7Encoding>false</EnableUnsafeUTF7Encoding>
     <EventSourceSupport>false</EventSourceSupport>
     <HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
-    <MetadataUpdaterSupport>false</MetadataUpdaterSupport>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <UseNativeHttpHandler>true</UseNativeHttpHandler>
+    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+
+    <IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
   </PropertyGroup>
 
   <ItemGroup>
