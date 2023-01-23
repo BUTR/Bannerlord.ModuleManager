@@ -21,12 +21,12 @@
     "url": "https://github.com/BUTR/Bannerlord.ModuleManager/issues"
   },
   "scripts": {
+    "install": "",
     "native:0": "dotnet publish -r win-x64 --self-contained -c Release ../Bannerlord.ModuleManager.Native",
     "native:1": "copyfiles -f ../Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/native/Bannerlord.ModuleManager.Native.dll .",
     "native:2": "copyfiles -f ../Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/native/Bannerlord.ModuleManager.Native.lib .",
     "native:3": "copyfiles -f ../Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/Common.Native.h .",
     "native:4": "copyfiles -f ../Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/Bannerlord.ModuleManager.Native.h .",
-    "preinstall" : "npm run native:0 && npm run native:1 && npm run native:2 && npm run native:3 && npm run native:4",
     "build": "run-s native:* && run-p build:*",
     "build-ts": "run-p build:*",
     "build-native": "run-s native:*",

@@ -21,11 +21,11 @@
     "url": "https://github.com/BUTR/Bannerlord.ModuleManager/issues"
   },
   "scripts": {
+    "install": "",
     "native:0": "dotnet publish -c Release ../Bannerlord.ModuleManager.DotNetJS",
     "native:1": "copyfiles -f ../Bannerlord.ModuleManager.DotNetJS/bin/dotnet.js src/lib",
     "native:2": "copyfiles -f ../Bannerlord.ModuleManager.DotNetJS/bin/dotnet.js.map src/lib",
     "native:3": "copyfiles -f ../Bannerlord.ModuleManager.DotNetJS/bin/dotnet.d.ts src/lib",
-    "preinstall": "npm run native:0 && npm run native:1 && npm run native:2 && npm run native:3",
     "build": "run-s native:* && run-p build:*",
     "build-ts": "run-p build:*",
     "build-native": "run-s native:*",
