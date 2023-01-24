@@ -21,7 +21,6 @@
     "url": "https://github.com/BUTR/Bannerlord.ModuleManager/issues"
   },
   "scripts": {
-    "install": "",
     "native:0": "dotnet publish -c Release ../Bannerlord.ModuleManager.DotNetJS",
     "native:1": "copyfiles -f ../Bannerlord.ModuleManager.DotNetJS/bin/dotnet.js src/lib",
     "native:2": "copyfiles -f ../Bannerlord.ModuleManager.DotNetJS/bin/dotnet.js.map src/lib",
