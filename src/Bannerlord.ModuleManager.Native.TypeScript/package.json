@@ -21,7 +21,7 @@
     "url": "https://github.com/BUTR/Bannerlord.ModuleManager/issues"
   },
   "scripts": {
-    "preinstall": "",
+    "install": "echo",
     "native:0": "dotnet publish -r win-x64 --self-contained -c Release ../Bannerlord.ModuleManager.Native",
     "native:1": "copyfiles -f ../Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/native/Bannerlord.ModuleManager.Native.dll .",
     "native:2": "copyfiles -f ../Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/native/Bannerlord.ModuleManager.Native.lib .",
