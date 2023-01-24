@@ -87,4 +87,15 @@ const harmonyXml = `<?xml version="1.0" encoding="UTF-8"?>
   </SubModules>
 </Module>`;
 
-module.exports = { harmonyXml, uiExtenderExXml, invalidXml }
+const harmonySubModuleXml = `<SubModule>
+  <Name value="Harmony" />
+  <DLLName value="Bannerlord.Harmony.dll" />
+  <SubModuleClassType value="Bannerlord.Harmony.SubModule" />
+  <!-- For compatibility with Legacy versions-->
+  <Tags>
+    <Tag key="DedicatedServerType" value="none" />
+    <Tag key="IsNoRenderModeElement" value="false" />
+  </Tags>
+</SubModule>`;
+
+module.exports = { harmonyXml, uiExtenderExXml, invalidXml, harmonySubModuleXml }

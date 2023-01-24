@@ -48,8 +48,8 @@
     "cov:send": "run-s cov:lcov && codecov",
     "cov:check": "nyc report && nyc check-coverage --lines 100 --functions 100 --branches 100",
     "doc": "run-s doc:html && open-cli dist/docs/index.html",
-    "doc:html": "typedoc src/ --exclude **/*.spec.* --exclude **/_*.* --out dist/docs",
-    "doc:json": "typedoc src/ --exclude **/*.spec.* --exclude **/_*.* --json dist/docs/typedoc.json"
+    "doc:html": "typedoc --entryPoints src/lib/index.ts --exclude **/*.spec.* --exclude **/_*.* --out dist/docs",
+    "doc:json": "typedoc --entryPoints src/lib/index.ts --exclude **/*.spec.* --exclude **/_*.* --json dist/docs/typedoc.json"
   },
   "engines": {
     "node": ">=10"
@@ -58,10 +58,10 @@
     "@ava/typescript": "^1.1.1",
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@types/node": "^18.7.9",
-    "ava": "^3.15.0",
+    "ava": "^4.3.3",
     "codecov": "^3.8.2",
     "copyfiles": "^2.4.1",
-    "cspell": "^5.13.1",
+    "cspell": "^6.19.2",
     "node-addon-api": "^5.0.0",
     "node-gyp": "^9.1.0",
     "npm-run-all": "^4.1.5",

@@ -40,13 +40,13 @@ namespace Bannerlord.ModuleManager.WASM
             return ToJson(ModuleSorter.Sort(AsModuleInfoExtendedArray(source)).ToArray(), CustomSourceGenerationContext.ModuleInfoExtendedArray);
         }
 
-        
+
         [JSExport]
         [return: JSMarshalAs<JSType.String>]
         public static string SortWithOptions([JSMarshalAs<JSType.String>] string source, [JSMarshalAs<JSType.String>] string options) =>
             ToJson(ModuleSorter.Sort(AsModuleInfoExtendedArray(source), AsModuleSorterOptions(options)).ToArray(), CustomSourceGenerationContext.ModuleInfoExtendedArray);
 
-        
+
         [JSExport]
         [return: JSMarshalAs<JSType.Boolean>]
         public static bool AreAllDependenciesOfModulePresent([JSMarshalAs<JSType.String>] string source, [JSMarshalAs<JSType.String>] string module) =>

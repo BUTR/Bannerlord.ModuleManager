@@ -4,6 +4,7 @@ using Microsoft.JSInterop;
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Xml;
 
 [assembly: JSNamespace("Bannerlord.ModuleManager.WASM", "Bannerlord.ModuleManager")]
@@ -12,6 +13,11 @@ namespace Bannerlord.ModuleManager.WASM
 {
     public static class Program
     {
+        static Program()
+        {
+            JS.Runtime.ConfigureJson(options => options.Converters.Add(new JsonStringEnumConverter()));
+        }
+
         private static readonly ApplicationVersionComparer _applicationVersionComparer = new();
 
         public static void Main() { }

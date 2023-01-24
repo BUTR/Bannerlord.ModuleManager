@@ -31,51 +31,51 @@ export class BannerlordModuleManager {
     }
 
     sort(unsorted: ModuleInfoExtended[]): ModuleInfoExtended[] {
-        return dotnet.Bannerlord.ModuleManager.Sort(unsorted);
+        return dotnet.Bannerlord.ModuleManager.sort(unsorted);
     }
 
     sortWithOptions(unsorted: ModuleInfoExtended[], options: ModuleSorterOptions): ModuleInfoExtended[] {
-        return dotnet.Bannerlord.ModuleManager.SortWithOptions(unsorted, options);
+        return dotnet.Bannerlord.ModuleManager.sortWithOptions(unsorted, options);
     }
 
     areAllDependenciesOfModulePresent(unsorted: ModuleInfoExtended[], module: ModuleInfoExtended): boolean {
-        return dotnet.Bannerlord.ModuleManager.AreAllDependenciesOfModulePresent(unsorted, module);
+        return dotnet.Bannerlord.ModuleManager.areAllDependenciesOfModulePresent(unsorted, module);
     }
 
     getDependentModulesOf(source: ModuleInfoExtended[], module: ModuleInfoExtended): ModuleInfoExtended[] {
-        return dotnet.Bannerlord.ModuleManager.GetDependentModulesOf(source, module);
+        return dotnet.Bannerlord.ModuleManager.getDependentModulesOf(source, module);
     }
 
     getDependentModulesOfWithOptions(source: ModuleInfoExtended[], module: ModuleInfoExtended, options: ModuleSorterOptions): ModuleInfoExtended[] {
-        return dotnet.Bannerlord.ModuleManager.GetDependentModulesOfWithOptions(source, module, options);
+        return dotnet.Bannerlord.ModuleManager.getDependentModulesOfWithOptions(source, module, options);
     }
 
-    ValidateLoadOrder(source: ModuleInfoExtended[], module: ModuleInfoExtended): ModuleIssue[] {
-        return dotnet.Bannerlord.ModuleManager.ValidateLoadOrder(source, module);
+    validateLoadOrder(source: ModuleInfoExtended[], module: ModuleInfoExtended): ModuleIssue[] {
+        return dotnet.Bannerlord.ModuleManager.validateLoadOrder(source, module);
     }
 
     validateModule(modules: ModuleInfoExtended[], targetModule: ModuleInfoExtended, manager: IValidationManager): ModuleIssue[] {
-        return dotnet.Bannerlord.ModuleManager.ValidateModule(modules, targetModule, createObjectReference(manager));
+        return dotnet.Bannerlord.ModuleManager.validateModule(modules, targetModule, createObjectReference(manager));
     }
 
     enableModule(modules: ModuleInfoExtended[], targetModule: ModuleInfoExtended, manager: IEnableDisableManager): void {
-        return dotnet.Bannerlord.ModuleManager.EnableModule(modules, targetModule, createObjectReference(manager));
+        return dotnet.Bannerlord.ModuleManager.enableModule(modules, targetModule, createObjectReference(manager));
     }
 
     disableModule(modules: ModuleInfoExtended[], targetModule: ModuleInfoExtended, manager: IEnableDisableManager): void {
-        return dotnet.Bannerlord.ModuleManager.DisableModule(modules, targetModule, createObjectReference(manager));
+        return dotnet.Bannerlord.ModuleManager.disableModule(modules, targetModule, createObjectReference(manager));
     }
 
-    getModuleInfo(xml: string): ModuleInfoExtended | undefined {
-        return dotnet.Bannerlord.ModuleManager.GetModuleInfo(xml);
+    getModuleInfo(xml: string): ModuleInfoExtended | null {
+        return dotnet.Bannerlord.ModuleManager.getModuleInfo(xml);
     }
 
-    getSubModuleInfo(xml: string): SubModuleInfoExtended | undefined {
-        return dotnet.Bannerlord.ModuleManager.GetSubModuleInfo(xml);
+    getSubModuleInfo(xml: string): SubModuleInfoExtended | null {
+        return dotnet.Bannerlord.ModuleManager.getSubModuleInfo(xml);
     }
 
     compareVersions(x: ApplicationVersion, y: ApplicationVersion): number {
-        return dotnet.Bannerlord.ModuleManager.CompareVersions(x, y);
+        return dotnet.Bannerlord.ModuleManager.compareVersions(x, y);
     }
 
     async dispose(): Promise<void> {

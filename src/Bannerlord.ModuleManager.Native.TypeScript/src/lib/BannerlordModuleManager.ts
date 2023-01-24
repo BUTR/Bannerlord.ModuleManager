@@ -3,6 +3,7 @@ import * as types from "./types";
 const blmanager: types.IBannerlordModuleManager = require('./../../blmanager.node');
 
 export class BannerlordModuleManager {
+    /* istanbul ignore next */
     private constructor() { }
 
     static sort(unsorted: types.ModuleInfoExtended[]): types.ModuleInfoExtended[] {

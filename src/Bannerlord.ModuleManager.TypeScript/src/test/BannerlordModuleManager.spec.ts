@@ -1,35 +1,102 @@
 import test from 'ava';
 
-import { harmonyXml, uiExtenderExXml, invalidXml } from './_data';
+import { harmonyXml, uiExtenderExXml, invalidXml, harmonySubModuleXml } from './_data';
 import { BannerlordModuleManager, IEnableDisableManager, IValidationManager } from '../lib/BannerlordModuleManager';
+import { Bannerlord } from '../lib/dotnet';
+import ApplicationVersion = Bannerlord.ModuleManager.ApplicationVersion;
+import ApplicationVersionType = Bannerlord.ModuleManager.ApplicationVersionType;
 
-test('sort', async (t) => {
-  const blmmanager = await BannerlordModuleManager.createAsync();
+let blmmanager: BannerlordModuleManager;
+test.before("Init WASM", async () => {
+  blmmanager = await BannerlordModuleManager.createAsync();
+});
+test.after("Terminate WASM", async () => {
+  blmmanager.dispose();
+});
 
+test('ApplicationVersion', async (t) => {
+  const version1: ApplicationVersion = {
+    applicationVersionType: ApplicationVersionType.Alpha,
+    major: 0,
+    minor: 0,
+    revision: 0,
+    changeSet: 0
+  }
+  const version2: ApplicationVersion = {
+    applicationVersionType: ApplicationVersionType.Release,
+    major: 1,
+    minor: 0,
+    revision: 0,
+    changeSet: 0
+  }
+
+  const result = blmmanager.compareVersions(version1, version2);
+  t.is(result, -1);
+
+  t.pass();
+});
+
+test('SubModule', async (t) => {
+  const harmonySubModule = blmmanager.getSubModuleInfo(harmonySubModuleXml);
+  if (harmonySubModule === null || harmonySubModule === undefined) {
+    t.fail();
+    return;
+  }
+
+  t.pass();
+});
+
+test('Main', async (t) => {
   const invalid = blmmanager.getModuleInfo(invalidXml);
   if (invalid === null || invalid === undefined) {
     t.fail();
     return;
   }
-  const uiExtenderEx = blmmanager.getModuleInfo(uiExtenderExXml);
-  if (uiExtenderEx === null || uiExtenderEx === undefined) {
-    t.fail();
-    return;
-  }
+
   const harmony = blmmanager.getModuleInfo(harmonyXml);
   if (harmony === null || harmony === undefined) {
     t.fail();
     return;
   }
+  t.deepEqual(harmony.id, 'Bannerlord.Harmony');
+
+  const uiExtenderEx = blmmanager.getModuleInfo(uiExtenderExXml);
+  if (uiExtenderEx === null || uiExtenderEx === undefined) {
+    t.fail();
+    return;
+  }
+  t.deepEqual(uiExtenderEx.id, 'Bannerlord.UIExtenderEx');
 
   const unsorted = [uiExtenderEx, harmony];
   const unsortedInvalid = [invalid, uiExtenderEx, harmony];
+
+  const areUIExtenderExDependenciesPresent = blmmanager.areAllDependenciesOfModulePresent(unsorted, uiExtenderEx);
+  t.is(areUIExtenderExDependenciesPresent, true);
+
+  const uiExtenderExDependencies = blmmanager.getDependentModulesOf(unsorted, uiExtenderEx);
+  if (uiExtenderExDependencies === null || !Array.isArray(uiExtenderExDependencies)) {
+    t.fail();
+    return;
+  }
+  t.deepEqual(uiExtenderExDependencies.length, 1);
+  t.deepEqual(uiExtenderExDependencies[0].id, harmony.id);
+
+  const uiExtenderExDependencies2 = blmmanager.getDependentModulesOfWithOptions(unsorted, uiExtenderEx, { skipOptionals: true, skipExternalDependencies: true });
+  if (uiExtenderExDependencies2 === null || !Array.isArray(uiExtenderExDependencies2)) {
+    t.fail();
+    return;
+  }
+  t.deepEqual(uiExtenderExDependencies2.length, 1);
+  t.deepEqual(uiExtenderExDependencies2[0].id, harmony.id);
 
   const sorted = blmmanager.sort(unsorted);
   if (sorted === null || !Array.isArray(sorted)) {
     t.fail();
     return;
   }
+  t.deepEqual(sorted.length, 2);
+  t.deepEqual(sorted[0].id, harmony.id);
+  t.deepEqual(sorted[1].id, uiExtenderEx.id);
 
   const sorted2 = blmmanager.sortWithOptions(unsorted, { skipOptionals: true, skipExternalDependencies: true });
   if (sorted2 === null || !Array.isArray(sorted2)) {
@@ -37,7 +104,7 @@ test('sort', async (t) => {
     return;
   }
 
-  const validationResult = blmmanager.ValidateLoadOrder(sorted, harmony);
+  const validationResult = blmmanager.validateLoadOrder(sorted, harmony);
   if (validationResult === null || !Array.isArray(validationResult)) {
     t.fail();
     return;
@@ -51,8 +118,8 @@ test('sort', async (t) => {
       return false;
     }
   };
-  const validationResult4 = blmmanager.validateModule(unsortedInvalid, uiExtenderEx, validationManager);
-  if (validationResult4 === null || !Array.isArray(validationResult4)) {
+  const validationResult1 = blmmanager.validateModule(unsortedInvalid, uiExtenderEx, validationManager);
+  if (validationResult1 === null || !Array.isArray(validationResult1)) {
     t.fail();
     return;
   }
@@ -61,8 +128,8 @@ test('sort', async (t) => {
     return;
   }
 
-  const validationResult5 = blmmanager.validateModule(unsortedInvalid, invalid, validationManager);
-  if (validationResult5 === null || !Array.isArray(validationResult5) || validationResult5.length != 1) {
+  const validationResult2 = blmmanager.validateModule(unsortedInvalid, invalid, validationManager);
+  if (validationResult2 === null || !Array.isArray(validationResult2) || validationResult2.length != 1) {
     t.fail();
     return;
   }
@@ -97,14 +164,6 @@ test('sort', async (t) => {
     t.fail();
     return;
   }
-
-  t.deepEqual(uiExtenderEx.id, 'Bannerlord.UIExtenderEx');
-  t.deepEqual(harmony.id, 'Bannerlord.Harmony');
-  t.deepEqual(sorted.length, 2);
-  t.deepEqual(sorted[0].id, harmony.id);
-  t.deepEqual(sorted[1].id, uiExtenderEx.id);
-
-  await blmmanager.dispose();
 
   t.pass();
 });

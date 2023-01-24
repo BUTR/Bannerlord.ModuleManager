@@ -22,9 +22,9 @@ public static class Utils2
         Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin)
     };
     internal static readonly SourceGenerationContext CustomSourceGenerationContext = new(Options);
-    
+
     public static unsafe ReadOnlySpan<char> ToSpan(char* value) => new SafeStringMallocHandle(value).ToSpan();
-    public static unsafe ReadOnlySpan<char> ToSpan(param_string* value) => new SafeStringMallocHandle((char*)value).ToSpan();
+    public static unsafe ReadOnlySpan<char> ToSpan(param_string* value) => new SafeStringMallocHandle((char*) value).ToSpan();
     public static unsafe param_json* ToJson<T>(T value) => (param_json*) Utils.SerializeJsonCopy(value, (JsonTypeInfo<T>) CustomSourceGenerationContext.GetTypeInfo(typeof(T)));
     public static unsafe (string Error, T? Result) GetResult<T>(return_value_json* ret)
     {

@@ -11,7 +11,7 @@ internal class ValidationManager
         var manager = Unsafe.AsRef<ValidationManager>(owner);
         return return_value_bool.AsValue(manager.IsSelected(Utils2.ToSpan(moduleId).ToString()));
     }
-        
+
     public bool IsSelected(string moduleId)
     {
         return true;

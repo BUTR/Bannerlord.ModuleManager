@@ -159,7 +159,11 @@ namespace Bannerlord.ModuleManager
         public static IEnumerable<ModuleInfoExtended> GetDependencies(IReadOnlyCollection<ModuleInfoExtended> modules, ModuleInfoExtended module, HashSet<ModuleInfoExtended> visited, ModuleSorterOptions options)
         {
             var dependencies = new List<ModuleInfoExtended>();
-            ModuleSorter.Visit(module, x => GetDependenciesInternal(modules, x, options), dependencies, visited);
+            ModuleSorter.Visit(module, x => GetDependenciesInternal(modules, x, options), moduleToAdd =>
+            {
+                if (moduleToAdd != module)
+                    dependencies.Add(moduleToAdd);
+            }, visited);
             return dependencies;
         }
         private static IEnumerable<ModuleInfoExtended> GetDependenciesInternal(IReadOnlyCollection<ModuleInfoExtended> modules, ModuleInfoExtended module, ModuleSorterOptions options)

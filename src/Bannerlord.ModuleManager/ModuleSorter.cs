@@ -99,12 +99,12 @@ namespace Bannerlord.ModuleManager
             var visited = new HashSet<T>();
             foreach (var item in source)
             {
-                Visit(item, getDependencies, list, visited);
+                Visit(item, getDependencies, item => list.Add(item), visited);
             }
             return list;
         }
 
-        public static void Visit<T>(T item, Func<T, IEnumerable<T>> getDependencies, ICollection<T> sorted, HashSet<T> visited)
+        public static void Visit<T>(T item, Func<T, IEnumerable<T>> getDependencies, Action<T> addItem, HashSet<T> visited)
         {
             if (visited.Contains(item))
             {
@@ -116,10 +116,10 @@ namespace Bannerlord.ModuleManager
             {
                 foreach (var item2 in enumerable)
                 {
-                    Visit(item2, getDependencies, sorted, visited);
+                    Visit(item2, getDependencies, addItem, visited);
                 }
             }
-            sorted.Add(item);
+            addItem(item);
         }
     }
 }

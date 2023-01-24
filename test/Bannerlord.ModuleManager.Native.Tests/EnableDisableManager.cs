@@ -28,24 +28,24 @@ internal class EnableDisableManager
         manager.SetDisabled(Utils2.ToSpan(moduleId).ToString(), value);
         return return_value_void.AsValue();
     }
-        
+
     public bool GetSelected(string moduleId)
     {
         return true;
     }
-        
+
     public void SetSelected(string moduleId, bool value)
     {
-            
+
     }
-        
+
     public bool GetDisabled(string moduleId)
     {
         return true;
     }
-        
+
     public void SetDisabled(string moduleId, bool value)
     {
-            
+
     }
 }
