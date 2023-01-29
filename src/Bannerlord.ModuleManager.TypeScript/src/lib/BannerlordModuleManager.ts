@@ -5,6 +5,7 @@ import SubModuleInfoExtended = Bannerlord.ModuleManager.SubModuleInfoExtended;
 import ModuleSorterOptions = Bannerlord.ModuleManager.ModuleSorterOptions;
 import ApplicationVersion = Bannerlord.ModuleManager.ApplicationVersion;
 import ModuleIssue = Bannerlord.ModuleManager.ModuleIssue;
+import DependentModuleMetadata = Bannerlord.ModuleManager.DependentModuleMetadata;
 
 export interface IValidationManager {
     isSelected(moduleId: string): boolean,
@@ -76,6 +77,19 @@ export class BannerlordModuleManager {
 
     compareVersions(x: ApplicationVersion, y: ApplicationVersion): number {
         return dotnet.Bannerlord.ModuleManager.compareVersions(x, y);
+    }
+
+    static getDependenciesAll(module: ModuleInfoExtended): DependentModuleMetadata[] {
+        return dotnet.Bannerlord.ModuleManager.getDependenciesAll(module);
+    }
+    static getDependenciesToLoadBeforeThis(module: ModuleInfoExtended): DependentModuleMetadata[] {
+        return dotnet.Bannerlord.ModuleManager.getDependenciesToLoadBeforeThis(module);
+    }
+    static getDependenciesToLoadAfterThis(module: ModuleInfoExtended): DependentModuleMetadata[] {
+        return dotnet.Bannerlord.ModuleManager.getDependenciesToLoadAfterThis(module);
+    }
+    static getDependenciesIncompatibles(module: ModuleInfoExtended): DependentModuleMetadata[] {
+        return dotnet.Bannerlord.ModuleManager.getDependenciesIncompatibles(module);
     }
 
     async dispose(): Promise<void> {

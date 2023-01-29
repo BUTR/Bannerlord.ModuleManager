@@ -106,4 +106,9 @@ export interface IBannerlordModuleManager {
     getSubModuleInfo(xml: string): SubModuleInfoExtended | undefined;
 
     compareVersions(x: ApplicationVersion, y: ApplicationVersion): number;
+
+    getDependenciesAll(module: ModuleInfoExtended): DependentModuleMetadata[];
+    getDependenciesToLoadBeforeThis(module: ModuleInfoExtended): DependentModuleMetadata[];
+    getDependenciesToLoadAfterThis(module: ModuleInfoExtended): DependentModuleMetadata[];
+    getDependenciesIncompatibles(module: ModuleInfoExtended): DependentModuleMetadata[];
 }

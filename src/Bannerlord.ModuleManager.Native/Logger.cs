@@ -17,6 +17,11 @@ namespace Bannerlord.ModuleManager.Native
             Log($"Received call to {caller}!");
         }
         [Conditional("LOGGING")]
+        public static void LogInput(nuint param1, [CallerMemberName] string? caller = null)
+        {
+            Log($"Received call to {caller}! {param1}");
+        }
+        [Conditional("LOGGING")]
         public static unsafe void LogInput<T1>(T1* param1, [CallerMemberName] string? caller = null)
             where T1 : unmanaged, IParameter<T1>
         {

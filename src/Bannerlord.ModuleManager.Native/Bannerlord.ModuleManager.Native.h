@@ -3,11 +3,10 @@
 
 #include "Common.Native.h"
 
+#ifdef __cplusplus
 using namespace Common;
 
 namespace Bannerlord::ModuleManager {
-
-#ifdef __cplusplus
     extern "C" {
 #endif
 
@@ -28,24 +27,29 @@ namespace Bannerlord::ModuleManager {
 
         return_value_void* __cdecl bmm_enable_module(const void* p_owner, const param_json* p_modules, const param_json* p_target_module
             , return_value_bool* (__cdecl *p_get_selected)(const void* p_owner, const param_string* p_module_id)
-            , return_value_void* (__cdecl *p_set_selected)(const void* p_owner, const param_string* p_module_id, bool value)
+            , return_value_void* (__cdecl *p_set_selected)(const void* p_owner, const param_string* p_module_id, param_bool value)
             , return_value_bool* (__cdecl *p_get_disabled)(const void* p_owner, const param_string* p_module_id)
-            , return_value_void* (__cdecl *p_set_disabled)(const void* p_owner, const param_string* p_module_id, bool value));
+            , return_value_void* (__cdecl *p_set_disabled)(const void* p_owner, const param_string* p_module_id, param_bool value));
         return_value_void* __cdecl bmm_disable_module(const void* p_owner, const param_json* p_modules, const param_json* p_target_module
             , return_value_bool* (__cdecl *p_get_selected)(const void* p_owner, const param_string* p_module_id)
-            , return_value_void* (__cdecl *p_set_selected)(const void* p_owner, const param_string* p_module_id, bool value)
+            , return_value_void* (__cdecl *p_set_selected)(const void* p_owner, const param_string* p_module_id, param_bool value)
             , return_value_bool* (__cdecl *p_get_disabled)(const void* p_owner, const param_string* p_module_id)
-            , return_value_void* (__cdecl *p_set_disabled)(const void* p_owner, const param_string* p_module_id, bool value));
+            , return_value_void* (__cdecl *p_set_disabled)(const void* p_owner, const param_string* p_module_id, param_bool value));
 
         return_value_json* __cdecl bmm_get_module_info(const param_string* p_xml_content);
         return_value_json* __cdecl bmm_get_sub_module_info(const param_string* p_xml_content);
 
         return_value_int32* __cdecl bmm_compare_versions(const param_json* p_x, const param_json* p_y);
 
+        return_value_json* __cdecl bmm_get_dependencies_all(const param_json* p_module);
+        return_value_json* __cdecl bmm_get_dependencies_load_before_this(const param_json* p_module);
+        return_value_json* __cdecl bmm_get_dependencies_load_after_this(const param_json* p_module);
+        return_value_json* __cdecl bmm_get_dependencies_incompatibles(const param_json* p_module);
+
+
 #ifdef __cplusplus
     }
-#endif
-
 }
+#endif
 
 #endif

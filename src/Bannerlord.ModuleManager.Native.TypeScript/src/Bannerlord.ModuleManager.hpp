@@ -1,7 +1,7 @@
-#ifndef BMM_BLMANAGER_GUARD_H_
-#define BMM_BLMANAGER_GUARD_H_
+#ifndef BMM_BLMANAGER_GUARD_HPP_
+#define BMM_BLMANAGER_GUARD_HPP_
 
-#include "utils.h"
+#include "utils.hpp"
 #include "Common.Native.h"
 #include "Bannerlord.ModuleManager.Native.h"
 #include <codecvt>
@@ -26,7 +26,7 @@ namespace Bannerlord::ModuleManager
             const auto data = (ValidationData *)p_owner;
             const auto env = data->Env;
 
-            const auto moduleId = String::New(env, Copy(p_module_id));
+            const auto moduleId = String::New(env, p_module_id);
 
             return Create(return_value_bool{nullptr, data->FIsSelected({moduleId}).As<Boolean>()});
         }
@@ -52,7 +52,7 @@ namespace Bannerlord::ModuleManager
             const auto data = (EnableDisableData *)p_owner;
             const auto env = data->Env;
 
-            const auto moduleId = String::New(env, Copy(p_module_id));
+            const auto moduleId = String::New(env, p_module_id);
 
             return Create(return_value_bool{nullptr, data->FGetSelected({moduleId}).As<Boolean>()});
         }
@@ -62,15 +62,15 @@ namespace Bannerlord::ModuleManager
             return Create(return_value_bool{Copy(conv.from_bytes(e.what())), false});
         }
     }
-    static return_value_void *setSelected(const void *p_owner, const param_string *p_module_id, bool value_raw)
+    static return_value_void *setSelected(const void *p_owner, const param_string *p_module_id, param_bool value_raw)
     {
         try
         {
             const auto data = (EnableDisableData *)p_owner;
             const auto env = data->Env;
 
-            const auto moduleId = String::New(env, Copy(p_module_id));
-            const auto value = Boolean::New(env, value_raw);
+            const auto moduleId = String::New(env, p_module_id);
+            const auto value = Boolean::New(env, value_raw == 1);
 
             data->FSetSelected({moduleId, value});
             return Create(return_value_void{nullptr});
@@ -98,15 +98,15 @@ namespace Bannerlord::ModuleManager
             return Create(return_value_bool{Copy(conv.from_bytes(e.what())), false});
         }
     }
-    static return_value_void *setDisabled(const void *p_owner, const param_string *p_module_id, bool value_raw)
+    static return_value_void *setDisabled(const void *p_owner, const param_string *p_module_id, param_bool value_raw)
     {
         try
         {
             const auto data = (EnableDisableData *)p_owner;
             const auto env = data->Env;
 
-            const auto moduleId = String::New(env, Copy(p_module_id));
-            const auto value = Boolean::New(env, value_raw);
+            const auto moduleId = String::New(env, p_module_id);
+            const auto value = Boolean::New(env, value_raw == 1);
 
             data->FSetDisabled({moduleId, value});
             return Create(return_value_void{nullptr});
@@ -287,6 +287,47 @@ namespace Bannerlord::ModuleManager
         return ThrowOrReturnInt32(env, result);
     }
 
+    Value GetDependenciesAll(const CallbackInfo &info)
+    {
+        const auto env = info.Env();
+        const auto module = JSONStringify(env, info[0].As<Object>());
+
+        const auto moduleCopy = CopyWithFree(module.Utf16Value());
+
+        const auto result = bmm_get_dependencies_all(moduleCopy.get());
+        return ThrowOrReturnJson(env, result);
+    }
+    Value GetDependenciesToLoadBeforeThis(const CallbackInfo &info)
+    {
+        const auto env = info.Env();
+        const auto module = JSONStringify(env, info[0].As<Object>());
+
+        const auto moduleCopy = CopyWithFree(module.Utf16Value());
+
+        const auto result = bmm_get_dependencies_load_before_this(moduleCopy.get());
+        return ThrowOrReturnJson(env, result);
+    }
+    Value GetDependenciesToLoadAfterThis(const CallbackInfo &info)
+    {
+        const auto env = info.Env();
+        const auto module = JSONStringify(env, info[0].As<Object>());
+
+        const auto moduleCopy = CopyWithFree(module.Utf16Value());
+
+        const auto result = bmm_get_dependencies_load_after_this(moduleCopy.get());
+        return ThrowOrReturnJson(env, result);
+    }
+    Value GetDependenciesIncompatibles(const CallbackInfo &info)
+    {
+        const auto env = info.Env();
+        const auto module = JSONStringify(env, info[0].As<Object>());
+
+        const auto moduleCopy = CopyWithFree(module.Utf16Value());
+
+        const auto result = bmm_get_dependencies_incompatibles(moduleCopy.get());
+        return ThrowOrReturnJson(env, result);
+    }
+
     const Object Init(Env env, Object exports)
     {
         exports.Set("sort", Function::New(env, Sort));
@@ -307,6 +348,11 @@ namespace Bannerlord::ModuleManager
         exports.Set("getSubModuleInfo", Function::New(env, GetSubModuleInfo));
 
         exports.Set("compareVersions", Function::New(env, CompareVersions));
+
+        exports.Set("getDependenciesAll", Function::New(env, GetDependenciesAll));
+        exports.Set("getDependenciesToLoadBeforeThis", Function::New(env, GetDependenciesToLoadBeforeThis));
+        exports.Set("getDependenciesToLoadAfterThis", Function::New(env, GetDependenciesToLoadAfterThis));
+        exports.Set("getDependenciesIncompatibles", Function::New(env, GetDependenciesIncompatibles));
 
         return exports;
     }

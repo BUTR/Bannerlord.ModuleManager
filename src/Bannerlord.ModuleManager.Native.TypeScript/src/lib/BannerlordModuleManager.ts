@@ -53,4 +53,17 @@ export class BannerlordModuleManager {
     static compareVersions(x: types.ApplicationVersion, y: types.ApplicationVersion): number {
         return blmanager.compareVersions(x, y);
     }
+  
+    static getDependenciesAll(module: types.ModuleInfoExtended): types.DependentModuleMetadata[] {
+        return blmanager.getDependenciesAll(module);
+    }
+    static getDependenciesToLoadBeforeThis(module: types.ModuleInfoExtended): types.DependentModuleMetadata[] {
+        return blmanager.getDependenciesToLoadBeforeThis(module);
+    }
+    static getDependenciesToLoadAfterThis(module: types.ModuleInfoExtended): types.DependentModuleMetadata[] {
+        return blmanager.getDependenciesToLoadAfterThis(module);
+    }
+    static getDependenciesIncompatibles(module: types.ModuleInfoExtended): types.DependentModuleMetadata[] {
+        return blmanager.getDependenciesIncompatibles(module);
+    }
 }

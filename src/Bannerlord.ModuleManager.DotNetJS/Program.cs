@@ -93,5 +93,14 @@ namespace Bannerlord.ModuleManager.WASM
 
         [JSInvokable]
         public static int CompareVersions(ApplicationVersion x, ApplicationVersion y) => _applicationVersionComparer.Compare(x, y);
+
+        [JSInvokable]
+        public static DependentModuleMetadata[] GetDependenciesAll(ModuleInfoExtended module) => module.DependenciesAllDistinct().ToArray();
+        [JSInvokable]
+        public static DependentModuleMetadata[] GetDependenciesToLoadBeforeThis(ModuleInfoExtended module) => module.DependenciesLoadBeforeThisDistinct().ToArray();
+        [JSInvokable]
+        public static DependentModuleMetadata[] GetDependenciesToLoadAfterThis(ModuleInfoExtended module) => module.DependenciesLoadAfterThisDistinct().ToArray();
+        [JSInvokable]
+        public static DependentModuleMetadata[] GetDependenciesIncompatibles(ModuleInfoExtended module) => module.DependenciesIncompatiblesDistinct().ToArray();
     }
 }

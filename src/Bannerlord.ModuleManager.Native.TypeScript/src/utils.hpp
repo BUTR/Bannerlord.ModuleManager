@@ -1,14 +1,22 @@
-#ifndef BMM_UTILS_GUARD_H_
-#define BMM_UTILS_GUARD_H_
+#ifndef BMM_UTILS_GUARD_HPP_
+#define BMM_UTILS_GUARD_HPP_
 
 #include <Common.Native.h>
 #include <napi.h>
+#include <cstdint>
 
 using namespace Napi;
 using namespace Common;
 
 namespace Utils
 {
+
+    void ConsoleLog(const Env env, const String message)
+    {
+        const auto consoleObject = env.Global().Get("console").As<Object>();
+        const auto log = consoleObject.Get("log").As<Function>();
+        log.Call(consoleObject, {message});
+    }
 
     const String JSONStringify(const Env env, const Object object)
     {
@@ -31,8 +39,8 @@ namespace Utils
         {
             return;
         }
-        const auto error = std::unique_ptr<char16_t[]>(val->error);
-        throw Error::New(env, String::New(env, error.get()));
+        const auto error = std::unique_ptr<char16_t[], deleter<char16_t>>(val->error);
+        NAPI_THROW(Error::New(env, String::New(env, error.get())));
     }
     const Value ThrowOrReturnString(Env env, return_value_string *val)
     {
@@ -42,14 +50,14 @@ namespace Utils
         {
             if (val->value == nullptr)
             {
-                throw Error::New(env, String::New(env, "Return value was null!"));
+                NAPI_THROW(Error::New(env, String::New(env, "Return value was null!")));
             }
 
-            const auto value = std::unique_ptr<char16_t[]>(val->value);
+            const auto value = std::unique_ptr<char16_t[], deleter<char16_t>>(val->value);
             return String::New(env, val->value);
         }
-        const auto error = std::unique_ptr<char16_t[]>(val->error);
-        throw Error::New(env, String::New(env, error.get()));
+        const auto error = std::unique_ptr<char16_t[], deleter<char16_t>>(val->error);
+        NAPI_THROW(Error::New(env, String::New(env, error.get())));
     }
     const Value ThrowOrReturnJson(Env env, return_value_json *val)
     {
@@ -59,14 +67,14 @@ namespace Utils
         {
             if (val->value == nullptr)
             {
-                throw Error::New(env, String::New(env, "Return value was null!"));
+                NAPI_THROW(Error::New(env, String::New(env, "Return value was null!")));
             }
 
-            const auto value = std::unique_ptr<char16_t[]>(val->value);
+            const auto value = std::unique_ptr<char16_t[], deleter<char16_t>>(val->value);
             return JSONParse(env, String::New(env, val->value));
         }
-        const auto error = std::unique_ptr<char16_t[]>(val->error);
-        throw Error::New(env, String::New(env, error.get()));
+        const auto error = std::unique_ptr<char16_t[], deleter<char16_t>>(val->error);
+        NAPI_THROW(Error::New(env, String::New(env, error.get())));
     }
     const Value ThrowOrReturnBoolean(Env env, return_value_bool *val)
     {
@@ -76,8 +84,8 @@ namespace Utils
         {
             return Boolean::New(env, val->value);
         }
-        const auto error = std::unique_ptr<char16_t[]>(val->error);
-        throw Error::New(env, String::New(env, error.get()));
+        const auto error = std::unique_ptr<char16_t[], deleter<char16_t>>(val->error);
+        NAPI_THROW(Error::New(env, String::New(env, error.get())));
     }
     const Value ThrowOrReturnInt32(Env env, return_value_int32 *val)
     {
@@ -87,8 +95,8 @@ namespace Utils
         {
             return Number::New(env, val->value);
         }
-        const auto error = std::unique_ptr<char16_t[]>(val->error);
-        throw Error::New(env, String::New(env, error.get()));
+        const auto error = std::unique_ptr<char16_t[], deleter<char16_t>>(val->error);
+        NAPI_THROW(Error::New(env, String::New(env, error.get())));
     }
     const Value ThrowOrReturnUInt32(Env env, return_value_uint32 *val)
     {
@@ -98,8 +106,8 @@ namespace Utils
         {
             return Number::New(env, val->value);
         }
-        const auto error = std::unique_ptr<char16_t[]>(val->error);
-        throw Error::New(env, String::New(env, error.get()));
+        const auto error = std::unique_ptr<char16_t[], deleter<char16_t>>(val->error);
+        NAPI_THROW(Error::New(env, String::New(env, error.get())));
     }
     void *ThrowOrReturnPtr(Env env, return_value_ptr *val)
     {
@@ -109,8 +117,8 @@ namespace Utils
         {
             return val->value;
         }
-        const auto error = std::unique_ptr<char16_t[]>(val->error);
-        throw Error::New(env, String::New(env, error.get()));
+        const auto error = std::unique_ptr<char16_t[], deleter<char16_t>>(val->error);
+        NAPI_THROW(Error::New(env, String::New(env, error.get())));
     }
 
 }

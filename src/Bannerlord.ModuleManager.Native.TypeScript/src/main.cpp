@@ -1,4 +1,4 @@
-#include "Bannerlord.ModuleManager.h"
+#include "Bannerlord.ModuleManager.hpp"
 #include <napi.h>
 
 using namespace Napi;
