@@ -164,20 +164,20 @@ public partial class Tests
     [Test]
     public unsafe void Test_SubModule()
     {
-        var (subModuleError, subModule) = GetResult<ModuleInfoExtended>(bmm_get_sub_module_info((param_string*) Utils.Copy(HarmonySubModuleXml)));
+        var (subModuleError, subModule) = GetResult<ModuleInfoExtended>(bmm_get_sub_module_info((param_string*) Copy(HarmonySubModuleXml)));
         Assert.That(subModuleError, Is.Empty);
     }
 
     [Test]
     public unsafe void Test_Main()
     {
-        var (invalidError, invalid) = GetResult<ModuleInfoExtended>(bmm_get_module_info((param_string*) Utils.Copy(InvalidXml)));
+        var (invalidError, invalid) = GetResult<ModuleInfoExtended>(bmm_get_module_info((param_string*) Copy(InvalidXml)));
         Assert.That(invalidError, Is.Empty);
-        var (harmonyError, harmony) = GetResult<ModuleInfoExtended>(bmm_get_module_info((param_string*) Utils.Copy(HarmonyXml)));
+        var (harmonyError, harmony) = GetResult<ModuleInfoExtended>(bmm_get_module_info((param_string*) Copy(HarmonyXml)));
         Assert.That(harmonyError, Is.Empty);
         Assert.That(harmony, Is.Not.Null);
         Assert.That(harmony!.Id, Is.EqualTo("Bannerlord.Harmony"));
-        var (uiExtenderError, uiExtenderEx) = GetResult<ModuleInfoExtended>(bmm_get_module_info((param_string*) Utils.Copy(UIExtenderExXml)));
+        var (uiExtenderError, uiExtenderEx) = GetResult<ModuleInfoExtended>(bmm_get_module_info((param_string*) Copy(UIExtenderExXml)));
         Assert.That(uiExtenderError, Is.Empty);
         Assert.That(uiExtenderEx, Is.Not.Null);
         Assert.That(uiExtenderEx!.Id, Is.EqualTo("Bannerlord.UIExtenderEx"));
