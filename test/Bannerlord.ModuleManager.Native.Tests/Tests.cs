@@ -41,6 +41,15 @@ public partial class Tests
 
     [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
     private static unsafe partial return_value_int32* bmm_compare_versions(param_json* p_x, param_json* p_y);
+    
+    [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
+    private static unsafe partial return_value_json* bmm_get_dependencies_all(param_json* p_module);
+    [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
+    private static unsafe partial return_value_json* bmm_get_dependencies_load_before_this(param_json* p_module);
+    [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
+    private static unsafe partial return_value_json* bmm_get_dependencies_load_after_this(param_json* p_module);
+    [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
+    private static unsafe partial return_value_json* bmm_get_dependencies_incompatibles(param_json* p_module);
 
     private const string InvalidXml = """
 <?xml version="1.0" encoding="UTF-8"?>
@@ -156,75 +165,80 @@ public partial class Tests
         var version1 = new ApplicationVersion(ApplicationVersionType.Alpha, 0, 0, 0, 0);
         var version2 = new ApplicationVersion(ApplicationVersionType.Release, 1, 0, 0, 0);
 
-        var (resultError, result) = GetResult(bmm_compare_versions(ToJson(version1), ToJson(version2)));
-        Assert.That(resultError, Is.Empty);
+        var result = GetResult(bmm_compare_versions(ToJson(version1), ToJson(version2)));
         Assert.That(result, Is.EqualTo(-1));
     }
 
     [Test]
     public unsafe void Test_SubModule()
     {
-        var (subModuleError, subModule) = GetResult<ModuleInfoExtended>(bmm_get_sub_module_info((param_string*) Copy(HarmonySubModuleXml)));
-        Assert.That(subModuleError, Is.Empty);
+        var subModule = GetResult<ModuleInfoExtended>(bmm_get_sub_module_info((param_string*) Copy(HarmonySubModuleXml)));
+        Assert.Pass();
     }
 
     [Test]
     public unsafe void Test_Main()
     {
-        var (invalidError, invalid) = GetResult<ModuleInfoExtended>(bmm_get_module_info((param_string*) Copy(InvalidXml)));
-        Assert.That(invalidError, Is.Empty);
-        var (harmonyError, harmony) = GetResult<ModuleInfoExtended>(bmm_get_module_info((param_string*) Copy(HarmonyXml)));
-        Assert.That(harmonyError, Is.Empty);
-        Assert.That(harmony, Is.Not.Null);
-        Assert.That(harmony!.Id, Is.EqualTo("Bannerlord.Harmony"));
-        var (uiExtenderError, uiExtenderEx) = GetResult<ModuleInfoExtended>(bmm_get_module_info((param_string*) Copy(UIExtenderExXml)));
-        Assert.That(uiExtenderError, Is.Empty);
-        Assert.That(uiExtenderEx, Is.Not.Null);
-        Assert.That(uiExtenderEx!.Id, Is.EqualTo("Bannerlord.UIExtenderEx"));
+        var invalid = GetResult<ModuleInfoExtended>(bmm_get_module_info((param_string*) Copy(InvalidXml)));
+        var harmony = GetResult<ModuleInfoExtended>(bmm_get_module_info((param_string*) Copy(HarmonyXml)));
+        Assert.Multiple(() =>
+        {
+            Assert.That(harmony, Is.Not.Null);
+            Assert.That(harmony!.Id, Is.EqualTo("Bannerlord.Harmony"));
+        });
+        var uiExtenderEx = GetResult<ModuleInfoExtended>(bmm_get_module_info((param_string*) Copy(UIExtenderExXml)));
+        Assert.Multiple(() =>
+        {
+            Assert.That(uiExtenderEx, Is.Not.Null);
+            Assert.That(uiExtenderEx!.Id, Is.EqualTo("Bannerlord.UIExtenderEx"));
+        });
 
         var unsorted = new[] { uiExtenderEx, harmony };
         var unsortedInvalid = new[] { invalid, uiExtenderEx, harmony };
 
-        var (areDepsPresentError, areDepsPresent) = GetResult(bmm_are_all_dependencies_of_module_present(ToJson(unsorted), ToJson(uiExtenderEx)));
-        Assert.That(areDepsPresentError, Is.Empty);
+        var areDepsPresent = GetResult(bmm_are_all_dependencies_of_module_present(ToJson(unsorted), ToJson(uiExtenderEx)));
         Assert.That(areDepsPresent, Is.True);
 
-        var (dependenciesError, dependencies) = GetResult<ModuleInfoExtended[]>(bmm_get_dependent_modules_of(ToJson(unsorted), ToJson(uiExtenderEx)));
-        Assert.That(dependenciesError, Is.Empty);
-        Assert.That(dependencies!.Length, Is.EqualTo(1));
-        Assert.That(dependencies[0].Id, Is.EqualTo(harmony.Id));
+        var dependencies = GetResult<ModuleInfoExtended[]>(bmm_get_dependent_modules_of(ToJson(unsorted), ToJson(uiExtenderEx)));
+        Assert.Multiple(() =>
+        {
+            Assert.That(dependencies, Has.Length.EqualTo(1));
+            Assert.That(dependencies![0].Id, Is.EqualTo(harmony!.Id));
+        });
+        var dependencies2 = GetResult<ModuleInfoExtended[]>(bmm_get_dependent_modules_of_with_options(ToJson(unsorted), ToJson(uiExtenderEx), ToJson(new ModuleSorterOptions(true, true))));
+        Assert.Multiple(() =>
+        {
+            Assert.That(dependencies2, Has.Length.EqualTo(1));
+            Assert.That(dependencies2![0].Id, Is.EqualTo(harmony!.Id));
+        });
+        var sorted = GetResult<ModuleInfoExtended[]>(bmm_sort(ToJson(unsorted)));
 
-        var (dependencies2Error, dependencies2) = GetResult<ModuleInfoExtended[]>(bmm_get_dependent_modules_of_with_options(ToJson(unsorted), ToJson(uiExtenderEx), ToJson(new ModuleSorterOptions(true, true))));
-        Assert.That(dependencies2Error, Is.Empty);
-        Assert.That(dependencies2!.Length, Is.EqualTo(1));
-        Assert.That(dependencies2[0].Id, Is.EqualTo(harmony.Id));
-
-        var (sortedError, sorted) = GetResult<ModuleInfoExtended[]>(bmm_sort(ToJson(unsorted)));
-        Assert.That(sortedError, Is.Empty);
-
-        var (sorted2Error, sorted2) = GetResult<ModuleInfoExtended[]>(bmm_sort_with_options(ToJson(unsorted), ToJson(new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true })));
-        Assert.That(sorted2Error, Is.Empty);
-        var (validationResultError, validationResult) = GetResult<ModuleIssue[]>(bmm_validate_load_order(ToJson(sorted), ToJson(harmony)));
-        Assert.That(validationResultError, Is.Empty);
+        var sorted2 = GetResult<ModuleInfoExtended[]>(bmm_sort_with_options(ToJson(unsorted), ToJson(new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true })));
+        var validationResult = GetResult<ModuleIssue[]>(bmm_validate_load_order(ToJson(sorted), ToJson(harmony)));
 
         var validationManager = new ValidationManager();
-        var (validationResult1Error, validationResult1) = GetResult<ModuleIssue[]>(bmm_validate_module(
+        var validationResult1 = GetResult<ModuleIssue[]>(bmm_validate_module(
             Unsafe.AsPointer(ref validationManager), ToJson(unsortedInvalid), ToJson(uiExtenderEx), &ValidationManager.IsSelected));
-        Assert.That(validationResult1Error, Is.Empty);
 
-        var (validationResult2Error, validationResult2) = GetResult<ModuleIssue[]>(bmm_validate_module(
+        var validationResult2 = GetResult<ModuleIssue[]>(bmm_validate_module(
             Unsafe.AsPointer(ref validationManager), ToJson(unsortedInvalid), ToJson(invalid), &ValidationManager.IsSelected));
-        Assert.That(validationResult2Error, Is.Empty);
 
         var enableDisableManager = new EnableDisableManager();
-        var (enableResultError, enableResult) = GetResult(bmm_enable_module(
+        GetResult(bmm_enable_module(
             Unsafe.AsPointer(ref enableDisableManager), ToJson(unsorted), ToJson(uiExtenderEx),
             &EnableDisableManager.GetSelected, &EnableDisableManager.SetSelected, &EnableDisableManager.GetDisabled, &EnableDisableManager.SetDisabled));
-        Assert.That(enableResultError, Is.Empty);
 
-        var (disableResultError, disableResult) = GetResult(bmm_disable_module(
+        GetResult(bmm_disable_module(
             Unsafe.AsPointer(ref enableDisableManager), ToJson(unsorted), ToJson(uiExtenderEx),
             &EnableDisableManager.GetSelected, &EnableDisableManager.SetSelected, &EnableDisableManager.GetDisabled, &EnableDisableManager.SetDisabled));
-        Assert.That(disableResultError, Is.Empty);
+
+        var dependenciesAll = GetResult<DependentModuleMetadata[]>(bmm_get_dependencies_all(ToJson(uiExtenderEx)));
+        Assert.That(dependenciesAll!, Has.Length.EqualTo(6));
+        var dependenciesLoadBefore = GetResult<DependentModuleMetadata[]>(bmm_get_dependencies_load_before_this(ToJson(uiExtenderEx)));
+        Assert.That(dependenciesLoadBefore!, Has.Length.EqualTo(1));
+        var dependenciesLoadAfter = GetResult<DependentModuleMetadata[]>(bmm_get_dependencies_load_after_this(ToJson(uiExtenderEx)));
+        Assert.That(dependenciesLoadAfter!, Has.Length.EqualTo(5));
+        var dependenciesIncompatibles = GetResult<DependentModuleMetadata[]>(bmm_get_dependencies_incompatibles(ToJson(uiExtenderEx)));
+        Assert.That(dependenciesLoadAfter!, Has.Length.EqualTo(0));
     }
 }

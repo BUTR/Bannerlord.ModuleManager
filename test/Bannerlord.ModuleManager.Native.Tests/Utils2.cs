@@ -1,5 +1,8 @@
 ﻿using BUTR.NativeAOT.Shared;
 
+using Microsoft.Win32.SafeHandles;
+
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.Encodings.Web;
@@ -12,6 +15,166 @@ namespace Bannerlord.ModuleManager.Native.Tests
 {
     public static partial class Utils2
     {
+        private unsafe class SafeStringMallocHandle : SafeHandleZeroOrMinusOneIsInvalid
+        {
+            public static implicit operator ReadOnlySpan<char>(SafeStringMallocHandle handle) => MemoryMarshal.CreateReadOnlySpanFromNullTerminated((char*) handle.handle.ToPointer());
+
+            public SafeStringMallocHandle(): base(true) { }
+            public SafeStringMallocHandle(char* ptr): base(true)
+            {
+                handle = new IntPtr(ptr);
+                var b = false;
+                DangerousAddRef(ref b);
+            }
+
+            protected override bool ReleaseHandle()
+            {
+                if (handle != IntPtr.Zero)
+                    dealloc(handle.ToPointer());
+                return true;
+            }
+        
+            public ReadOnlySpan<char> ToSpan() => this;
+        }
+        
+        private unsafe class SafeStructMallocHandle : SafeHandleZeroOrMinusOneIsInvalid
+        {
+            public static SafeStructMallocHandle<TStruct> Create<TStruct>(TStruct* ptr) where TStruct : unmanaged => new(ptr);
+
+            protected SafeStructMallocHandle() : base(true) { }
+
+            protected SafeStructMallocHandle(IntPtr handle) : base(true)
+            {
+                this.handle = handle;
+                var b = false;
+                DangerousAddRef(ref b);
+            }
+
+            protected override bool ReleaseHandle()
+            {
+                if (handle != IntPtr.Zero)
+                    dealloc(handle.ToPointer());
+                return true;
+            }
+        }
+
+        private sealed unsafe class SafeStructMallocHandle<TStruct> : SafeStructMallocHandle where TStruct : unmanaged
+        {
+            public static implicit operator TStruct*(SafeStructMallocHandle<TStruct> handle) => (TStruct*) handle.handle.ToPointer();
+
+            public TStruct* Value => this;
+
+            public bool IsNull => Value == null;
+
+            public void ValueAsVoid()
+            {
+                if (typeof(TStruct) != typeof(return_value_void))
+                    throw new Exception();
+
+                var ptr = (return_value_void*) Value;
+                if (ptr->Error is null)
+                {
+                    return;
+                }
+
+                using var hError = new SafeStringMallocHandle(ptr->Error);
+                throw new NativeCallException(new string(hError));
+            }
+
+            public SafeStringMallocHandle ValueAsString()
+            {
+                if (typeof(TStruct) != typeof(return_value_string))
+                    throw new Exception();
+
+                var ptr = (return_value_string*) Value;
+                if (ptr->Error is null)
+                {
+                    return new SafeStringMallocHandle(ptr->Value);
+                }
+
+                using var hError = new SafeStringMallocHandle(ptr->Error);
+                throw new NativeCallException(new string(hError));
+            }
+
+            public SafeStringMallocHandle ValueAsJson()
+            {
+                if (typeof(TStruct) != typeof(return_value_json))
+                    throw new Exception();
+
+                var ptr = (return_value_json*) Value;
+                if (ptr->Error is null)
+                {
+                    return new SafeStringMallocHandle(ptr->Value);
+                }
+
+                using var hError = new SafeStringMallocHandle(ptr->Error);
+                throw new NativeCallException(new string(hError));
+            }
+
+            public bool ValueAsBool()
+            {
+                if (typeof(TStruct) != typeof(return_value_bool))
+                    throw new Exception();
+
+                var ptr = (return_value_bool*) Value;
+                if (ptr->Error is null)
+                {
+                    return ptr->Value == 1;
+                }
+
+                using var hError = new SafeStringMallocHandle(ptr->Error);
+                throw new NativeCallException(new string(hError));
+            }
+
+            public uint ValueAsUInt32()
+            {
+                if (typeof(TStruct) != typeof(return_value_uint32))
+                    throw new Exception();
+
+                var ptr = (return_value_uint32*) Value;
+                if (ptr->Error is null)
+                {
+                    return ptr->Value;
+                }
+
+                using var hError = new SafeStringMallocHandle(ptr->Error);
+                throw new NativeCallException(new string(hError));
+            }
+
+            public int ValueAsInt32()
+            {
+                if (typeof(TStruct) != typeof(return_value_int32))
+                    throw new Exception();
+
+                var ptr = (return_value_int32*) Value;
+                if (ptr->Error is null)
+                {
+                    return ptr->Value;
+                }
+
+                using var hError = new SafeStringMallocHandle(ptr->Error);
+                throw new NativeCallException(new string(hError));
+            }
+
+            public void* ValueAsPointer()
+            {
+                if (typeof(TStruct) != typeof(return_value_ptr))
+                    throw new Exception();
+
+                var ptr = (return_value_ptr*) Value;
+                if (ptr->Error is null)
+                {
+                    return ptr->Value;
+                }
+
+                using var hError = new SafeStringMallocHandle(ptr->Error);
+                throw new NativeCallException(new string(hError));
+            }
+
+            public SafeStructMallocHandle() : base(IntPtr.Zero) { }
+            public SafeStructMallocHandle(TStruct* param) : base(new IntPtr(param)) { }
+        }
+
         private const string DllPath = "../../../../../src/Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/native/Bannerlord.ModuleManager.Native.dll";
 
         [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
@@ -41,34 +204,65 @@ namespace Bannerlord.ModuleManager.Native.Tests
             return dst;
         }
 
-    
-        public static unsafe ReadOnlySpan<char> ToSpan(char* value) => new SafeStringMallocHandle(value).ToSpan();
         public static unsafe ReadOnlySpan<char> ToSpan(param_string* value) => new SafeStringMallocHandle((char*) value).ToSpan();
         public static unsafe param_json* ToJson<T>(T value) => (param_json*) Utils.SerializeJsonCopy(value, (JsonTypeInfo<T>) CustomSourceGenerationContext.GetTypeInfo(typeof(T)));
-        public static unsafe (string Error, T? Result) GetResult<T>(return_value_json* ret)
+        private static TValue DeserializeJson<TValue>(SafeStringMallocHandle json, JsonTypeInfo<TValue> jsonTypeInfo, [CallerMemberName] string? caller = null)
         {
-            var result = Unsafe.AsRef<return_value_json>(ret);
-            return (ToSpan(result.Error).ToString(), Utils.DeserializeJson(new SafeStringMallocHandle(result.Value), (JsonTypeInfo<T>) CustomSourceGenerationContext.GetTypeInfo(typeof(T))));
+            if (json.DangerousGetHandle() == IntPtr.Zero)
+            {
+                throw new JsonDeserializationException($"Received null parameter! Caller: {caller}, Type: {typeof(TValue)};");
+            }
+
+            return DeserializeJson((ReadOnlySpan<char>) json, jsonTypeInfo, caller);
         }
-        public static unsafe (string Error, string Result) GetResult(return_value_string* ret)
+        private static TValue DeserializeJson<TValue>([StringSyntax(StringSyntaxAttribute.Json)] ReadOnlySpan<char> json, JsonTypeInfo<TValue> jsonTypeInfo, [CallerMemberName] string? caller = null)
         {
-            var result = Unsafe.AsRef<return_value_string>(ret);
-            return (ToSpan(result.Error).ToString(), ToSpan(result.Value).ToString());
+            try
+            {
+                if (JsonSerializer.Deserialize(json, jsonTypeInfo) is not { } result)
+                {
+                    throw new JsonDeserializationException($"Received null! Caller: {caller}, Type: {typeof(TValue)}; Json:{json};");
+                }
+
+                return result;
+            }
+            catch (JsonException e)
+            {
+                throw new JsonDeserializationException($"Failed to deserialize! Caller: {caller}, Type: {typeof(TValue)}; Json:{json};", e);
+            }
         }
-        public static unsafe (string Error, bool Result) GetResult(return_value_bool* ret)
+        
+        public static unsafe T? GetResult<T>(return_value_json* ret)
         {
-            var result = Unsafe.AsRef<return_value_bool>(ret);
-            return (ToSpan(result.Error).ToString(), result.Value);
+            using var result = new SafeStructMallocHandle<return_value_json>(ret);
+            using var json = result.ValueAsJson();
+            return DeserializeJson(json, (JsonTypeInfo<T>) CustomSourceGenerationContext.GetTypeInfo(typeof(T)));
         }
-        public static unsafe (string Error, int Result) GetResult(return_value_int32* ret)
+        public static unsafe string GetResult(return_value_string* ret)
         {
-            var result = Unsafe.AsRef<return_value_int32>(ret);
-            return (new string(result.Error), result.Value);
+            using var result = new SafeStructMallocHandle<return_value_string>(ret);
+            using var str = result.ValueAsString();
+            return str.ToSpan().ToString();
         }
-        public static unsafe (string Error, string Result) GetResult(return_value_void* ret)
+        public static unsafe bool GetResult(return_value_bool* ret)
         {
-            var result = Unsafe.AsRef<return_value_void>(ret);
-            return (new string(result.Error), string.Empty);
+            using var result = new SafeStructMallocHandle<return_value_bool>(ret);
+            return result.ValueAsBool();
+        }
+        public static unsafe int GetResult(return_value_int32* ret)
+        {
+            using var result = new SafeStructMallocHandle<return_value_int32>(ret);
+            return result.ValueAsInt32();
+        }
+        public static unsafe uint GetResult(return_value_uint32* ret)
+        {
+            using var result = new SafeStructMallocHandle<return_value_uint32>(ret);
+            return result.ValueAsUInt32();
+        }
+        public static unsafe void GetResult(return_value_void* ret)
+        {
+            using var result = new SafeStructMallocHandle<return_value_void>(ret);
+            result.ValueAsVoid();
         }
     }
 }
