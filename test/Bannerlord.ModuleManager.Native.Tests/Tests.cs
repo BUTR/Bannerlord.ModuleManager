@@ -28,12 +28,12 @@ namespace Bannerlord.ModuleManager.Native.Tests
         [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
         private static unsafe partial return_value_json* bmm_validate_load_order(param_json* p_source, param_json* p_target_module);
         [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
-        private static unsafe partial return_value_json* bmm_validate_module(void* p_owner, param_json* p_modules, param_json* p_target_module, delegate*<void*, param_string*, return_value_bool*> p_is_selected);
+        private static unsafe partial return_value_json* bmm_validate_module(param_ptr* p_owner, param_json* p_modules, param_json* p_target_module, delegate*<param_ptr*, param_string*, return_value_bool*> p_is_selected);
 
         [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
-        private static unsafe partial return_value_void* bmm_enable_module(void* p_owner, param_json* p_modules, param_json* p_target_module, delegate*<void*, param_string*, return_value_bool*> p_get_selected, delegate*<void*, param_string*, byte, return_value_void*> p_set_selected, delegate*<void*, param_string*, return_value_bool*> p_get_disabled, delegate*<void*, param_string*, byte, return_value_void*> p_set_disabled);
+        private static unsafe partial return_value_void* bmm_enable_module(param_ptr* p_owner, param_json* p_modules, param_json* p_target_module, delegate*<param_ptr*, param_string*, return_value_bool*> p_get_selected, delegate*<param_ptr*, param_string*, param_bool, return_value_void*> p_set_selected, delegate*<param_ptr*, param_string*, return_value_bool*> p_get_disabled, delegate*<param_ptr*, param_string*, param_bool, return_value_void*> p_set_disabled);
         [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
-        private static unsafe partial return_value_void* bmm_disable_module(void* p_owner, param_json* p_modules, param_json* p_target_module, delegate*<void*, param_string*, return_value_bool*> p_get_selected, delegate*<void*, param_string*, byte, return_value_void*> p_set_selected, delegate*<void*, param_string*, return_value_bool*> p_get_disabled, delegate*<void*, param_string*, byte, return_value_void*> p_set_disabled);
+        private static unsafe partial return_value_void* bmm_disable_module(param_ptr* p_owner, param_json* p_modules, param_json* p_target_module, delegate*<param_ptr*, param_string*, return_value_bool*> p_get_selected, delegate*<param_ptr*, param_string*, param_bool, return_value_void*> p_set_selected, delegate*<param_ptr*, param_string*, return_value_bool*> p_get_disabled, delegate*<param_ptr*, param_string*, param_bool, return_value_void*> p_set_disabled);
 
         [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
         private static unsafe partial return_value_json* bmm_get_module_info(param_string* p_xml_content);
@@ -168,11 +168,13 @@ namespace Bannerlord.ModuleManager.Native.Tests
                 var version1 = new ApplicationVersion(ApplicationVersionType.Alpha, 0, 0, 0, 0);
                 var version2 = new ApplicationVersion(ApplicationVersionType.Release, 1, 0, 0, 0);
 
-                var result = GetResult(bmm_compare_versions(ToJson(version1), ToJson(version2)));
+                using var version1Json = ToJson(version1);
+                using var version2Json = ToJson(version2);
+                var result = GetResult(bmm_compare_versions(version1Json, version2Json));
                 Assert.That(result, Is.EqualTo(-1));
             });
 
-            Assert.That(DanglingAllocationsCount, Is.EqualTo(0));
+            Assert.That(LibraryAliveCount(), Is.EqualTo(0));
         }
 
         [Test]
@@ -180,11 +182,11 @@ namespace Bannerlord.ModuleManager.Native.Tests
         {
             Assert.DoesNotThrow(() =>
             {
-                using var xml = Copy(HarmonySubModuleXml);
-                var subModule = GetResult<ModuleInfoExtended>(bmm_get_sub_module_info((param_string*) xml.DangerousGetHandle()));
+                using var xml = Utils.Copy(HarmonySubModuleXml, true);
+                var subModule = GetResult<ModuleInfoExtended>(bmm_get_sub_module_info(xml));
             });
 
-            Assert.That(DanglingAllocationsCount, Is.EqualTo(0));
+            Assert.That(LibraryAliveCount(), Is.EqualTo(0));
         }
 
         [Test]
@@ -192,18 +194,21 @@ namespace Bannerlord.ModuleManager.Native.Tests
         {
             Assert.DoesNotThrow(() =>
             {
-                using var invalidXml = Copy(InvalidXml);
-                var invalid = GetResult<ModuleInfoExtended>(bmm_get_module_info((param_string*) invalidXml.DangerousGetHandle()));
+                using var invalidXml = Utils.Copy(InvalidXml, true);
+                var invalid = GetResult<ModuleInfoExtended>(bmm_get_module_info(invalidXml));
+                using var invalidJson = ToJson(invalid);
                 Assert.That(invalid, Is.Not.Null);
-                using var harmonyXml = Copy(HarmonyXml);
-                var harmony = GetResult<ModuleInfoExtended>(bmm_get_module_info((param_string*) harmonyXml.DangerousGetHandle()));
+                using var harmonyXml = Utils.Copy(HarmonyXml, true);
+                var harmony = GetResult<ModuleInfoExtended>(bmm_get_module_info(harmonyXml));
+                using var harmonyJson = ToJson(harmony);
                 Assert.Multiple(() =>
                 {
                     Assert.That(harmony, Is.Not.Null);
                     Assert.That(harmony!.Id, Is.EqualTo("Bannerlord.Harmony"));
                 });
-                using var uiExtenderExXml = Copy(UIExtenderExXml);
-                var uiExtenderEx = GetResult<ModuleInfoExtended>(bmm_get_module_info((param_string*) uiExtenderExXml.DangerousGetHandle()));
+                using var uiExtenderExXml = Utils.Copy(UIExtenderExXml, true);
+                var uiExtenderEx = GetResult<ModuleInfoExtended>(bmm_get_module_info(uiExtenderExXml));
+                using var uiExtenderExJson = ToJson(uiExtenderEx);
                 Assert.Multiple(() =>
                 {
                     Assert.That(uiExtenderEx, Is.Not.Null);
@@ -212,31 +217,36 @@ namespace Bannerlord.ModuleManager.Native.Tests
 
                 var unsorted = new[] { uiExtenderEx, harmony };
                 var unsortedInvalid = new[] { invalid, uiExtenderEx, harmony };
+                using var unsortedJson = ToJson(unsorted);
+                using var unsortedInvalidJson = ToJson(unsortedInvalid);
 
-                var areDepsPresent = GetResult(bmm_are_all_dependencies_of_module_present(ToJson(unsorted), ToJson(uiExtenderEx)));
+                var areDepsPresent = GetResult(bmm_are_all_dependencies_of_module_present(unsortedJson, uiExtenderExJson));
                 Assert.That(areDepsPresent, Is.True);
 
-                var dependencies = GetResult<ModuleInfoExtended[]>(bmm_get_dependent_modules_of(ToJson(unsorted), ToJson(uiExtenderEx)));
+                var dependencies = GetResult<ModuleInfoExtended[]>(bmm_get_dependent_modules_of(unsortedJson, uiExtenderExJson));
                 Assert.Multiple(() =>
                 {
                     Assert.That(dependencies, Has.Length.EqualTo(1));
                     Assert.That(dependencies![0].Id, Is.EqualTo(harmony!.Id), () => string.Join(", ", dependencies.Select(x => x.Id)));
                 });
-                var dependencies2 = GetResult<ModuleInfoExtended[]>(bmm_get_dependent_modules_of_with_options(ToJson(unsorted), ToJson(uiExtenderEx), ToJson(new ModuleSorterOptions(true, true))));
+                using var moduleSorterOptionsJson = ToJson(new ModuleSorterOptions(true, true));
+                var dependencies2 = GetResult<ModuleInfoExtended[]>(bmm_get_dependent_modules_of_with_options(unsortedJson, uiExtenderExJson, moduleSorterOptionsJson));
                 Assert.Multiple(() =>
                 {
                     Assert.That(dependencies2, Has.Length.EqualTo(1));
                     Assert.That(dependencies2![0].Id, Is.EqualTo(harmony!.Id), () => string.Join(", ", dependencies2.Select(x => x.Id)));
                 });
 
-                var sorted = GetResult<ModuleInfoExtended[]>(bmm_sort(ToJson(unsorted)));
+                var sorted = GetResult<ModuleInfoExtended[]>(bmm_sort(unsortedJson));
+                using var sortedJson = ToJson(sorted);
                 Assert.Multiple(() =>
                 {
                     Assert.That(sorted, Has.Length.EqualTo(2), () => string.Join(", ", sorted?.Select(x => x.Id) ?? Enumerable.Empty<string>()));
                     Assert.That(sorted![0].Id, Is.EqualTo(harmony!.Id));
                     Assert.That(sorted![1].Id, Is.EqualTo(uiExtenderEx!.Id));
                 });
-                var sorted2 = GetResult<ModuleInfoExtended[]>(bmm_sort_with_options(ToJson(unsorted), ToJson(new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true })));
+                using var moduleSorterOptions2Json = ToJson(new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true });
+                var sorted2 = GetResult<ModuleInfoExtended[]>(bmm_sort_with_options(unsortedJson, moduleSorterOptions2Json));
                 Assert.Multiple(() =>
                 {
                     Assert.That(sorted2, Has.Length.EqualTo(2), () => string.Join(", ", sorted2?.Select(x => x.Id) ?? Enumerable.Empty<string>()));
@@ -244,38 +254,38 @@ namespace Bannerlord.ModuleManager.Native.Tests
                     Assert.That(sorted2![1].Id, Is.EqualTo(uiExtenderEx!.Id));
                 });
 
-                var validationResult = GetResult<ModuleIssue[]>(bmm_validate_load_order(ToJson(sorted), ToJson(harmony)));
+                var validationResult = GetResult<ModuleIssue[]>(bmm_validate_load_order(sortedJson, harmonyJson));
                 Assert.That(validationResult, Has.Length.EqualTo(0), () => string.Join(", ", validationResult?.Select(x => x.Reason) ?? Enumerable.Empty<string>()));
 
                 var validationManager = new ValidationManager();
                 var validationResult1 = GetResult<ModuleIssue[]>(bmm_validate_module(
-                    Unsafe.AsPointer(ref validationManager), ToJson(unsortedInvalid), ToJson(uiExtenderEx), &ValidationManager.IsSelected));
+                    (param_ptr*) Unsafe.AsPointer(ref validationManager), unsortedInvalidJson, uiExtenderExJson, &ValidationManager.IsSelected));
                 Assert.That(validationResult1, Has.Length.EqualTo(0), () => string.Join(", ", validationResult1?.Select(x => x.Reason) ?? Enumerable.Empty<string>()));
 
                 var validationResult2 = GetResult<ModuleIssue[]>(bmm_validate_module(
-                    Unsafe.AsPointer(ref validationManager), ToJson(unsortedInvalid), ToJson(invalid), &ValidationManager.IsSelected));
+                    (param_ptr*) Unsafe.AsPointer(ref validationManager), unsortedInvalidJson, invalidJson, &ValidationManager.IsSelected));
                 Assert.That(validationResult2, Has.Length.EqualTo(1), () => string.Join(", ", validationResult2?.Select(x => x.Reason) ?? Enumerable.Empty<string>()));
 
                 var enableDisableManager = new EnableDisableManager();
                 GetResult(bmm_enable_module(
-                    Unsafe.AsPointer(ref enableDisableManager), ToJson(unsorted), ToJson(uiExtenderEx),
+                    (param_ptr*) Unsafe.AsPointer(ref enableDisableManager), unsortedJson, uiExtenderExJson,
                     &EnableDisableManager.GetSelected, &EnableDisableManager.SetSelected, &EnableDisableManager.GetDisabled, &EnableDisableManager.SetDisabled));
 
                 GetResult(bmm_disable_module(
-                    Unsafe.AsPointer(ref enableDisableManager), ToJson(unsorted), ToJson(uiExtenderEx),
+                    (param_ptr*) Unsafe.AsPointer(ref enableDisableManager), unsortedJson, uiExtenderExJson,
                     &EnableDisableManager.GetSelected, &EnableDisableManager.SetSelected, &EnableDisableManager.GetDisabled, &EnableDisableManager.SetDisabled));
 
-                var dependenciesAll = GetResult<DependentModuleMetadata[]>(bmm_get_dependencies_all(ToJson(uiExtenderEx)));
+                var dependenciesAll = GetResult<DependentModuleMetadata[]>(bmm_get_dependencies_all(uiExtenderExJson));
                 Assert.That(dependenciesAll!, Has.Length.EqualTo(6));
-                var dependenciesLoadBefore = GetResult<DependentModuleMetadata[]>(bmm_get_dependencies_load_before_this(ToJson(uiExtenderEx)));
+                var dependenciesLoadBefore = GetResult<DependentModuleMetadata[]>(bmm_get_dependencies_load_before_this(uiExtenderExJson));
                 Assert.That(dependenciesLoadBefore!, Has.Length.EqualTo(1));
-                var dependenciesLoadAfter = GetResult<DependentModuleMetadata[]>(bmm_get_dependencies_load_after_this(ToJson(uiExtenderEx)));
+                var dependenciesLoadAfter = GetResult<DependentModuleMetadata[]>(bmm_get_dependencies_load_after_this(uiExtenderExJson));
                 Assert.That(dependenciesLoadAfter!, Has.Length.EqualTo(5));
-                var dependenciesIncompatibles = GetResult<DependentModuleMetadata[]>(bmm_get_dependencies_incompatibles(ToJson(uiExtenderEx)));
+                var dependenciesIncompatibles = GetResult<DependentModuleMetadata[]>(bmm_get_dependencies_incompatibles(uiExtenderExJson));
                 Assert.That(dependenciesIncompatibles!, Has.Length.EqualTo(0));
             });
 
-            Assert.That(DanglingAllocationsCount, Is.EqualTo(0));
+            Assert.That(LibraryAliveCount(), Is.EqualTo(0));
         }
     }
 }

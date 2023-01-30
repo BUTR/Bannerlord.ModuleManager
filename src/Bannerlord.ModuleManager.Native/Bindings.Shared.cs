@@ -13,7 +13,7 @@ namespace Bannerlord.ModuleManager.Native
             Logger.LogInput(size);
             try
             {
-                var result = NativeMemory.Alloc(size);
+                var result = Allocator.Alloc(size, true);
 
                 Logger.LogOutputPrimitive((int) result);
                 return result;
@@ -31,13 +31,31 @@ namespace Bannerlord.ModuleManager.Native
             Logger.LogInput(ptr);
             try
             {
-                NativeMemory.Free(ptr);
+                Allocator.Free(ptr, true);
 
                 Logger.LogOutput();
             }
             catch (Exception e)
             {
                 Logger.LogException(e);
+            }
+        }
+
+        [UnmanagedCallersOnly(EntryPoint = "alloc_alive_count")]
+        public static int AllocAliveCount()
+        {
+            Logger.LogInput();
+            try
+            {
+                var result = Allocator.GetCurrentAllocations();
+
+                Logger.LogOutputPrimitive(result);
+                return result;
+            }
+            catch (Exception e)
+            {
+                Logger.LogException(e);
+                return -1;
             }
         }
     }

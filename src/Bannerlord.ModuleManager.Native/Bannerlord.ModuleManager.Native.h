@@ -48,10 +48,11 @@ namespace Bannerlord::ModuleManager {
         return_value_json* CALL_CONV bmm_get_dependencies_load_after_this(const param_json* p_module);
         return_value_json* CALL_CONV bmm_get_dependencies_incompatibles(const param_json* p_module);
 
-
 #ifdef __cplusplus
     }
 }
 #endif
+
+#undef CALL_CONV
 
 #endif

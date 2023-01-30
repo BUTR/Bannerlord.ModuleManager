@@ -34,12 +34,12 @@ namespace Bannerlord.ModuleManager.Native
                 var result = ModuleSorter.Sort(source).ToArray();
 
                 Logger.LogOutputManaged(result);
-                return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleInfoExtendedArray);
+                return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleInfoExtendedArray, false);
             }
             catch (Exception e)
             {
                 Logger.LogException(e);
-                return return_value_json.AsError(Utils.Copy(e.ToString()));
+                return return_value_json.AsError(Utils.Copy(e.ToString(), false), false);
             }
         }
 
@@ -55,12 +55,12 @@ namespace Bannerlord.ModuleManager.Native
                 var result = ModuleSorter.Sort(source, options).ToArray();
 
                 Logger.LogOutputManaged(result);
-                return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleInfoExtendedArray);
+                return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleInfoExtendedArray, false);
             }
             catch (Exception e)
             {
                 Logger.LogException(e);
-                return return_value_json.AsError(Utils.Copy(e.ToString()));
+                return return_value_json.AsError(Utils.Copy(e.ToString(), false), false);
             }
         }
 
@@ -77,12 +77,12 @@ namespace Bannerlord.ModuleManager.Native
                 var result = ModuleUtilities.AreDependenciesPresent(source, module);
 
                 Logger.LogOutputPrimitive(result);
-                return return_value_bool.AsValue(result);
+                return return_value_bool.AsValue(result, false);
             }
             catch (Exception e)
             {
                 Logger.LogException(e);
-                return return_value_bool.AsError(Utils.Copy(e.ToString()));
+                return return_value_bool.AsError(Utils.Copy(e.ToString(), false), false);
             }
         }
 
@@ -99,12 +99,12 @@ namespace Bannerlord.ModuleManager.Native
                 var result = ModuleUtilities.GetDependencies(source, module).ToArray();
 
                 Logger.LogOutputManaged(result);
-                return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleInfoExtendedArray);
+                return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleInfoExtendedArray, false);
             }
             catch (Exception e)
             {
                 Logger.LogException(e);
-                return return_value_json.AsError(Utils.Copy(e.ToString()));
+                return return_value_json.AsError(Utils.Copy(e.ToString(), false), false);
             }
         }
 
@@ -121,12 +121,12 @@ namespace Bannerlord.ModuleManager.Native
                 var result = ModuleUtilities.GetDependencies(source, module, options).ToArray();
 
                 Logger.LogOutputManaged(result);
-                return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleInfoExtendedArray);
+                return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleInfoExtendedArray, false);
             }
             catch (Exception e)
             {
                 Logger.LogException(e);
-                return return_value_json.AsError(Utils.Copy(e.ToString()));
+                return return_value_json.AsError(Utils.Copy(e.ToString(), false), false);
             }
         }
 
@@ -145,20 +145,25 @@ namespace Bannerlord.ModuleManager.Native
 
                 var result = ModuleUtilities.ValidateModule(modules, targetModule, module =>
                 {
+                    Logger.LogInput();
                     fixed (char* pModuleId = module.Id)
                     {
-                        using var result = SafeStructMallocHandle.Create(isSelected(p_owner, (param_string*) pModuleId));
-                        return result.ValueAsBool();
+                        Logger.LogInputChar(pModuleId);
+                        
+                        using var resultStr = SafeStructMallocHandle.Create(isSelected(p_owner, (param_string*) pModuleId), true);
+                        var result = resultStr.ValueAsBool();
+                        Logger.LogOutputPrimitive(result);
+                        return result;
                     }
                 }).ToArray();
 
                 Logger.LogOutputManaged(result);
-                return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleIssueArray);
+                return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleIssueArray, false);
             }
             catch (Exception e)
             {
                 Logger.LogException(e);
-                return return_value_json.AsError(Utils.Copy(e.ToString()));
+                return return_value_json.AsError(Utils.Copy(e.ToString(), false), false);
             }
         }
 
@@ -174,12 +179,12 @@ namespace Bannerlord.ModuleManager.Native
                 var result = ModuleUtilities.ValidateLoadOrder(modules, targetModule).ToArray();
 
                 Logger.LogOutputManaged(result);
-                return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleIssueArray);
+                return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleIssueArray, false);
             }
             catch (Exception e)
             {
                 Logger.LogException(e);
-                return return_value_json.AsError(Utils.Copy(e.ToString()));
+                return return_value_json.AsError(Utils.Copy(e.ToString(), false), false);
             }
         }
 
@@ -209,7 +214,8 @@ namespace Bannerlord.ModuleManager.Native
                     {
                         Logger.LogInputChar(pModuleId);
 
-                        var result = SafeStructMallocHandle.Create(getSelected(p_owner, (param_string*) pModuleId)).ValueAsBool();
+                        using var resultStr = SafeStructMallocHandle.Create(getSelected(p_owner, (param_string*) pModuleId), true);
+                        var result = resultStr.ValueAsBool();
                         Logger.LogOutputPrimitive(result);
                         return result;
                     }
@@ -220,7 +226,8 @@ namespace Bannerlord.ModuleManager.Native
                     {
                         Logger.LogInputChar(pModuleId);
 
-                        SafeStructMallocHandle.Create(setSelected(p_owner, (param_string*) pModuleId, value)).ValueAsVoid();
+                        using var resultStr = SafeStructMallocHandle.Create(setSelected(p_owner, (param_string*) pModuleId, value), true);
+                        resultStr.ValueAsVoid();
                         Logger.LogOutput();
                     }
                 }, module =>
@@ -230,7 +237,8 @@ namespace Bannerlord.ModuleManager.Native
                     {
                         Logger.LogInputChar(pModuleId);
 
-                        var result = SafeStructMallocHandle.Create(getDisabled(p_owner, (param_string*) pModuleId)).ValueAsBool();
+                        using var resultStr = SafeStructMallocHandle.Create(getDisabled(p_owner, (param_string*) pModuleId), true);
+                        var result = resultStr.ValueAsBool();
                         Logger.LogOutputPrimitive(result);
                         return result;
                     }
@@ -241,18 +249,19 @@ namespace Bannerlord.ModuleManager.Native
                     {
                         Logger.LogInputChar(pModuleId);
 
-                        SafeStructMallocHandle.Create(setDisabled(p_owner, (param_string*) pModuleId, value)).ValueAsVoid();
+                        using var resultStr = SafeStructMallocHandle.Create(setDisabled(p_owner, (param_string*) pModuleId, value), true);
+                        resultStr.ValueAsVoid();
                         Logger.LogOutput();
                     }
                 });
 
                 Logger.LogOutput();
-                return return_value_void.AsValue();
+                return return_value_void.AsValue(false);
             }
             catch (Exception e)
             {
                 Logger.LogException(e);
-                return return_value_void.AsError(Utils.Copy(e.ToString()));
+                return return_value_void.AsError(Utils.Copy(e.ToString(), false), false);
             }
         }
 
@@ -281,7 +290,8 @@ namespace Bannerlord.ModuleManager.Native
                     {
                         Logger.LogInputChar(pModuleId);
 
-                        var result = SafeStructMallocHandle.Create(getSelected(p_owner, (param_string*) pModuleId)).ValueAsBool();
+                        using var resultStr = SafeStructMallocHandle.Create(getSelected(p_owner, (param_string*) pModuleId), true);
+                        var result = resultStr.ValueAsBool();
                         Logger.LogOutputPrimitive(result);
                         return result;
                     }
@@ -292,7 +302,8 @@ namespace Bannerlord.ModuleManager.Native
                     {
                         Logger.LogInputChar(pModuleId);
 
-                        SafeStructMallocHandle.Create(setSelected(p_owner, (param_string*) pModuleId, value)).ValueAsVoid();
+                        using var resultStr = SafeStructMallocHandle.Create(setSelected(p_owner, (param_string*) pModuleId, value), true);
+                        resultStr.ValueAsVoid();
                         Logger.LogOutput();
                     }
                 }, module =>
@@ -302,7 +313,8 @@ namespace Bannerlord.ModuleManager.Native
                     {
                         Logger.LogInputChar(pModuleId);
 
-                        var result = SafeStructMallocHandle.Create(getDisabled(p_owner, (param_string*) pModuleId)).ValueAsBool();
+                        using var resultStr = SafeStructMallocHandle.Create(getDisabled(p_owner, (param_string*) pModuleId), true);
+                        var result = resultStr.ValueAsBool();
                         Logger.LogOutputPrimitive(result);
                         return result;
                     }
@@ -313,18 +325,19 @@ namespace Bannerlord.ModuleManager.Native
                     {
                         Logger.LogInputChar(pModuleId);
 
-                        SafeStructMallocHandle.Create(setDisabled(p_owner, (param_string*) pModuleId, value)).ValueAsVoid();
+                        using var resultStr = SafeStructMallocHandle.Create(setDisabled(p_owner, (param_string*) pModuleId, value), true);
+                        resultStr.ValueAsVoid();
                         Logger.LogOutput();
                     }
                 });
 
                 Logger.LogOutput();
-                return return_value_void.AsValue();
+                return return_value_void.AsValue(false);
             }
             catch (Exception e)
             {
                 Logger.LogException(e);
-                return return_value_void.AsError(Utils.Copy(e.ToString()));
+                return return_value_void.AsError(Utils.Copy(e.ToString(), false), false);
             }
         }
 
@@ -343,16 +356,16 @@ namespace Bannerlord.ModuleManager.Native
                 {
                     var e = new InvalidOperationException("Invalid xml content!");
                     Logger.LogException(e);
-                    return return_value_json.AsError(Utils.Copy(e.ToString()));
+                    return return_value_json.AsError(Utils.Copy(e.ToString(), false), false);
                 }
 
                 Logger.LogOutputManaged(result);
-                return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleInfoExtended);
+                return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleInfoExtended, false);
             }
             catch (Exception e)
             {
                 Logger.LogException(e);
-                return return_value_json.AsError(Utils.Copy(e.ToString()));
+                return return_value_json.AsError(Utils.Copy(e.ToString(), false), false);
             }
         }
 
@@ -370,15 +383,15 @@ namespace Bannerlord.ModuleManager.Native
                 {
                     var e = new InvalidOperationException("Invalid xml content!");
                     Logger.LogException(e);
-                    return return_value_json.AsError(Utils.Copy(e.ToString()));
+                    return return_value_json.AsError(Utils.Copy(e.ToString(), false), false);
                 }
 
-                return return_value_json.AsValue(result, CustomSourceGenerationContext.SubModuleInfoExtended);
+                return return_value_json.AsValue(result, CustomSourceGenerationContext.SubModuleInfoExtended, false);
             }
             catch (Exception e)
             {
                 Logger.LogException(e);
-                return return_value_json.AsError(Utils.Copy(e.ToString()));
+                return return_value_json.AsError(Utils.Copy(e.ToString(), false), false);
             }
         }
 
@@ -395,12 +408,12 @@ namespace Bannerlord.ModuleManager.Native
                 var result = _applicationVersionComparer.Compare(x, y);
 
                 Logger.LogOutputPrimitive(result);
-                return return_value_int32.AsValue(result);
+                return return_value_int32.AsValue(result, false);
             }
             catch (Exception e)
             {
                 Logger.LogException(e);
-                return return_value_int32.AsError(Utils.Copy(e.ToString()));
+                return return_value_int32.AsError(Utils.Copy(e.ToString(), false), false);
             }
         }
 
@@ -416,12 +429,12 @@ namespace Bannerlord.ModuleManager.Native
                 var result = module.DependenciesAllDistinct().ToArray();
 
                 Logger.LogOutputManaged(result);
-                return return_value_json.AsValue(result, CustomSourceGenerationContext.DependentModuleMetadataArray);
+                return return_value_json.AsValue(result, CustomSourceGenerationContext.DependentModuleMetadataArray, false);
             }
             catch (Exception e)
             {
                 Logger.LogException(e);
-                return return_value_json.AsError(Utils.Copy(e.ToString()));
+                return return_value_json.AsError(Utils.Copy(e.ToString(), false), false);
             }
         }
         [UnmanagedCallersOnly(EntryPoint = "bmm_get_dependencies_load_before_this", CallConvs = new [] { typeof(CallConvCdecl) })]
@@ -435,12 +448,12 @@ namespace Bannerlord.ModuleManager.Native
                 var result = module.DependenciesLoadBeforeThisDistinct().ToArray();
 
                 Logger.LogOutputManaged(result);
-                return return_value_json.AsValue(result, CustomSourceGenerationContext.DependentModuleMetadataArray);
+                return return_value_json.AsValue(result, CustomSourceGenerationContext.DependentModuleMetadataArray, false);
             }
             catch (Exception e)
             {
                 Logger.LogException(e);
-                return return_value_json.AsError(Utils.Copy(e.ToString()));
+                return return_value_json.AsError(Utils.Copy(e.ToString(), false), false);
             }
         }
         [UnmanagedCallersOnly(EntryPoint = "bmm_get_dependencies_load_after_this", CallConvs = new [] { typeof(CallConvCdecl) })]
@@ -454,12 +467,12 @@ namespace Bannerlord.ModuleManager.Native
                 var result = module.DependenciesLoadAfterThisDistinct().ToArray();
 
                 Logger.LogOutputManaged(result);
-                return return_value_json.AsValue(result, CustomSourceGenerationContext.DependentModuleMetadataArray);
+                return return_value_json.AsValue(result, CustomSourceGenerationContext.DependentModuleMetadataArray, false);
             }
             catch (Exception e)
             {
                 Logger.LogException(e);
-                return return_value_json.AsError(Utils.Copy(e.ToString()));
+                return return_value_json.AsError(Utils.Copy(e.ToString(), false), false);
             }
         }
         [UnmanagedCallersOnly(EntryPoint = "bmm_get_dependencies_incompatibles", CallConvs = new [] { typeof(CallConvCdecl) })]
@@ -473,12 +486,12 @@ namespace Bannerlord.ModuleManager.Native
                 var result = module.DependenciesIncompatiblesDistinct().ToArray();
 
                 Logger.LogOutputManaged(result);
-                return return_value_json.AsValue(result, CustomSourceGenerationContext.DependentModuleMetadataArray);
+                return return_value_json.AsValue(result, CustomSourceGenerationContext.DependentModuleMetadataArray, false);
             }
             catch (Exception e)
             {
                 Logger.LogException(e);
-                return return_value_json.AsError(Utils.Copy(e.ToString()));
+                return return_value_json.AsError(Utils.Copy(e.ToString(), false), false);
             }
         }
     }

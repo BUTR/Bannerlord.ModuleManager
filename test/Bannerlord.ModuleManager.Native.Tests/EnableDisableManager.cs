@@ -6,27 +6,27 @@ namespace Bannerlord.ModuleManager.Native.Tests
 {
     internal class EnableDisableManager
     {
-        public static unsafe return_value_bool* GetSelected(void* owner, param_string* moduleId)
+        public static unsafe return_value_bool* GetSelected(param_ptr* owner, param_string* moduleId)
         {
             var manager = Unsafe.AsRef<EnableDisableManager>(owner);
-            return return_value_bool.AsValue(manager.GetSelected(Utils2.ToSpan(moduleId).ToString()));
+            return return_value_bool.AsValue(manager.GetSelected(Utils2.ToSpan(moduleId).ToString()), false);
         }
-        public static unsafe return_value_void* SetSelected(void* owner, param_string* moduleId, byte value)
+        public static unsafe return_value_void* SetSelected(param_ptr* owner, param_string* moduleId, param_bool value)
         {
             var manager = Unsafe.AsRef<EnableDisableManager>(owner);
-            manager.SetSelected(Utils2.ToSpan(moduleId).ToString(), value == 1);
-            return return_value_void.AsValue();
+            manager.SetSelected(Utils2.ToSpan(moduleId).ToString(), value);
+            return return_value_void.AsValue(true);
         }
-        public static unsafe return_value_bool* GetDisabled(void* owner, param_string* moduleId)
+        public static unsafe return_value_bool* GetDisabled(param_ptr* owner, param_string* moduleId)
         {
             var manager = Unsafe.AsRef<EnableDisableManager>(owner);
-            return return_value_bool.AsValue(manager.GetDisabled(Utils2.ToSpan(moduleId).ToString()));
+            return return_value_bool.AsValue(manager.GetDisabled(Utils2.ToSpan(moduleId).ToString()), false);
         }
-        public static unsafe return_value_void* SetDisabled(void* owner, param_string* moduleId, byte value)
+        public static unsafe return_value_void* SetDisabled(param_ptr* owner, param_string* moduleId, param_bool value)
         {
             var manager = Unsafe.AsRef<EnableDisableManager>(owner);
-            manager.SetDisabled(Utils2.ToSpan(moduleId).ToString(), value == 1);
-            return return_value_void.AsValue();
+            manager.SetDisabled(Utils2.ToSpan(moduleId).ToString(), value);
+            return return_value_void.AsValue(true);
         }
 
         public bool GetSelected(string moduleId)
