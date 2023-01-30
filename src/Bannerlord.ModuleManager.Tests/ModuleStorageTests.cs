@@ -103,7 +103,7 @@ namespace Bannerlord.ModuleManager.Tests
 </Module>
 """;
 
-        public static ModuleInfoExtended? GetModuleInfo(string xml)
+        private static ModuleInfoExtended? GetModuleInfo(string xml)
         {
             var doc = new XmlDocument();
             doc.LoadXml(xml);
@@ -116,11 +116,17 @@ namespace Bannerlord.ModuleManager.Tests
             var invalid = GetModuleInfo(InvalidXml);
             Assert.That(invalid, Is.Not.Null);
             var harmony = GetModuleInfo(HarmonyXml);
-            Assert.That(harmony, Is.Not.Null);
-            Assert.That(harmony.Id, Is.EqualTo("Bannerlord.Harmony"));
+            Assert.Multiple(() =>
+            {
+                Assert.That(harmony, Is.Not.Null);
+                Assert.That(harmony!.Id, Is.EqualTo("Bannerlord.Harmony"));
+            });
             var uiExtenderEx = GetModuleInfo(UIExtenderExXml);
-            Assert.That(uiExtenderEx, Is.Not.Null);
-            Assert.That(uiExtenderEx.Id, Is.EqualTo("Bannerlord.UIExtenderEx"));
+            Assert.Multiple(() =>
+            {
+                Assert.That(uiExtenderEx, Is.Not.Null);
+                Assert.That(uiExtenderEx!.Id, Is.EqualTo("Bannerlord.UIExtenderEx"));
+            });
 
             var unsorted = new[] { uiExtenderEx, harmony };
             var unsortedInvalid = new[] { invalid, uiExtenderEx, harmony };
@@ -129,33 +135,48 @@ namespace Bannerlord.ModuleManager.Tests
             Assert.That(areDepsPresent, Is.True);
 
             var dependencies = ModuleUtilities.GetDependencies(unsorted, uiExtenderEx).ToArray();
-            Assert.That(dependencies!.Length, Is.EqualTo(1));
-            Assert.That(dependencies[0].Id, Is.EqualTo(harmony.Id));
+            Assert.Multiple(() =>
+            {
+                Assert.That(dependencies, Has.Length.EqualTo(1));
+                Assert.That(dependencies![0].Id, Is.EqualTo(harmony!.Id), () => string.Join(", ", dependencies.Select(x => x.Id)));
+            });
 
             var dependencies2 = ModuleUtilities.GetDependencies(unsorted, uiExtenderEx, new ModuleSorterOptions(true, true)).ToArray();
-            Assert.That(dependencies2!.Length, Is.EqualTo(1));
-            Assert.That(dependencies2[0].Id, Is.EqualTo(harmony.Id));
+            Assert.Multiple(() =>
+            {
+                Assert.That(dependencies2, Has.Length.EqualTo(1));
+                Assert.That(dependencies2![0].Id, Is.EqualTo(harmony!.Id), () => string.Join(", ", dependencies2.Select(x => x.Id)));
+            });
 
             var sorted = ModuleSorter.Sort(unsorted);
-            Assert.That(sorted.Count, Is.EqualTo(2));
+            Assert.That(sorted.Count, Is.EqualTo(2), () => string.Join(", ", sorted.Select(x => x.Id)));
 
             var sorted2 = ModuleSorter.Sort(unsorted, new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true });
-            Assert.That(sorted2, Is.EqualTo(2));
+            Assert.That(sorted2.Count, Is.EqualTo(2), () => string.Join(", ", sorted2.Select(x => x.Id)));
 
-            var validationResult = ModuleUtilities.ValidateLoadOrder(sorted.AsReadOnly(), harmony);
-            Assert.That(validationResult, Is.Empty);
+            var validationResult = ModuleUtilities.ValidateLoadOrder(sorted.AsReadOnly(), harmony).ToArray();
+            Assert.That(validationResult, Is.Empty, () => string.Join(", ", validationResult?.Select(x => x.Reason) ?? Enumerable.Empty<string>()));
 
             var validationManager = new ValidationManager();
             var validationResult1 = ModuleUtilities.ValidateModule(unsortedInvalid, uiExtenderEx, validationManager.IsSelected).ToArray();
-            Assert.That(validationResult1.Length, Is.Empty);
+            Assert.That(validationResult1, Is.Empty, () => string.Join(", ", validationResult1?.Select(x => x.Reason) ?? Enumerable.Empty<string>()));
 
             var validationResult2 = ModuleUtilities.ValidateModule(unsortedInvalid, invalid, validationManager.IsSelected).ToArray();
-            Assert.That(validationResult2.Length, Is.Empty);
+            Assert.That(validationResult2, Has.Length.EqualTo(1), () => string.Join(", ", validationResult2?.Select(x => x.Reason) ?? Enumerable.Empty<string>()));
 
             var enableDisableManager = new EnableDisableManager();
             ModuleUtilities.EnableModule(unsorted, uiExtenderEx, enableDisableManager.GetSelected, enableDisableManager.SetSelected, enableDisableManager.GetDisabled, enableDisableManager.SetDisabled);
 
             ModuleUtilities.DisableModule(unsorted, uiExtenderEx, enableDisableManager.GetSelected, enableDisableManager.SetSelected, enableDisableManager.GetDisabled, enableDisableManager.SetDisabled);
+
+            var dependenciesAll = uiExtenderEx.DependenciesAllDistinct().ToArray();
+            Assert.That(dependenciesAll, Has.Length.EqualTo(6));
+            var dependenciesLoadBefore = uiExtenderEx.DependenciesLoadBeforeThisDistinct().ToArray();
+            Assert.That(dependenciesLoadBefore, Has.Length.EqualTo(1));
+            var dependenciesLoadAfter = uiExtenderEx.DependenciesLoadAfterThisDistinct().ToArray();
+            Assert.That(dependenciesLoadAfter, Has.Length.EqualTo(5));
+            var dependenciesIncompatibles = uiExtenderEx.DependenciesIncompatiblesDistinct().ToArray();
+            Assert.That(dependenciesIncompatibles, Has.Length.EqualTo(0));
         }
 
         [Test]

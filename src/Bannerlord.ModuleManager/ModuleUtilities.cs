@@ -210,7 +210,7 @@ namespace Bannerlord.ModuleManager
         public static IEnumerable<ModuleIssue> ValidateModule(IReadOnlyList<ModuleInfoExtended> modules, ModuleInfoExtended targetModule, Func<ModuleInfoExtended, bool> isSelected)
         {
             var visited = new HashSet<ModuleInfoExtended>();
-            foreach (var issue in ValidateModule(modules, targetModule, visited, isSelected, x => ValidateModule(modules, x, isSelected).Any()))
+            foreach (var issue in ValidateModule(modules, targetModule, visited, isSelected, x => ValidateModule(modules, x, isSelected).Count() == 0))
                 yield return issue;
         }
         /// <summary>

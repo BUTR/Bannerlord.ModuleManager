@@ -5,53 +5,54 @@ using System.Runtime.InteropServices;
 
 using static Bannerlord.ModuleManager.Native.Tests.Utils2;
 
-namespace Bannerlord.ModuleManager.Native.Tests;
-
-public partial class Tests
+namespace Bannerlord.ModuleManager.Native.Tests
 {
-    private const string DllPath = "../../../../../src/Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/native/Bannerlord.ModuleManager.Native.dll";
+    public partial class Tests
+    {
+        private const string DllPath = "../../../../../src/Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/native/Bannerlord.ModuleManager.Native.dll";
 
-    [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
-    private static unsafe partial return_value_json* bmm_sort(param_json* p_source);
-    [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
-    private static unsafe partial return_value_json* bmm_sort_with_options(param_json* p_source, param_json* p_options);
 
-    [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
-    private static unsafe partial return_value_bool* bmm_are_all_dependencies_of_module_present(param_json* p_source, param_json* p_module);
+        [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
+        private static unsafe partial return_value_json* bmm_sort(param_json* p_source);
+        [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
+        private static unsafe partial return_value_json* bmm_sort_with_options(param_json* p_source, param_json* p_options);
 
-    [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
-    private static unsafe partial return_value_json* bmm_get_dependent_modules_of(param_json* p_source, param_json* p_module);
-    [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
-    private static unsafe partial return_value_json* bmm_get_dependent_modules_of_with_options(param_json* p_source, param_json* p_module, param_json* p_options);
+        [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
+        private static unsafe partial return_value_bool* bmm_are_all_dependencies_of_module_present(param_json* p_source, param_json* p_module);
 
-    [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
-    private static unsafe partial return_value_json* bmm_validate_load_order(param_json* p_source, param_json* p_target_module);
-    [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
-    private static unsafe partial return_value_json* bmm_validate_module(void* p_owner, param_json* p_modules, param_json* p_target_module, delegate*<void*, param_string*, return_value_bool*> p_is_selected);
+        [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
+        private static unsafe partial return_value_json* bmm_get_dependent_modules_of(param_json* p_source, param_json* p_module);
+        [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
+        private static unsafe partial return_value_json* bmm_get_dependent_modules_of_with_options(param_json* p_source, param_json* p_module, param_json* p_options);
 
-    [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
-    private static unsafe partial return_value_void* bmm_enable_module(void* p_owner, param_json* p_modules, param_json* p_target_module, delegate*<void*, param_string*, return_value_bool*> p_get_selected, delegate*<void*, param_string*, bool, return_value_void*> p_set_selected, delegate*<void*, param_string*, return_value_bool*> p_get_disabled, delegate*<void*, param_string*, bool, return_value_void*> p_set_disabled);
-    [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
-    private static unsafe partial return_value_void* bmm_disable_module(void* p_owner, param_json* p_modules, param_json* p_target_module, delegate*<void*, param_string*, return_value_bool*> p_get_selected, delegate*<void*, param_string*, bool, return_value_void*> p_set_selected, delegate*<void*, param_string*, return_value_bool*> p_get_disabled, delegate*<void*, param_string*, bool, return_value_void*> p_set_disabled);
+        [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
+        private static unsafe partial return_value_json* bmm_validate_load_order(param_json* p_source, param_json* p_target_module);
+        [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
+        private static unsafe partial return_value_json* bmm_validate_module(void* p_owner, param_json* p_modules, param_json* p_target_module, delegate*<void*, param_string*, return_value_bool*> p_is_selected);
 
-    [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
-    private static unsafe partial return_value_json* bmm_get_module_info(param_string* p_xml_content);
-    [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
-    private static unsafe partial return_value_json* bmm_get_sub_module_info(param_string* p_xml_content);
+        [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
+        private static unsafe partial return_value_void* bmm_enable_module(void* p_owner, param_json* p_modules, param_json* p_target_module, delegate*<void*, param_string*, return_value_bool*> p_get_selected, delegate*<void*, param_string*, byte, return_value_void*> p_set_selected, delegate*<void*, param_string*, return_value_bool*> p_get_disabled, delegate*<void*, param_string*, byte, return_value_void*> p_set_disabled);
+        [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
+        private static unsafe partial return_value_void* bmm_disable_module(void* p_owner, param_json* p_modules, param_json* p_target_module, delegate*<void*, param_string*, return_value_bool*> p_get_selected, delegate*<void*, param_string*, byte, return_value_void*> p_set_selected, delegate*<void*, param_string*, return_value_bool*> p_get_disabled, delegate*<void*, param_string*, byte, return_value_void*> p_set_disabled);
 
-    [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
-    private static unsafe partial return_value_int32* bmm_compare_versions(param_json* p_x, param_json* p_y);
-    
-    [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
-    private static unsafe partial return_value_json* bmm_get_dependencies_all(param_json* p_module);
-    [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
-    private static unsafe partial return_value_json* bmm_get_dependencies_load_before_this(param_json* p_module);
-    [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
-    private static unsafe partial return_value_json* bmm_get_dependencies_load_after_this(param_json* p_module);
-    [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
-    private static unsafe partial return_value_json* bmm_get_dependencies_incompatibles(param_json* p_module);
+        [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
+        private static unsafe partial return_value_json* bmm_get_module_info(param_string* p_xml_content);
+        [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
+        private static unsafe partial return_value_json* bmm_get_sub_module_info(param_string* p_xml_content);
 
-    private const string InvalidXml = """
+        [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
+        private static unsafe partial return_value_int32* bmm_compare_versions(param_json* p_x, param_json* p_y);
+
+        [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
+        private static unsafe partial return_value_json* bmm_get_dependencies_all(param_json* p_module);
+        [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
+        private static unsafe partial return_value_json* bmm_get_dependencies_load_before_this(param_json* p_module);
+        [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
+        private static unsafe partial return_value_json* bmm_get_dependencies_load_after_this(param_json* p_module);
+        [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
+        private static unsafe partial return_value_json* bmm_get_dependencies_incompatibles(param_json* p_module);
+
+        private const string InvalidXml = """
 <?xml version="1.0" encoding="UTF-8"?>
 <Module>
   <Name value="Invalid" />
@@ -78,7 +79,7 @@ public partial class Tests
 </Module>
 """;
 
-    private const string UIExtenderExXml = """
+        private const string UIExtenderExXml = """
 <?xml version="1.0" encoding="UTF-8"?>
 <Module>
   <Name value="UIExtenderEx" />
@@ -112,7 +113,7 @@ public partial class Tests
 </Module>
 """;
 
-    private const string HarmonyXml = """
+        private const string HarmonyXml = """
 <?xml version="1.0" encoding="UTF-8"?>
 <Module>
   <Name value="Harmony" />
@@ -146,7 +147,7 @@ public partial class Tests
 </Module>
 """;
 
-    private const string HarmonySubModuleXml = """
+        private const string HarmonySubModuleXml = """
 <SubModule>
   <Name value="Harmony" />
   <DLLName value="Bannerlord.Harmony.dll" />
@@ -159,86 +160,113 @@ public partial class Tests
 </SubModule>
 """;
 
-    [Test]
-    public unsafe void Test_ApplicationVersion()
-    {
-        var version1 = new ApplicationVersion(ApplicationVersionType.Alpha, 0, 0, 0, 0);
-        var version2 = new ApplicationVersion(ApplicationVersionType.Release, 1, 0, 0, 0);
-
-        var result = GetResult(bmm_compare_versions(ToJson(version1), ToJson(version2)));
-        Assert.That(result, Is.EqualTo(-1));
-    }
-
-    [Test]
-    public unsafe void Test_SubModule()
-    {
-        var subModule = GetResult<ModuleInfoExtended>(bmm_get_sub_module_info((param_string*) Copy(HarmonySubModuleXml)));
-        Assert.Pass();
-    }
-
-    [Test]
-    public unsafe void Test_Main()
-    {
-        var invalid = GetResult<ModuleInfoExtended>(bmm_get_module_info((param_string*) Copy(InvalidXml)));
-        var harmony = GetResult<ModuleInfoExtended>(bmm_get_module_info((param_string*) Copy(HarmonyXml)));
-        Assert.Multiple(() =>
+        [Test]
+        public unsafe void Test_ApplicationVersion()
         {
-            Assert.That(harmony, Is.Not.Null);
-            Assert.That(harmony!.Id, Is.EqualTo("Bannerlord.Harmony"));
-        });
-        var uiExtenderEx = GetResult<ModuleInfoExtended>(bmm_get_module_info((param_string*) Copy(UIExtenderExXml)));
-        Assert.Multiple(() =>
+            Assert.DoesNotThrow(() =>
+            {
+                var version1 = new ApplicationVersion(ApplicationVersionType.Alpha, 0, 0, 0, 0);
+                var version2 = new ApplicationVersion(ApplicationVersionType.Release, 1, 0, 0, 0);
+
+                var result = GetResult(bmm_compare_versions(ToJson(version1), ToJson(version2)));
+                Assert.That(result, Is.EqualTo(-1));
+            });
+
+            Assert.That(DanglingAllocationsCount, Is.EqualTo(0));
+        }
+
+        [Test]
+        public unsafe void Test_SubModule()
         {
-            Assert.That(uiExtenderEx, Is.Not.Null);
-            Assert.That(uiExtenderEx!.Id, Is.EqualTo("Bannerlord.UIExtenderEx"));
-        });
+            Assert.DoesNotThrow(() =>
+            {
+                using var xml = Copy(HarmonySubModuleXml);
+                var subModule = GetResult<ModuleInfoExtended>(bmm_get_sub_module_info((param_string*) xml.DangerousGetHandle()));
+            });
 
-        var unsorted = new[] { uiExtenderEx, harmony };
-        var unsortedInvalid = new[] { invalid, uiExtenderEx, harmony };
+            Assert.That(DanglingAllocationsCount, Is.EqualTo(0));
+        }
 
-        var areDepsPresent = GetResult(bmm_are_all_dependencies_of_module_present(ToJson(unsorted), ToJson(uiExtenderEx)));
-        Assert.That(areDepsPresent, Is.True);
-
-        var dependencies = GetResult<ModuleInfoExtended[]>(bmm_get_dependent_modules_of(ToJson(unsorted), ToJson(uiExtenderEx)));
-        Assert.Multiple(() =>
+        [Test]
+        public unsafe void Test_Main()
         {
-            Assert.That(dependencies, Has.Length.EqualTo(1));
-            Assert.That(dependencies![0].Id, Is.EqualTo(harmony!.Id));
-        });
-        var dependencies2 = GetResult<ModuleInfoExtended[]>(bmm_get_dependent_modules_of_with_options(ToJson(unsorted), ToJson(uiExtenderEx), ToJson(new ModuleSorterOptions(true, true))));
-        Assert.Multiple(() =>
-        {
-            Assert.That(dependencies2, Has.Length.EqualTo(1));
-            Assert.That(dependencies2![0].Id, Is.EqualTo(harmony!.Id));
-        });
-        var sorted = GetResult<ModuleInfoExtended[]>(bmm_sort(ToJson(unsorted)));
+            Assert.DoesNotThrow(() =>
+            {
+                using var invalidXml = Copy(InvalidXml);
+                var invalid = GetResult<ModuleInfoExtended>(bmm_get_module_info((param_string*) invalidXml.DangerousGetHandle()));
+                Assert.That(invalid, Is.Not.Null);
+                using var harmonyXml = Copy(HarmonyXml);
+                var harmony = GetResult<ModuleInfoExtended>(bmm_get_module_info((param_string*) harmonyXml.DangerousGetHandle()));
+                Assert.Multiple(() =>
+                {
+                    Assert.That(harmony, Is.Not.Null);
+                    Assert.That(harmony!.Id, Is.EqualTo("Bannerlord.Harmony"));
+                });
+                using var uiExtenderExXml = Copy(UIExtenderExXml);
+                var uiExtenderEx = GetResult<ModuleInfoExtended>(bmm_get_module_info((param_string*) uiExtenderExXml.DangerousGetHandle()));
+                Assert.Multiple(() =>
+                {
+                    Assert.That(uiExtenderEx, Is.Not.Null);
+                    Assert.That(uiExtenderEx!.Id, Is.EqualTo("Bannerlord.UIExtenderEx"));
+                });
 
-        var sorted2 = GetResult<ModuleInfoExtended[]>(bmm_sort_with_options(ToJson(unsorted), ToJson(new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true })));
-        var validationResult = GetResult<ModuleIssue[]>(bmm_validate_load_order(ToJson(sorted), ToJson(harmony)));
+                var unsorted = new[] { uiExtenderEx, harmony };
+                var unsortedInvalid = new[] { invalid, uiExtenderEx, harmony };
 
-        var validationManager = new ValidationManager();
-        var validationResult1 = GetResult<ModuleIssue[]>(bmm_validate_module(
-            Unsafe.AsPointer(ref validationManager), ToJson(unsortedInvalid), ToJson(uiExtenderEx), &ValidationManager.IsSelected));
+                var areDepsPresent = GetResult(bmm_are_all_dependencies_of_module_present(ToJson(unsorted), ToJson(uiExtenderEx)));
+                Assert.That(areDepsPresent, Is.True);
 
-        var validationResult2 = GetResult<ModuleIssue[]>(bmm_validate_module(
-            Unsafe.AsPointer(ref validationManager), ToJson(unsortedInvalid), ToJson(invalid), &ValidationManager.IsSelected));
+                var dependencies = GetResult<ModuleInfoExtended[]>(bmm_get_dependent_modules_of(ToJson(unsorted), ToJson(uiExtenderEx)));
+                Assert.Multiple(() =>
+                {
+                    Assert.That(dependencies, Has.Length.EqualTo(1));
+                    Assert.That(dependencies![0].Id, Is.EqualTo(harmony!.Id), () => string.Join(", ", dependencies.Select(x => x.Id)));
+                });
+                var dependencies2 = GetResult<ModuleInfoExtended[]>(bmm_get_dependent_modules_of_with_options(ToJson(unsorted), ToJson(uiExtenderEx), ToJson(new ModuleSorterOptions(true, true))));
+                Assert.Multiple(() =>
+                {
+                    Assert.That(dependencies2, Has.Length.EqualTo(1));
+                    Assert.That(dependencies2![0].Id, Is.EqualTo(harmony!.Id), () => string.Join(", ", dependencies2.Select(x => x.Id)));
+                });
 
-        var enableDisableManager = new EnableDisableManager();
-        GetResult(bmm_enable_module(
-            Unsafe.AsPointer(ref enableDisableManager), ToJson(unsorted), ToJson(uiExtenderEx),
-            &EnableDisableManager.GetSelected, &EnableDisableManager.SetSelected, &EnableDisableManager.GetDisabled, &EnableDisableManager.SetDisabled));
+                var sorted = GetResult<ModuleInfoExtended[]>(bmm_sort(ToJson(unsorted)));
+                Assert.That(sorted, Has.Length.EqualTo(2), () => string.Join(", ", sorted?.Select(x => x.Id) ?? Enumerable.Empty<string>()));
 
-        GetResult(bmm_disable_module(
-            Unsafe.AsPointer(ref enableDisableManager), ToJson(unsorted), ToJson(uiExtenderEx),
-            &EnableDisableManager.GetSelected, &EnableDisableManager.SetSelected, &EnableDisableManager.GetDisabled, &EnableDisableManager.SetDisabled));
+                var sorted2 = GetResult<ModuleInfoExtended[]>(bmm_sort_with_options(ToJson(unsorted), ToJson(new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true })));
+                Assert.That(sorted2, Has.Length.EqualTo(2), () => string.Join(", ", sorted2?.Select(x => x.Id) ?? Enumerable.Empty<string>()));
 
-        var dependenciesAll = GetResult<DependentModuleMetadata[]>(bmm_get_dependencies_all(ToJson(uiExtenderEx)));
-        Assert.That(dependenciesAll!, Has.Length.EqualTo(6));
-        var dependenciesLoadBefore = GetResult<DependentModuleMetadata[]>(bmm_get_dependencies_load_before_this(ToJson(uiExtenderEx)));
-        Assert.That(dependenciesLoadBefore!, Has.Length.EqualTo(1));
-        var dependenciesLoadAfter = GetResult<DependentModuleMetadata[]>(bmm_get_dependencies_load_after_this(ToJson(uiExtenderEx)));
-        Assert.That(dependenciesLoadAfter!, Has.Length.EqualTo(5));
-        var dependenciesIncompatibles = GetResult<DependentModuleMetadata[]>(bmm_get_dependencies_incompatibles(ToJson(uiExtenderEx)));
-        Assert.That(dependenciesLoadAfter!, Has.Length.EqualTo(0));
+                var validationResult = GetResult<ModuleIssue[]>(bmm_validate_load_order(ToJson(sorted), ToJson(harmony)));
+                Assert.That(validationResult, Has.Length.EqualTo(0), () => string.Join(", ", validationResult?.Select(x => x.Reason) ?? Enumerable.Empty<string>()));
+
+                var validationManager = new ValidationManager();
+                var validationResult1 = GetResult<ModuleIssue[]>(bmm_validate_module(
+                    Unsafe.AsPointer(ref validationManager), ToJson(unsortedInvalid), ToJson(uiExtenderEx), &ValidationManager.IsSelected));
+                Assert.That(validationResult1, Has.Length.EqualTo(0), () => string.Join(", ", validationResult1?.Select(x => x.Reason) ?? Enumerable.Empty<string>()));
+
+                var validationResult2 = GetResult<ModuleIssue[]>(bmm_validate_module(
+                    Unsafe.AsPointer(ref validationManager), ToJson(unsortedInvalid), ToJson(invalid), &ValidationManager.IsSelected));
+                Assert.That(validationResult2, Has.Length.EqualTo(1), () => string.Join(", ", validationResult2?.Select(x => x.Reason) ?? Enumerable.Empty<string>()));
+
+                var enableDisableManager = new EnableDisableManager();
+                GetResult(bmm_enable_module(
+                    Unsafe.AsPointer(ref enableDisableManager), ToJson(unsorted), ToJson(uiExtenderEx),
+                    &EnableDisableManager.GetSelected, &EnableDisableManager.SetSelected, &EnableDisableManager.GetDisabled, &EnableDisableManager.SetDisabled));
+
+                GetResult(bmm_disable_module(
+                    Unsafe.AsPointer(ref enableDisableManager), ToJson(unsorted), ToJson(uiExtenderEx),
+                    &EnableDisableManager.GetSelected, &EnableDisableManager.SetSelected, &EnableDisableManager.GetDisabled, &EnableDisableManager.SetDisabled));
+
+                var dependenciesAll = GetResult<DependentModuleMetadata[]>(bmm_get_dependencies_all(ToJson(uiExtenderEx)));
+                Assert.That(dependenciesAll!, Has.Length.EqualTo(6));
+                var dependenciesLoadBefore = GetResult<DependentModuleMetadata[]>(bmm_get_dependencies_load_before_this(ToJson(uiExtenderEx)));
+                Assert.That(dependenciesLoadBefore!, Has.Length.EqualTo(1));
+                var dependenciesLoadAfter = GetResult<DependentModuleMetadata[]>(bmm_get_dependencies_load_after_this(ToJson(uiExtenderEx)));
+                Assert.That(dependenciesLoadAfter!, Has.Length.EqualTo(5));
+                var dependenciesIncompatibles = GetResult<DependentModuleMetadata[]>(bmm_get_dependencies_incompatibles(ToJson(uiExtenderEx)));
+                Assert.That(dependenciesIncompatibles!, Has.Length.EqualTo(0));
+            });
+
+            Assert.That(DanglingAllocationsCount, Is.EqualTo(0));
+        }
     }
 }
