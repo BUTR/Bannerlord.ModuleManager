@@ -15,12 +15,12 @@ namespace Bannerlord.ModuleManager.Native.Tests
     {
         private const string DllPath = "../../../../../src/Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/native/Bannerlord.ModuleManager.Native.dll";
 
-        
+
         static unsafe Utils2()
         {
             Allocator.SetCustom(&alloc, &dealloc);
         }
-        
+
         [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
         private static unsafe partial void* alloc(nuint size);
         [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
@@ -41,7 +41,7 @@ namespace Bannerlord.ModuleManager.Native.Tests
         internal static readonly SourceGenerationContext CustomSourceGenerationContext = new(Options);
 
         public static int LibraryAliveCount() => alloc_alive_count();
-        
+
         public static unsafe ReadOnlySpan<char> ToSpan(param_string* value) => new SafeStringMallocHandle((char*) value, false).ToSpan();
         public static SafeStringMallocHandle ToJson<T>(T value) => Utils.SerializeJsonCopy(value, (JsonTypeInfo<T>) CustomSourceGenerationContext.GetTypeInfo(typeof(T)), true);
         private static TValue DeserializeJson<TValue>(SafeStringMallocHandle json, JsonTypeInfo<TValue> jsonTypeInfo, [CallerMemberName] string? caller = null)
