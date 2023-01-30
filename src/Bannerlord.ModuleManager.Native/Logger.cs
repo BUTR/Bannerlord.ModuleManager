@@ -23,31 +23,31 @@ namespace Bannerlord.ModuleManager.Native
         }
         [Conditional("LOGGING")]
         public static unsafe void LogInput<T1>(T1* param1, [CallerMemberName] string? caller = null)
-            where T1 : unmanaged, IParameter<T1>
+            where T1 : unmanaged, IParameterWithSpan<T1>
         {
             Log($"Received call to {caller}! {T1.ToSpan(param1)}");
         }
         [Conditional("LOGGING")]
         public static unsafe void LogInput<T1, T2>(T1* param1, T2* param2, [CallerMemberName] string? caller = null)
-            where T1 : unmanaged, IParameter<T1>
-            where T2 : unmanaged, IParameter<T2>
+            where T1 : unmanaged, IParameterWithSpan<T1>
+            where T2 : unmanaged, IParameterWithSpan<T2>
         {
             Log($"Received call to {caller}! {T1.ToSpan(param1)}; {T2.ToSpan(param2)}");
         }
         [Conditional("LOGGING")]
         public static unsafe void LogInput<T1, T2, T3>(T1* param1, T2* param2, T3* param3, [CallerMemberName] string? caller = null)
-            where T1 : unmanaged, IParameter<T1>
-            where T2 : unmanaged, IParameter<T2>
-            where T3 : unmanaged, IParameter<T3>
+            where T1 : unmanaged, IParameterWithSpan<T1>
+            where T2 : unmanaged, IParameterWithSpan<T2>
+            where T3 : unmanaged, IParameterWithSpan<T3>
         {
             Log($"Received call to {caller}! {T1.ToSpan(param1)}; {T2.ToSpan(param2)}; {T3.ToSpan(param3)}");
         }
         [Conditional("LOGGING")]
         public static unsafe void LogInput<T1, T2, T3, T4>(T1* param1, T2* param2, T3* param3, T4* param4, [CallerMemberName] string? caller = null)
-            where T1 : unmanaged, IParameter<T1>
-            where T2 : unmanaged, IParameter<T2>
-            where T3 : unmanaged, IParameter<T3>
-            where T4 : unmanaged, IParameter<T4>
+            where T1 : unmanaged, IParameterWithSpan<T1>
+            where T2 : unmanaged, IParameterWithSpan<T2>
+            where T3 : unmanaged, IParameterWithSpan<T3>
+            where T4 : unmanaged, IParameterWithSpan<T4>
         {
             Log($"Received call to {caller}! {T1.ToSpan(param1)}; {T2.ToSpan(param2)}; {T3.ToSpan(param3)}; {T4.ToSpan(param4)}");
         }

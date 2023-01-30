@@ -2,6 +2,7 @@
 
 using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Xml;
 
@@ -10,19 +11,19 @@ namespace Bannerlord.ModuleManager.Native
     public static unsafe partial class Bindings
     {
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        private delegate return_value_bool* N_IsSelected(void* p_owner, param_string* p_module_id);
+        private delegate return_value_bool* N_IsSelected(param_ptr* p_owner, param_string* p_module_id);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        private delegate return_value_bool* N_GetSelected(void* p_owner, param_string* p_module_id);
+        private delegate return_value_bool* N_GetSelected(param_ptr* p_owner, param_string* p_module_id);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        private delegate return_value_void* N_SetSelected(void* p_owner, param_string* p_module_id, byte value);
+        private delegate return_value_void* N_SetSelected(param_ptr* p_owner, param_string* p_module_id, param_bool value);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        private delegate return_value_bool* N_GetDisabled(void* p_owner, param_string* p_module_id);
+        private delegate return_value_bool* N_GetDisabled(param_ptr* p_owner, param_string* p_module_id);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        private delegate return_value_void* N_SetDisabled(void* p_owner, param_string* p_module_id, byte value);
+        private delegate return_value_void* N_SetDisabled(param_ptr* p_owner, param_string* p_module_id, param_bool value);
 
         private static readonly ApplicationVersionComparer _applicationVersionComparer = new();
 
-        [UnmanagedCallersOnly(EntryPoint = "bmm_sort")]
+        [UnmanagedCallersOnly(EntryPoint = "bmm_sort", CallConvs = new [] { typeof(CallConvCdecl) })]
         public static return_value_json* Sort(param_json* p_source)
         {
             Logger.LogInput(p_source);
@@ -42,7 +43,7 @@ namespace Bannerlord.ModuleManager.Native
             }
         }
 
-        [UnmanagedCallersOnly(EntryPoint = "bmm_sort_with_options")]
+        [UnmanagedCallersOnly(EntryPoint = "bmm_sort_with_options", CallConvs = new [] { typeof(CallConvCdecl) })]
         public static return_value_json* SortWithOptions(param_json* p_source, param_json* p_options)
         {
             Logger.LogInput(p_source, p_options);
@@ -64,7 +65,7 @@ namespace Bannerlord.ModuleManager.Native
         }
 
 
-        [UnmanagedCallersOnly(EntryPoint = "bmm_are_all_dependencies_of_module_present")]
+        [UnmanagedCallersOnly(EntryPoint = "bmm_are_all_dependencies_of_module_present", CallConvs = new [] { typeof(CallConvCdecl) })]
         public static return_value_bool* AreAllDependenciesOfModulePresent(param_json* p_source, param_json* p_module)
         {
             Logger.LogInput(p_source, p_module);
@@ -86,7 +87,7 @@ namespace Bannerlord.ModuleManager.Native
         }
 
 
-        [UnmanagedCallersOnly(EntryPoint = "bmm_get_dependent_modules_of")]
+        [UnmanagedCallersOnly(EntryPoint = "bmm_get_dependent_modules_of", CallConvs = new [] { typeof(CallConvCdecl) })]
         public static return_value_json* GetDependentModulesOf(param_json* p_source, param_json* p_module)
         {
             Logger.LogInput(p_source, p_module);
@@ -107,7 +108,7 @@ namespace Bannerlord.ModuleManager.Native
             }
         }
 
-        [UnmanagedCallersOnly(EntryPoint = "bmm_get_dependent_modules_of_with_options")]
+        [UnmanagedCallersOnly(EntryPoint = "bmm_get_dependent_modules_of_with_options", CallConvs = new [] { typeof(CallConvCdecl) })]
         public static return_value_json* GetDependentModulesOfWithOptions(param_json* p_source, param_json* p_module, param_json* p_options)
         {
             Logger.LogInput(p_source, p_module, p_options);
@@ -130,9 +131,9 @@ namespace Bannerlord.ModuleManager.Native
         }
 
 
-        [UnmanagedCallersOnly(EntryPoint = "bmm_validate_module")]
-        public static return_value_json* ValidateModule(void* p_owner, param_json* p_modules, param_json* p_target_module,
-            delegate* unmanaged[Cdecl]<return_value_bool*, void*, param_string*> p_is_selected)
+        [UnmanagedCallersOnly(EntryPoint = "bmm_validate_module", CallConvs = new [] { typeof(CallConvCdecl) })]
+        public static return_value_json* ValidateModule(param_ptr* p_owner, param_json* p_modules, param_json* p_target_module,
+            delegate* unmanaged[Cdecl]<return_value_bool*, param_ptr*, param_string*> p_is_selected)
         {
             Logger.LogInput(p_modules, p_target_module);
             try
@@ -161,7 +162,7 @@ namespace Bannerlord.ModuleManager.Native
             }
         }
 
-        [UnmanagedCallersOnly(EntryPoint = "bmm_validate_load_order")]
+        [UnmanagedCallersOnly(EntryPoint = "bmm_validate_load_order", CallConvs = new [] { typeof(CallConvCdecl) })]
         public static return_value_json* ValidateLoadOrder(param_json* p_modules, param_json* p_target_module)
         {
             Logger.LogInput(p_modules, p_target_module);
@@ -183,12 +184,12 @@ namespace Bannerlord.ModuleManager.Native
         }
 
 
-        [UnmanagedCallersOnly(EntryPoint = "bmm_enable_module")]
-        public static return_value_void* EnableModule(void* p_owner, param_json* p_module, param_json* p_target_module,
-            delegate* unmanaged[Cdecl]<return_value_bool*, void*, param_string*> p_get_selected,
-            delegate* unmanaged[Cdecl]<return_value_void*, void*, param_string*, byte> p_set_selected,
-            delegate* unmanaged[Cdecl]<return_value_bool*, void*, param_string*> p_get_disabled,
-            delegate* unmanaged[Cdecl]<return_value_void*, void*, param_string*, byte> p_set_disabled)
+        [UnmanagedCallersOnly(EntryPoint = "bmm_enable_module", CallConvs = new [] { typeof(CallConvCdecl) })]
+        public static return_value_void* EnableModule(param_ptr* p_owner, param_json* p_module, param_json* p_target_module,
+            delegate* unmanaged[Cdecl]<return_value_bool*, param_ptr*, param_string*> p_get_selected,
+            delegate* unmanaged[Cdecl]<return_value_void*, param_ptr*, param_string*, param_bool> p_set_selected,
+            delegate* unmanaged[Cdecl]<return_value_bool*, param_ptr*, param_string*> p_get_disabled,
+            delegate* unmanaged[Cdecl]<return_value_void*, param_ptr*, param_string*, param_bool> p_set_disabled)
         {
             Logger.LogInput(p_module, p_target_module);
             try
@@ -219,7 +220,7 @@ namespace Bannerlord.ModuleManager.Native
                     {
                         Logger.LogInputChar(pModuleId);
 
-                        SafeStructMallocHandle.Create(setSelected(p_owner, (param_string*) pModuleId, (byte) (value ? 1 : 0))).ValueAsVoid();
+                        SafeStructMallocHandle.Create(setSelected(p_owner, (param_string*) pModuleId, value)).ValueAsVoid();
                         Logger.LogOutput();
                     }
                 }, module =>
@@ -240,7 +241,7 @@ namespace Bannerlord.ModuleManager.Native
                     {
                         Logger.LogInputChar(pModuleId);
 
-                        SafeStructMallocHandle.Create(setDisabled(p_owner, (param_string*) pModuleId, (byte) (value ? 1 : 0))).ValueAsVoid();
+                        SafeStructMallocHandle.Create(setDisabled(p_owner, (param_string*) pModuleId, value)).ValueAsVoid();
                         Logger.LogOutput();
                     }
                 });
@@ -255,12 +256,12 @@ namespace Bannerlord.ModuleManager.Native
             }
         }
 
-        [UnmanagedCallersOnly(EntryPoint = "bmm_disable_module")]
-        public static return_value_void* DisableModule(void* p_owner, param_json* p_module, param_json* p_target_module,
-            delegate* unmanaged[Cdecl]<return_value_bool*, void*, param_string*> p_get_selected,
-            delegate* unmanaged[Cdecl]<return_value_void*, void*, param_string*, byte> p_set_selected,
-            delegate* unmanaged[Cdecl]<return_value_bool*, void*, param_string*> p_get_disabled,
-            delegate* unmanaged[Cdecl]<return_value_void*, void*, param_string*, byte> p_set_disabled)
+        [UnmanagedCallersOnly(EntryPoint = "bmm_disable_module", CallConvs = new [] { typeof(CallConvCdecl) })]
+        public static return_value_void* DisableModule(param_ptr* p_owner, param_json* p_module, param_json* p_target_module,
+            delegate* unmanaged[Cdecl]<return_value_bool*, param_ptr*, param_string*> p_get_selected,
+            delegate* unmanaged[Cdecl]<return_value_void*, param_ptr*, param_string*, param_bool> p_set_selected,
+            delegate* unmanaged[Cdecl]<return_value_bool*, param_ptr*, param_string*> p_get_disabled,
+            delegate* unmanaged[Cdecl]<return_value_void*, param_ptr*, param_string*, param_ptr> p_set_disabled)
         {
             Logger.LogInput(p_module, p_target_module);
             try
@@ -291,7 +292,7 @@ namespace Bannerlord.ModuleManager.Native
                     {
                         Logger.LogInputChar(pModuleId);
 
-                        SafeStructMallocHandle.Create(setSelected(p_owner, (param_string*) pModuleId, (byte) (value ? 1 : 0))).ValueAsVoid();
+                        SafeStructMallocHandle.Create(setSelected(p_owner, (param_string*) pModuleId, value)).ValueAsVoid();
                         Logger.LogOutput();
                     }
                 }, module =>
@@ -312,7 +313,7 @@ namespace Bannerlord.ModuleManager.Native
                     {
                         Logger.LogInputChar(pModuleId);
 
-                        SafeStructMallocHandle.Create(setDisabled(p_owner, (param_string*) pModuleId, (byte) (value ? 1 : 0))).ValueAsVoid();
+                        SafeStructMallocHandle.Create(setDisabled(p_owner, (param_string*) pModuleId, value)).ValueAsVoid();
                         Logger.LogOutput();
                     }
                 });
@@ -328,7 +329,7 @@ namespace Bannerlord.ModuleManager.Native
         }
 
 
-        [UnmanagedCallersOnly(EntryPoint = "bmm_get_module_info")]
+        [UnmanagedCallersOnly(EntryPoint = "bmm_get_module_info", CallConvs = new [] { typeof(CallConvCdecl) })]
         public static return_value_json* GetModuleInfo(param_string* p_xml_content)
         {
             Logger.LogInput(p_xml_content);
@@ -355,7 +356,7 @@ namespace Bannerlord.ModuleManager.Native
             }
         }
 
-        [UnmanagedCallersOnly(EntryPoint = "bmm_get_sub_module_info")]
+        [UnmanagedCallersOnly(EntryPoint = "bmm_get_sub_module_info", CallConvs = new [] { typeof(CallConvCdecl) })]
         public static return_value_json* GetSubModuleInfo(param_string* p_xml_content)
         {
             Logger.LogInput(p_xml_content);
@@ -382,7 +383,7 @@ namespace Bannerlord.ModuleManager.Native
         }
 
 
-        [UnmanagedCallersOnly(EntryPoint = "bmm_compare_versions")]
+        [UnmanagedCallersOnly(EntryPoint = "bmm_compare_versions", CallConvs = new [] { typeof(CallConvCdecl) })]
         public static return_value_int32* CompareVersions(param_json* p_x, param_json* p_y)
         {
             Logger.LogInput(p_x, p_y);
@@ -404,7 +405,7 @@ namespace Bannerlord.ModuleManager.Native
         }
 
 
-        [UnmanagedCallersOnly(EntryPoint = "bmm_get_dependencies_all")]
+        [UnmanagedCallersOnly(EntryPoint = "bmm_get_dependencies_all", CallConvs = new [] { typeof(CallConvCdecl) })]
         public static return_value_json* GetDependenciesAll(param_json* p_module)
         {
             Logger.LogInput(p_module);
@@ -423,7 +424,7 @@ namespace Bannerlord.ModuleManager.Native
                 return return_value_json.AsError(Utils.Copy(e.ToString()));
             }
         }
-        [UnmanagedCallersOnly(EntryPoint = "bmm_get_dependencies_load_before_this")]
+        [UnmanagedCallersOnly(EntryPoint = "bmm_get_dependencies_load_before_this", CallConvs = new [] { typeof(CallConvCdecl) })]
         public static return_value_json* GetDependenciesLoadBeforeThis(param_json* p_module)
         {
             Logger.LogInput(p_module);
@@ -442,7 +443,7 @@ namespace Bannerlord.ModuleManager.Native
                 return return_value_json.AsError(Utils.Copy(e.ToString()));
             }
         }
-        [UnmanagedCallersOnly(EntryPoint = "bmm_get_dependencies_load_after_this")]
+        [UnmanagedCallersOnly(EntryPoint = "bmm_get_dependencies_load_after_this", CallConvs = new [] { typeof(CallConvCdecl) })]
         public static return_value_json* GetDependenciesLoadAfterThis(param_json* p_module)
         {
             Logger.LogInput(p_module);
@@ -461,7 +462,7 @@ namespace Bannerlord.ModuleManager.Native
                 return return_value_json.AsError(Utils.Copy(e.ToString()));
             }
         }
-        [UnmanagedCallersOnly(EntryPoint = "bmm_get_dependencies_incompatibles")]
+        [UnmanagedCallersOnly(EntryPoint = "bmm_get_dependencies_incompatibles", CallConvs = new [] { typeof(CallConvCdecl) })]
         public static return_value_json* GetDependenciesIncompatibles(param_json* p_module)
         {
             Logger.LogInput(p_module);
