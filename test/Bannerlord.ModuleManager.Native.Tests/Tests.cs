@@ -230,10 +230,19 @@ namespace Bannerlord.ModuleManager.Native.Tests
                 });
 
                 var sorted = GetResult<ModuleInfoExtended[]>(bmm_sort(ToJson(unsorted)));
-                Assert.That(sorted, Has.Length.EqualTo(2), () => string.Join(", ", sorted?.Select(x => x.Id) ?? Enumerable.Empty<string>()));
-
+                Assert.Multiple(() =>
+                {
+                    Assert.That(sorted, Has.Length.EqualTo(2), () => string.Join(", ", sorted?.Select(x => x.Id) ?? Enumerable.Empty<string>()));
+                    Assert.That(sorted![0].Id, Is.EqualTo(harmony!.Id));
+                    Assert.That(sorted![1].Id, Is.EqualTo(uiExtenderEx!.Id));
+                });
                 var sorted2 = GetResult<ModuleInfoExtended[]>(bmm_sort_with_options(ToJson(unsorted), ToJson(new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true })));
-                Assert.That(sorted2, Has.Length.EqualTo(2), () => string.Join(", ", sorted2?.Select(x => x.Id) ?? Enumerable.Empty<string>()));
+                Assert.Multiple(() =>
+                {
+                    Assert.That(sorted2, Has.Length.EqualTo(2), () => string.Join(", ", sorted2?.Select(x => x.Id) ?? Enumerable.Empty<string>()));
+                    Assert.That(sorted2![0].Id, Is.EqualTo(harmony!.Id));
+                    Assert.That(sorted2![1].Id, Is.EqualTo(uiExtenderEx!.Id));
+                });
 
                 var validationResult = GetResult<ModuleIssue[]>(bmm_validate_load_order(ToJson(sorted), ToJson(harmony)));
                 Assert.That(validationResult, Has.Length.EqualTo(0), () => string.Join(", ", validationResult?.Select(x => x.Reason) ?? Enumerable.Empty<string>()));

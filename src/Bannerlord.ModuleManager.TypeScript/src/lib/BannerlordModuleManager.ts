@@ -79,16 +79,16 @@ export class BannerlordModuleManager {
         return dotnet.Bannerlord.ModuleManager.compareVersions(x, y);
     }
 
-    static getDependenciesAll(module: ModuleInfoExtended): DependentModuleMetadata[] {
+    getDependenciesAll(module: ModuleInfoExtended): DependentModuleMetadata[] {
         return dotnet.Bannerlord.ModuleManager.getDependenciesAll(module);
     }
-    static getDependenciesToLoadBeforeThis(module: ModuleInfoExtended): DependentModuleMetadata[] {
+    getDependenciesToLoadBeforeThis(module: ModuleInfoExtended): DependentModuleMetadata[] {
         return dotnet.Bannerlord.ModuleManager.getDependenciesToLoadBeforeThis(module);
     }
-    static getDependenciesToLoadAfterThis(module: ModuleInfoExtended): DependentModuleMetadata[] {
+    getDependenciesToLoadAfterThis(module: ModuleInfoExtended): DependentModuleMetadata[] {
         return dotnet.Bannerlord.ModuleManager.getDependenciesToLoadAfterThis(module);
     }
-    static getDependenciesIncompatibles(module: ModuleInfoExtended): DependentModuleMetadata[] {
+    getDependenciesIncompatibles(module: ModuleInfoExtended): DependentModuleMetadata[] {
         return dotnet.Bannerlord.ModuleManager.getDependenciesIncompatibles(module);
     }
 
