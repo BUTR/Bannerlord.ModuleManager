@@ -123,21 +123,29 @@ namespace Bannerlord.ModuleManager.Native
             Log($"{caller} - Exception: {e}");
         }
 
-        private static readonly ReaderWriterLockSlim _lock = new();
+        private static readonly ReaderWriterLock _lock = new();
         private static void Log(string message)
         {
-            _lock.EnterWriteLock(); 
+            while (true)
+            {
+                try
+                {
+                    _lock.AcquireWriterLock(100);
 
-            try 
-            { 
-                using var fs = new FileStream("Bannerlord.VortexExtension.Native.log", FileMode.Append, FileAccess.Write, FileShare.Read, 4096, FileOptions.SequentialScan);
-                using var sw = new StreamWriter(fs, Encoding.UTF8, -1, true);
-                sw.WriteLine(message);
-            } 
-            finally 
-            { 
-                _lock.ExitWriteLock(); 
-            } 
+                    try 
+                    { 
+                        using var fs = new FileStream("Bannerlord.VortexExtension.Native.log", FileMode.Append, FileAccess.Write, FileShare.Read, 4096, FileOptions.SequentialScan);
+                        using var sw = new StreamWriter(fs, Encoding.UTF8, -1, true);
+                        sw.WriteLine(message);
+                        return;
+                    } 
+                    finally 
+                    { 
+                        _lock.ReleaseWriterLock(); 
+                    }
+                }
+                catch (Exception) { /* ignored */ }
+            }
         }
     }
 }
