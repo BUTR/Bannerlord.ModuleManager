@@ -33,7 +33,7 @@ namespace Bannerlord.ModuleManager.Native
 
                 var result = ModuleSorter.Sort(source).ToArray();
 
-                Logger.LogOutputManaged(result);
+                Logger.LogOutput(result);
                 return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleInfoExtendedArray, false);
             }
             catch (Exception e)
@@ -54,7 +54,7 @@ namespace Bannerlord.ModuleManager.Native
 
                 var result = ModuleSorter.Sort(source, options).ToArray();
 
-                Logger.LogOutputManaged(result);
+                Logger.LogOutput(result);
                 return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleInfoExtendedArray, false);
             }
             catch (Exception e)
@@ -76,7 +76,7 @@ namespace Bannerlord.ModuleManager.Native
 
                 var result = ModuleUtilities.AreDependenciesPresent(source, module);
 
-                Logger.LogOutputPrimitive(result);
+                Logger.LogOutput(result);
                 return return_value_bool.AsValue(result, false);
             }
             catch (Exception e)
@@ -98,7 +98,7 @@ namespace Bannerlord.ModuleManager.Native
 
                 var result = ModuleUtilities.GetDependencies(source, module).ToArray();
 
-                Logger.LogOutputManaged(result);
+                Logger.LogOutput(result);
                 return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleInfoExtendedArray, false);
             }
             catch (Exception e)
@@ -120,7 +120,7 @@ namespace Bannerlord.ModuleManager.Native
 
                 var result = ModuleUtilities.GetDependencies(source, module, options).ToArray();
 
-                Logger.LogOutputManaged(result);
+                Logger.LogOutput(result);
                 return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleInfoExtendedArray, false);
             }
             catch (Exception e)
@@ -148,16 +148,16 @@ namespace Bannerlord.ModuleManager.Native
                     Logger.LogInput();
                     fixed (char* pModuleId = module.Id)
                     {
-                        Logger.LogInputChar(pModuleId);
+                        Logger.LogPinned(pModuleId);
                         
                         using var resultStr = SafeStructMallocHandle.Create(isSelected(p_owner, (param_string*) pModuleId), true);
                         var result = resultStr.ValueAsBool();
-                        Logger.LogOutputPrimitive(result);
+                        Logger.LogOutput(result);
                         return result;
                     }
                 }).ToArray();
 
-                Logger.LogOutputManaged(result);
+                Logger.LogOutput(result);
                 return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleIssueArray, false);
             }
             catch (Exception e)
@@ -178,7 +178,7 @@ namespace Bannerlord.ModuleManager.Native
 
                 var result = ModuleUtilities.ValidateLoadOrder(modules, targetModule).ToArray();
 
-                Logger.LogOutputManaged(result);
+                Logger.LogOutput(result);
                 return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleIssueArray, false);
             }
             catch (Exception e)
@@ -212,11 +212,11 @@ namespace Bannerlord.ModuleManager.Native
                     Logger.LogInput();
                     fixed (char* pModuleId = module.Id)
                     {
-                        Logger.LogInputChar(pModuleId);
+                        Logger.LogPinned(pModuleId);
 
                         using var resultStr = SafeStructMallocHandle.Create(getSelected(p_owner, (param_string*) pModuleId), true);
                         var result = resultStr.ValueAsBool();
-                        Logger.LogOutputPrimitive(result);
+                        Logger.LogOutput(result);
                         return result;
                     }
                 }, (module, value) =>
@@ -224,7 +224,7 @@ namespace Bannerlord.ModuleManager.Native
                     Logger.LogInput();
                     fixed (char* pModuleId = module.Id)
                     {
-                        Logger.LogInputChar(pModuleId);
+                        Logger.LogPinned(pModuleId);
 
                         using var resultStr = SafeStructMallocHandle.Create(setSelected(p_owner, (param_string*) pModuleId, value), true);
                         resultStr.ValueAsVoid();
@@ -235,11 +235,11 @@ namespace Bannerlord.ModuleManager.Native
                     Logger.LogInput();
                     fixed (char* pModuleId = module.Id)
                     {
-                        Logger.LogInputChar(pModuleId);
+                        Logger.LogPinned(pModuleId);
 
                         using var resultStr = SafeStructMallocHandle.Create(getDisabled(p_owner, (param_string*) pModuleId), true);
                         var result = resultStr.ValueAsBool();
-                        Logger.LogOutputPrimitive(result);
+                        Logger.LogOutput(result);
                         return result;
                     }
                 }, (module, value) =>
@@ -247,7 +247,7 @@ namespace Bannerlord.ModuleManager.Native
                     Logger.LogInput();
                     fixed (char* pModuleId = module.Id)
                     {
-                        Logger.LogInputChar(pModuleId);
+                        Logger.LogPinned(pModuleId);
 
                         using var resultStr = SafeStructMallocHandle.Create(setDisabled(p_owner, (param_string*) pModuleId, value), true);
                         resultStr.ValueAsVoid();
@@ -288,11 +288,11 @@ namespace Bannerlord.ModuleManager.Native
                     Logger.LogInput();
                     fixed (char* pModuleId = module.Id)
                     {
-                        Logger.LogInputChar(pModuleId);
+                        Logger.LogPinned(pModuleId);
 
                         using var resultStr = SafeStructMallocHandle.Create(getSelected(p_owner, (param_string*) pModuleId), true);
                         var result = resultStr.ValueAsBool();
-                        Logger.LogOutputPrimitive(result);
+                        Logger.LogOutput(result);
                         return result;
                     }
                 }, (module, value) =>
@@ -300,7 +300,7 @@ namespace Bannerlord.ModuleManager.Native
                     Logger.LogInput();
                     fixed (char* pModuleId = module.Id)
                     {
-                        Logger.LogInputChar(pModuleId);
+                        Logger.LogPinned(pModuleId);
 
                         using var resultStr = SafeStructMallocHandle.Create(setSelected(p_owner, (param_string*) pModuleId, value), true);
                         resultStr.ValueAsVoid();
@@ -311,11 +311,11 @@ namespace Bannerlord.ModuleManager.Native
                     Logger.LogInput();
                     fixed (char* pModuleId = module.Id)
                     {
-                        Logger.LogInputChar(pModuleId);
+                        Logger.LogPinned(pModuleId);
 
                         using var resultStr = SafeStructMallocHandle.Create(getDisabled(p_owner, (param_string*) pModuleId), true);
                         var result = resultStr.ValueAsBool();
-                        Logger.LogOutputPrimitive(result);
+                        Logger.LogOutput(result);
                         return result;
                     }
                 }, (module, value) =>
@@ -323,7 +323,7 @@ namespace Bannerlord.ModuleManager.Native
                     Logger.LogInput();
                     fixed (char* pModuleId = module.Id)
                     {
-                        Logger.LogInputChar(pModuleId);
+                        Logger.LogPinned(pModuleId);
 
                         using var resultStr = SafeStructMallocHandle.Create(setDisabled(p_owner, (param_string*) pModuleId, value), true);
                         resultStr.ValueAsVoid();
@@ -359,7 +359,7 @@ namespace Bannerlord.ModuleManager.Native
                     return return_value_json.AsError(Utils.Copy(e.ToString(), false), false);
                 }
 
-                Logger.LogOutputManaged(result);
+                Logger.LogOutput(result);
                 return return_value_json.AsValue(result, CustomSourceGenerationContext.ModuleInfoExtended, false);
             }
             catch (Exception e)
@@ -407,7 +407,7 @@ namespace Bannerlord.ModuleManager.Native
 
                 var result = _applicationVersionComparer.Compare(x, y);
 
-                Logger.LogOutputPrimitive(result);
+                Logger.LogOutput(result);
                 return return_value_int32.AsValue(result, false);
             }
             catch (Exception e)
@@ -428,7 +428,7 @@ namespace Bannerlord.ModuleManager.Native
 
                 var result = module.DependenciesAllDistinct().ToArray();
 
-                Logger.LogOutputManaged(result);
+                Logger.LogOutput(result);
                 return return_value_json.AsValue(result, CustomSourceGenerationContext.DependentModuleMetadataArray, false);
             }
             catch (Exception e)
@@ -447,7 +447,7 @@ namespace Bannerlord.ModuleManager.Native
 
                 var result = module.DependenciesLoadBeforeThisDistinct().ToArray();
 
-                Logger.LogOutputManaged(result);
+                Logger.LogOutput(result);
                 return return_value_json.AsValue(result, CustomSourceGenerationContext.DependentModuleMetadataArray, false);
             }
             catch (Exception e)
@@ -466,7 +466,7 @@ namespace Bannerlord.ModuleManager.Native
 
                 var result = module.DependenciesLoadAfterThisDistinct().ToArray();
 
-                Logger.LogOutputManaged(result);
+                Logger.LogOutput(result);
                 return return_value_json.AsValue(result, CustomSourceGenerationContext.DependentModuleMetadataArray, false);
             }
             catch (Exception e)
@@ -485,7 +485,7 @@ namespace Bannerlord.ModuleManager.Native
 
                 var result = module.DependenciesIncompatiblesDistinct().ToArray();
 
-                Logger.LogOutputManaged(result);
+                Logger.LogOutput(result);
                 return return_value_json.AsValue(result, CustomSourceGenerationContext.DependentModuleMetadataArray, false);
             }
             catch (Exception e)

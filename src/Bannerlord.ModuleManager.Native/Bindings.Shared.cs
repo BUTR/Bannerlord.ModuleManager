@@ -13,9 +13,9 @@ namespace Bannerlord.ModuleManager.Native
             Logger.LogInput(size);
             try
             {
-                var result = Allocator.Alloc(size, true);
+                var result = Allocator.Alloc(size);
 
-                Logger.LogOutputPrimitive((int) result);
+                Logger.LogOutput(new IntPtr(result).ToString("x16"), nameof(Alloc));
                 return result;
             }
             catch (Exception e)
@@ -28,10 +28,10 @@ namespace Bannerlord.ModuleManager.Native
         [UnmanagedCallersOnly(EntryPoint = "dealloc")]
         public static void Dealloc(param_ptr* ptr)
         {
-            Logger.LogInput(ptr);
+            Logger.LogInput(new IntPtr(ptr).ToString("x16"), nameof(Dealloc));
             try
             {
-                Allocator.Free(ptr, true);
+                Allocator.Free(ptr);
 
                 Logger.LogOutput();
             }
@@ -49,7 +49,7 @@ namespace Bannerlord.ModuleManager.Native
             {
                 var result = Allocator.GetCurrentAllocations();
 
-                Logger.LogOutputPrimitive(result);
+                Logger.LogOutput(result);
                 return result;
             }
             catch (Exception e)

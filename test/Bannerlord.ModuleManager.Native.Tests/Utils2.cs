@@ -13,13 +13,8 @@ namespace Bannerlord.ModuleManager.Native.Tests
 {
     internal static partial class Utils2
     {
-        private const string DllPath = "../../../../../src/Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/native/Bannerlord.ModuleManager.Native.dll";
+        public const string DllPath = "../../../../../src/Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/native/Bannerlord.ModuleManager.Native.dll";
 
-
-        static unsafe Utils2()
-        {
-            Allocator.SetCustom(&alloc, &dealloc);
-        }
 
         [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
         private static unsafe partial void* alloc(nuint size);
@@ -40,6 +35,7 @@ namespace Bannerlord.ModuleManager.Native.Tests
         };
         internal static readonly SourceGenerationContext CustomSourceGenerationContext = new(Options);
 
+        public static unsafe void LibrarySetAllocator() => Allocator.SetCustom(&alloc, &dealloc);
         public static int LibraryAliveCount() => alloc_alive_count();
 
         public static unsafe ReadOnlySpan<char> ToSpan(param_string* value) => new SafeStringMallocHandle((char*) value, false).ToSpan();
@@ -73,8 +69,7 @@ namespace Bannerlord.ModuleManager.Native.Tests
         public static unsafe T? GetResult<T>(return_value_json* ret)
         {
             using var result = SafeStructMallocHandle.Create(ret, true);
-            using var json = result.ValueAsJson();
-            return DeserializeJson(json, (JsonTypeInfo<T>) CustomSourceGenerationContext.GetTypeInfo(typeof(T)));
+            return result.ValueAsJson((JsonTypeInfo<T>) CustomSourceGenerationContext.GetTypeInfo(typeof(T)));
         }
         public static unsafe string GetResult(return_value_string* ret)
         {
