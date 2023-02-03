@@ -1,6 +1,6 @@
 const invalidXml = `<?xml version="1.0" encoding="UTF-8"?>
 <Module>
-  <Name value="Invalid" />
+  <Name value="Кириллица" />
   <Id value="Invalid" />
   <Version value="v1.0.0" />
   <Official value="false" />

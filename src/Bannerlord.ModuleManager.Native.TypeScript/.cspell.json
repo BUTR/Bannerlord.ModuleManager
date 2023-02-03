@@ -33,7 +33,8 @@
     "transpiled",
     "typedoc",
     "untracked",
-    "blmanager"
+    "blmanager",
+    "Кириллица"
   ],
   "flagWords": [],
   "ignorePaths": [
