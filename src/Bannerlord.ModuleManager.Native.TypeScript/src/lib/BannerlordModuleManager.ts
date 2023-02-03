@@ -1,6 +1,10 @@
 import * as types from "./types";
 
-const blmanager: types.IBannerlordModuleManager = require('./../../blmanager.node');
+const blmanager: types.IBannerlordModuleManager & { allocAliveCount(): number; } = require('./../../blmanager.node');
+
+export const allocAliveCount = (): number => {
+    return blmanager.allocAliveCount();
+}
 
 export class BannerlordModuleManager {
     /* istanbul ignore next */

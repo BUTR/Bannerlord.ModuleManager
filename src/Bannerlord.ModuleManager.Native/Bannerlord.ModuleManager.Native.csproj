@@ -39,16 +39,12 @@
     <None Update="Bannerlord.ModuleManager.Native.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="$(PkgBUTR_NativeAOT_Shared_Source)\include\butrnativeaotshared\Common.Native.h" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BUTR.NativeAOT.Shared.Source" Version="1.0.46" GeneratePathProperty="true" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
+    <PackageReference Include="BUTR.NativeAOT.Generator" Version="1.0.68" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
+    <PackageReference Include="BUTR.NativeAOT.Shared.Source" Version="1.0.68" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
     <PackageReference Include="ConcurrentHashSet" Version="1.3.0" />
   </ItemGroup>
-
-  <Target Name="CopyHeaders" AfterTargets="AfterBuild">
-    <Copy SourceFiles="$(PkgBUTR_NativeAOT_Shared_Source)\include\butrnativeaotshared\Common.Native.h" DestinationFolder="$(OutputPath)" />
-  </Target>
 
 </Project>

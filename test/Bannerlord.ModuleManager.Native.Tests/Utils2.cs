@@ -17,11 +17,11 @@ namespace Bannerlord.ModuleManager.Native.Tests
 
 
         [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
-        private static unsafe partial void* alloc(nuint size);
+        private static unsafe partial void* common_alloc(nuint size);
         [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
-        private static unsafe partial void dealloc(void* ptr);
+        private static unsafe partial void common_dealloc(void* ptr);
         [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
-        private static unsafe partial int alloc_alive_count();
+        private static unsafe partial int common_alloc_alive_count();
 
         private static readonly JsonSerializerOptions Options = new()
         {
@@ -35,8 +35,8 @@ namespace Bannerlord.ModuleManager.Native.Tests
         };
         internal static readonly SourceGenerationContext CustomSourceGenerationContext = new(Options);
 
-        public static unsafe void LibrarySetAllocator() => Allocator.SetCustom(&alloc, &dealloc);
-        public static int LibraryAliveCount() => alloc_alive_count();
+        public static unsafe void LibrarySetAllocator() => Allocator.SetCustom(&common_alloc, &common_dealloc);
+        public static int LibraryAliveCount() => common_alloc_alive_count();
 
         public static unsafe ReadOnlySpan<char> ToSpan(param_string* value) => new SafeStringMallocHandle((char*) value, false).ToSpan();
         public static SafeStringMallocHandle ToJson<T>(T value) => Utils.SerializeJsonCopy(value, (JsonTypeInfo<T>) CustomSourceGenerationContext.GetTypeInfo(typeof(T)), true);

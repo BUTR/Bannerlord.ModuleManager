@@ -2,7 +2,9 @@ import test from 'ava';
 
 import { harmonyXml, uiExtenderExXml, invalidXml, harmonySubModuleXml } from './_data';
 import { IEnableDisableManager, IValidationManager, ApplicationVersion, ApplicationVersionType } from '../lib/types';
-import { BannerlordModuleManager } from '../lib/BannerlordModuleManager';
+import { BannerlordModuleManager, allocAliveCount } from '../lib/BannerlordModuleManager';
+
+const isDebug = process.argv[2] == "Debug";
 
 test('ApplicationVersion', async (t) => {
   const version1: ApplicationVersion = {
@@ -22,6 +24,11 @@ test('ApplicationVersion', async (t) => {
 
   const result = BannerlordModuleManager.compareVersions(version1, version2);
   t.is(result, -1);
+
+  if (isDebug)
+    t.deepEqual(allocAliveCount(), 0);
+
+  t.pass();
 });
 
 test('SubModule', async (t) => {
@@ -30,6 +37,9 @@ test('SubModule', async (t) => {
     t.fail();
     return;
   }
+
+  if (isDebug)
+    t.deepEqual(allocAliveCount(), 0);
 
   t.pass();
 });
@@ -40,6 +50,7 @@ test('Main', async (t) => {
     t.fail();
     return;
   }
+  t.deepEqual(invalid.name, 'Русский');
 
   const harmony = BannerlordModuleManager.getModuleInfo(harmonyXml);
   if (harmony === null || harmony === undefined) {
@@ -54,7 +65,7 @@ test('Main', async (t) => {
     return;
   }
   t.deepEqual(uiExtenderEx.id, 'Bannerlord.UIExtenderEx');
-  
+
   const unsorted = [uiExtenderEx, harmony];
   const unsortedInvalid = [invalid, uiExtenderEx, harmony];
 
@@ -167,6 +178,9 @@ test('Main', async (t) => {
   t.deepEqual(dependenciesLoadAfter.length, 5);
   const dependenciesIncompatibles = BannerlordModuleManager.getDependenciesIncompatibles(uiExtenderEx);
   t.deepEqual(dependenciesIncompatibles.length, 0);
-  
+
+  if (isDebug)
+    t.deepEqual(allocAliveCount(), 0);
+
   t.pass();
 });

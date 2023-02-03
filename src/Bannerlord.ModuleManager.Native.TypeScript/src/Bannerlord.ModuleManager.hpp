@@ -2,28 +2,25 @@
 #define BMM_BLMANAGER_GUARD_HPP_
 
 #include "utils.hpp"
-#include "Common.Native.h"
-#include "Bannerlord.ModuleManager.Native.h"
 #include <codecvt>
 
 using namespace Napi;
 using namespace Utils;
-using namespace Common;
-using namespace Bannerlord::ModuleManager;
+using namespace Bannerlord::ModuleManager::Native;
 
 namespace Bannerlord::ModuleManager
 {
 
     struct ValidationData
     {
-        Napi::Env Env;
-        Function FIsSelected;
+        const Napi::Env Env;
+        const Function FIsSelected;
     };
-    static return_value_bool *isSelected(const void *p_owner, const param_string *p_module_id)
+    static return_value_bool *const isSelected(const param_ptr *const p_owner, const param_string *const p_module_id) noexcept
     {
         try
         {
-            const auto data = (ValidationData *)p_owner;
+            const auto data = static_cast<const ValidationData *const>(p_owner);
             const auto env = data->Env;
 
             const auto moduleId = String::New(env, p_module_id);
@@ -39,17 +36,17 @@ namespace Bannerlord::ModuleManager
 
     struct EnableDisableData
     {
-        Napi::Env Env;
-        Function FGetSelected;
-        Function FSetSelected;
-        Function FGetDisabled;
-        Function FSetDisabled;
+        const Napi::Env Env;
+        const Function FGetSelected;
+        const Function FSetSelected;
+        const Function FGetDisabled;
+        const Function FSetDisabled;
     };
-    static return_value_bool *getSelected(const void *p_owner, const param_string *p_module_id)
+    static return_value_bool *const getSelected(const param_ptr *const p_owner, const param_string *const p_module_id) noexcept
     {
         try
         {
-            const auto data = (EnableDisableData *)p_owner;
+            const auto data = static_cast<const EnableDisableData *const>(p_owner);
             const auto env = data->Env;
 
             const auto moduleId = String::New(env, p_module_id);
@@ -62,11 +59,11 @@ namespace Bannerlord::ModuleManager
             return Create(return_value_bool{Copy(conv.from_bytes(e.what())), false});
         }
     }
-    static return_value_void *setSelected(const void *p_owner, const param_string *p_module_id, param_bool value_raw)
+    static return_value_void *const setSelected(const param_ptr *const p_owner, const param_string *const p_module_id, param_bool value_raw) noexcept
     {
         try
         {
-            const auto data = (EnableDisableData *)p_owner;
+            const auto data = static_cast<const EnableDisableData *const>(p_owner);
             const auto env = data->Env;
 
             const auto moduleId = String::New(env, p_module_id);
@@ -81,11 +78,11 @@ namespace Bannerlord::ModuleManager
             return Create(return_value_void{Copy(conv.from_bytes(e.what()))});
         }
     }
-    static return_value_bool *getDisabled(const void *p_owner, const param_string *p_module_id)
+    static return_value_bool *const getDisabled(const param_ptr *const p_owner, const param_string *const p_module_id) noexcept
     {
         try
         {
-            const auto data = (EnableDisableData *)p_owner;
+            const auto data = static_cast<const EnableDisableData *const>(p_owner);
             const auto env = data->Env;
 
             const auto moduleId = String::New(env, Copy(p_module_id));
@@ -98,11 +95,11 @@ namespace Bannerlord::ModuleManager
             return Create(return_value_bool{Copy(conv.from_bytes(e.what())), false});
         }
     }
-    static return_value_void *setDisabled(const void *p_owner, const param_string *p_module_id, param_bool value_raw)
+    static return_value_void *const setDisabled(const param_ptr *const p_owner, const param_string *const p_module_id, param_bool value_raw) noexcept
     {
         try
         {
-            const auto data = (EnableDisableData *)p_owner;
+            const auto data = static_cast<const EnableDisableData *const>(p_owner);
             const auto env = data->Env;
 
             const auto moduleId = String::New(env, p_module_id);
@@ -206,9 +203,9 @@ namespace Bannerlord::ModuleManager
         const auto sourceCopy = CopyWithFree(source.Utf16Value());
         const auto targetModuleCopy = CopyWithFree(targetModule.Utf16Value());
 
-        const auto data = ValidationData{env, fIsSelected};
+        auto data = ValidationData{env, fIsSelected};
 
-        const auto result = Bannerlord::ModuleManager::bmm_validate_module(&data, sourceCopy.get(), targetModuleCopy.get(), isSelected);
+        const auto result = bmm_validate_module(static_cast<void *const>(&data), sourceCopy.get(), targetModuleCopy.get(), isSelected);
         return ThrowOrReturnJson(env, result);
     }
 
@@ -227,9 +224,9 @@ namespace Bannerlord::ModuleManager
         const auto sourceCopy = CopyWithFree(source.Utf16Value());
         const auto targetModuleCopy = CopyWithFree(targetModule.Utf16Value());
 
-        const auto data = EnableDisableData{env, fGetSelected, fSetSelected, fGetDisabled, fSetDisabled};
+        auto data = EnableDisableData{env, fGetSelected, fSetSelected, fGetDisabled, fSetDisabled};
 
-        const auto result = Bannerlord::ModuleManager::bmm_enable_module(&data, sourceCopy.get(), targetModuleCopy.get(), getSelected, setSelected, getDisabled, setDisabled);
+        const auto result = bmm_enable_module(static_cast<void *const>(&data), sourceCopy.get(), targetModuleCopy.get(), getSelected, setSelected, getDisabled, setDisabled);
         ThrowOrReturn(env, result);
     }
     void DisableModule(const CallbackInfo &info)
@@ -247,9 +244,9 @@ namespace Bannerlord::ModuleManager
         const auto sourceCopy = CopyWithFree(source.Utf16Value());
         const auto targetModuleCopy = CopyWithFree(targetModule.Utf16Value());
 
-        const auto data = EnableDisableData{env, FGetSelected, FSetSelected, FGetDisabled, FSetDisabled};
+        auto data = EnableDisableData{env, FGetSelected, FSetSelected, FGetDisabled, FSetDisabled};
 
-        const auto result = Bannerlord::ModuleManager::bmm_disable_module(&data, sourceCopy.get(), targetModuleCopy.get(), getSelected, setSelected, getDisabled, setDisabled);
+        const auto result = bmm_disable_module(static_cast<void *const>(&data), sourceCopy.get(), targetModuleCopy.get(), getSelected, setSelected, getDisabled, setDisabled);
         ThrowOrReturn(env, result);
     }
 
@@ -328,7 +325,7 @@ namespace Bannerlord::ModuleManager
         return ThrowOrReturnJson(env, result);
     }
 
-    const Object Init(Env env, Object exports)
+    Object Init(const Env env, const Object exports)
     {
         exports.Set("sort", Function::New(env, Sort));
         exports.Set("sortWithOptions", Function::New(env, SortWithOptions));

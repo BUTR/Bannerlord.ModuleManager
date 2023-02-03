@@ -5,6 +5,8 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "files.associations": {
-    "memory": "cpp"
+    "memory": "cpp",
+    "cstdint": "cpp",
+    "xlocale": "cpp"
   }
 }
