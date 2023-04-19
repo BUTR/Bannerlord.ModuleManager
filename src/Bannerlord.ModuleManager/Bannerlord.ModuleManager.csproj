@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -47,7 +47,7 @@
   </PropertyGroup>
 
   <ItemGroup Condition="$(PackAsSource) == 'true'">
-    <PackageReference Include="NuGetizer" Version="0.9.1" />
+    <PackageReference Include="NuGetizer" Version="1.0.2" />
     <PackageFile Include="**/*.cs" PackagePath="content\cs\$(TargetFramework)\$(ProjectName)\%(RelativeDir)%(Filename).cs"
                  Exclude="$(BaseIntermediateOutputPath)/**/*.cs" />
     <PackageFile Include="**/*.cs" PackagePath="contentFiles\cs\$(TargetFramework)\$(ProjectName)\%(RelativeDir)%(Filename).cs"
