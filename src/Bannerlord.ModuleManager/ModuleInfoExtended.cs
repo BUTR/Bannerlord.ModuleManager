@@ -72,6 +72,9 @@ namespace Bannerlord.ModuleManager
         public string Url { get; set; } = string.Empty;
         public IReadOnlyList<DependentModuleMetadata> DependentModuleMetadatas { get; set; } = Array.Empty<DependentModuleMetadata>();
 
+#if BANNERLORDBUTRMODULEMANAGER_NULLABLE
+        [return: global::System.Diagnostics.CodeAnalysis.NotNullIfNotNull("xmlDocument")]
+#endif
         public static ModuleInfoExtended? FromXml(XmlDocument? xmlDocument)
         {
             if (xmlDocument is null)

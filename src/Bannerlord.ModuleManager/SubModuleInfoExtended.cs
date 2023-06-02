@@ -72,6 +72,9 @@ namespace Bannerlord.ModuleManager
             Tags = tags;
         }
 
+#if BANNERLORDBUTRMODULEMANAGER_NULLABLE
+        [return: global::System.Diagnostics.CodeAnalysis.NotNullIfNotNull("xmlDocument")]
+#endif
         public static SubModuleInfoExtended? FromXml(XmlNode? subModuleNode)
         {
             if (subModuleNode is null) return null;
