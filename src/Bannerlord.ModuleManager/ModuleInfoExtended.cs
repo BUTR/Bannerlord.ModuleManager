@@ -70,6 +70,7 @@ namespace Bannerlord.ModuleManager
         public IReadOnlyList<DependentModule> ModulesToLoadAfterThis { get; set; } = Array.Empty<DependentModule>();
         public IReadOnlyList<DependentModule> IncompatibleModules { get; set; } = Array.Empty<DependentModule>();
         public string Url { get; set; } = string.Empty;
+        public string UpdateInfo { get; set; } = string.Empty;
         public IReadOnlyList<DependentModuleMetadata> DependentModuleMetadatas { get; set; } = Array.Empty<DependentModuleMetadata>();
 
 #if BANNERLORDBUTRMODULEMANAGER_NULLABLE
@@ -156,6 +157,9 @@ namespace Bannerlord.ModuleManager
             // Custom data
             //
             var url = moduleNode?.SelectSingleNode("Url")?.Attributes?["value"]?.InnerText ?? string.Empty;
+
+            var updateInfoProvider = moduleNode?.SelectSingleNode("UpdateInfo")?.Attributes?["provider"]?.InnerText ?? string.Empty;
+            var updateInfoValue = moduleNode?.SelectSingleNode("UpdateInfo")?.Attributes?["value"]?.InnerText ?? string.Empty;
 
             var dependentModuleMetadatasNode = moduleNode?.SelectSingleNode("DependedModuleMetadatas");
             var dependentModuleMetadatasList = dependentModuleMetadatasNode?.SelectNodes("DependedModuleMetadata");
@@ -264,6 +268,7 @@ namespace Bannerlord.ModuleManager
                 ModulesToLoadAfterThis = modulesToLoadAfterThis,
                 IncompatibleModules = incompatibleModules,
                 Url = url,
+                UpdateInfo = !string.IsNullOrEmpty(updateInfoProvider) && !string.IsNullOrEmpty(updateInfoValue) ? $"{updateInfoProvider}:{updateInfoValue}" : string.Empty,
                 DependentModuleMetadatas = dependentModuleMetadatas
             };
         }
