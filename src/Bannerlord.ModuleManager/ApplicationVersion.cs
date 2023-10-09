@@ -43,12 +43,14 @@
 
 namespace Bannerlord.ModuleManager
 {
+    using global::System;
+
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
     internal
 #else
     public
 # endif
-        record ApplicationVersion
+        record ApplicationVersion : IComparable<ApplicationVersion>
     {
         public static ApplicationVersion Empty { get; } = new();
 
@@ -75,6 +77,13 @@ namespace Bannerlord.ModuleManager
             Major == other?.Major && Minor == other.Minor && Revision == other.Revision && ChangeSet == other.ChangeSet;
 
         public override string ToString() => $"{GetPrefix(ApplicationVersionType)}{Major}.{Minor}.{Revision}.{ChangeSet}";
+
+        public int CompareTo(ApplicationVersion? other) => ApplicationVersionComparer.CompareStandard(this, other);
+
+        public static bool operator <(ApplicationVersion left, ApplicationVersion right) => left.CompareTo(right) < 0;
+        public static bool operator >(ApplicationVersion left, ApplicationVersion right) => left.CompareTo(right) > 0;
+        public static bool operator <=(ApplicationVersion left, ApplicationVersion right) => left.CompareTo(right) <= 0;
+        public static bool operator >=(ApplicationVersion left, ApplicationVersion right) => left.CompareTo(right) >= 0;
 
         public static char GetPrefix(ApplicationVersionType applicationVersionType) => applicationVersionType switch
         {

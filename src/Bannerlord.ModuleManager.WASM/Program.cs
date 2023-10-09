@@ -13,7 +13,6 @@ namespace Bannerlord.ModuleManager.WASM
 {
     public static partial class Program
     {
-        private static readonly ApplicationVersionComparer _applicationVersionComparer = new();
         private static readonly JsonSerializerOptions _options = new()
         {
             DefaultIgnoreCondition = JsonIgnoreCondition.Never,
@@ -127,6 +126,6 @@ namespace Bannerlord.ModuleManager.WASM
         [JSExport]
         [return: JSMarshalAs<JSType.Number>]
         public static int CompareVersions([JSMarshalAs<JSType.String>] string x, [JSMarshalAs<JSType.String>] string y) =>
-            _applicationVersionComparer.Compare(AsApplicationVersion(x), AsApplicationVersion(y));
+            ApplicationVersionComparer.CompareStandard(AsApplicationVersion(x), AsApplicationVersion(y));
     }
 }

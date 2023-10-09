@@ -375,7 +375,6 @@ namespace Bannerlord.ModuleManager
             }
 
             // Check that the dependencies have the minimum required version set by DependedModuleMetadatas
-            var comparer = new ApplicationVersionComparer();
             foreach (var metadata in targetModule.DependenciesToLoadDistinct())
             {
                 // Ignore the check for empty versions
@@ -387,7 +386,7 @@ namespace Bannerlord.ModuleManager
                 if (metadata.Version != ApplicationVersion.Empty)
                 {
                     // dependedModuleMetadata.Version > dependedModule.Version
-                    if (!metadata.IsOptional && (comparer.Compare(metadata.Version, metadataModule.Version) > 0))
+                    if (!metadata.IsOptional && (ApplicationVersionComparer.CompareStandard(metadata.Version, metadataModule.Version) > 0))
                     {
                         yield return new ModuleIssue(targetModule, metadataModule.Id, ModuleIssueType.VersionMismatchLessThanOrEqual)
                         {
@@ -403,7 +402,7 @@ namespace Bannerlord.ModuleManager
                     // dependedModuleMetadata.Version < dependedModule.VersionRange.Max
                     if (!metadata.IsOptional)
                     {
-                        if (comparer.Compare(metadata.VersionRange.Min, metadataModule.Version) > 0)
+                        if (ApplicationVersionComparer.CompareStandard(metadata.VersionRange.Min, metadataModule.Version) > 0)
                         {
                             yield return new ModuleIssue(targetModule, metadataModule.Id, ModuleIssueType.VersionMismatchLessThan)
                             {
@@ -412,7 +411,7 @@ namespace Bannerlord.ModuleManager
                             };
                             continue;
                         }
-                        if (comparer.Compare(metadata.VersionRange.Max, metadataModule.Version) < 0)
+                        if (ApplicationVersionComparer.CompareStandard(metadata.VersionRange.Max, metadataModule.Version) < 0)
                         {
                             yield return new ModuleIssue(targetModule, metadataModule.Id, ModuleIssueType.VersionMismatchGreaterThan)
                             {

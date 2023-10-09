@@ -57,7 +57,9 @@ namespace Bannerlord.ModuleManager
         public int Compare(object? x, object? y) => Compare(x as ApplicationVersion, y as ApplicationVersion);
 
         /// <inheritdoc/>
-        public virtual int Compare(ApplicationVersion? x, ApplicationVersion? y)
+        public virtual int Compare(ApplicationVersion? x, ApplicationVersion? y) => CompareStandard(x, y);
+
+        public static int CompareStandard(ApplicationVersion? x, ApplicationVersion? y)
         {
             if (x is null && y is null)
                 return 0;

@@ -18,8 +18,6 @@ namespace Bannerlord.ModuleManager.WASM
             JS.Runtime.ConfigureJson(options => options.Converters.Add(new JsonStringEnumConverter()));
         }
 
-        private static readonly ApplicationVersionComparer _applicationVersionComparer = new();
-
         public static void Main() { }
 
         [JSInvokable]
@@ -92,7 +90,7 @@ namespace Bannerlord.ModuleManager.WASM
         }
 
         [JSInvokable]
-        public static int CompareVersions(ApplicationVersion x, ApplicationVersion y) => _applicationVersionComparer.Compare(x, y);
+        public static int CompareVersions(ApplicationVersion x, ApplicationVersion y) => ApplicationVersionComparer.CompareStandard(x, y);
 
         [JSInvokable]
         public static DependentModuleMetadata[] GetDependenciesAll(ModuleInfoExtended module) => module.DependenciesAllDistinct().ToArray();

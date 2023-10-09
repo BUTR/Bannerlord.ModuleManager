@@ -21,8 +21,6 @@ namespace Bannerlord.ModuleManager.Native
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate return_value_void* N_SetDisabled(param_ptr* p_owner, param_string* p_module_id, param_bool value);
 
-        private static readonly ApplicationVersionComparer _applicationVersionComparer = new();
-
         [UnmanagedCallersOnly(EntryPoint = "bmm_sort", CallConvs = new[] { typeof(CallConvCdecl) }), IsNotConst<IsPtrConst>]
         public static return_value_json* Sort([IsConst<IsPtrConst>] param_json* p_source)
         {
@@ -414,7 +412,7 @@ namespace Bannerlord.ModuleManager.Native
                 var x = Utils.DeserializeJson(p_x, CustomSourceGenerationContext.ApplicationVersion);
                 var y = Utils.DeserializeJson(p_y, CustomSourceGenerationContext.ApplicationVersion);
 
-                var result = _applicationVersionComparer.Compare(x, y);
+                var result = ApplicationVersionComparer.CompareStandard(x, y);
 
                 Logger.LogOutput(result);
                 return return_value_int32.AsValue(result, false);
