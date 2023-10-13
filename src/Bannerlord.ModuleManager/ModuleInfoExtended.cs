@@ -56,7 +56,7 @@ namespace Bannerlord.ModuleManager
         record ModuleInfoExtended
     {
         private static readonly string NativeModuleId = "Native";
-        private static readonly string[] OfficialModuleIds = { NativeModuleId, "SandBox", "SandBoxCore", "StoryMode", "CustomBattle" };
+        private static readonly string[] OfficialModuleIds = { NativeModuleId, "SandBox", "SandBoxCore", "StoryMode", "CustomBattle", "BirthAndDeath", "Multiplayer" };
 
         public string Id { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
@@ -102,44 +102,44 @@ namespace Bannerlord.ModuleManager
 
             var dependentModulesNode = moduleNode?.SelectSingleNode("DependedModules");
             var dependentModulesList = dependentModulesNode?.SelectNodes("DependedModule");
-            var dependentModules = new DependentModule[dependentModulesList?.Count ?? 0];
+            var dependentModules = new List<DependentModule>(dependentModulesList?.Count ?? 0);
             for (var i = 0; i < dependentModulesList?.Count; i++)
             {
                 if (dependentModulesList?[i]?.Attributes?["Id"] is { } idAttr)
                 {
                     ApplicationVersion.TryParse(dependentModulesList[i]?.Attributes?["DependentVersion"]?.InnerText, out var dVersion);
                     var isOptional = dependentModulesList[i]?.Attributes?["Optional"] is { } optional && optional.InnerText.Equals("true");
-                    dependentModules[i] = new DependentModule(idAttr.InnerText, dVersion, isOptional);
+                    dependentModules.Add(new DependentModule(idAttr.InnerText, dVersion, isOptional));
                 }
             }
 
             var modulesToLoadAfterThisNode = moduleNode?.SelectSingleNode("ModulesToLoadAfterThis");
             var modulesToLoadAfterThisList = modulesToLoadAfterThisNode?.SelectNodes("Module");
-            var modulesToLoadAfterThis = new DependentModule[modulesToLoadAfterThisList?.Count ?? 0];
+            var modulesToLoadAfterThis = new List<DependentModule>(modulesToLoadAfterThisList?.Count ?? 0);
             for (var i = 0; i < modulesToLoadAfterThisList?.Count; i++)
             {
                 if (modulesToLoadAfterThisList?[i]?.Attributes?["Id"] is { } idAttr)
                 {
-                    modulesToLoadAfterThis[i] = new DependentModule
+                    modulesToLoadAfterThis.Add(new DependentModule
                     {
                         Id = idAttr.InnerText,
                         IsOptional = true
-                    };
+                    });
                 }
             }
 
             var incompatibleModulesNode = moduleNode?.SelectSingleNode("IncompatibleModules");
             var incompatibleModulesList = incompatibleModulesNode?.SelectNodes("Module");
-            var incompatibleModules = new DependentModule[incompatibleModulesList?.Count ?? 0];
+            var incompatibleModules = new List<DependentModule>(incompatibleModulesList?.Count ?? 0);
             for (var i = 0; i < incompatibleModulesList?.Count; i++)
             {
                 if (incompatibleModulesList?[i]?.Attributes?["Id"] is { } idAttr)
                 {
-                    incompatibleModules[i] = new DependentModule
+                    incompatibleModules.Add(new DependentModule
                     {
                         Id = idAttr.InnerText,
                         IsOptional = true
-                    };
+                    });
                 }
             }
 
