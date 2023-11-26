@@ -38,8 +38,10 @@
 
   <ItemGroup>
     <PackageReference Include="NuGetizer" Version="0.9.1" />
-    <PackageFile Include="**/*.cs" PackagePath="content\cs\$(TargetFramework)\$(ProjectName)\%(RelativeDir)%(Filename).cs" Exclude="$(BaseIntermediateOutputPath)/**/*.cs" />
-    <PackageFile Include="**/*.cs" PackagePath="contentFiles\cs\$(TargetFramework)\$(ProjectName)\%(RelativeDir)%(Filename).cs" Exclude="$(BaseIntermediateOutputPath)/**/*.cs" />
+    <PackageFile Include="../Bannerlord.ModuleManager.Models/*.cs" PackagePath="content\cs\$(TargetFramework)\$(ProjectName)\%(RelativeDir)%(Filename).cs" Exclude="$(BaseIntermediateOutputPath)/**/*.cs" />
+    <PackageFile Include="../Bannerlord.ModuleManager.Models/*.cs" PackagePath="contentFiles\cs\$(TargetFramework)\$(ProjectName)\%(RelativeDir)%(Filename).cs" Exclude="$(BaseIntermediateOutputPath)/**/*.cs" />
+    <PackageFile Include="../Bannerlord.ModuleManager/*.cs" PackagePath="content\cs\$(TargetFramework)\$(ProjectName)\%(RelativeDir)%(Filename).cs" Exclude="$(BaseIntermediateOutputPath)/**/*.cs" />
+    <PackageFile Include="../Bannerlord.ModuleManager/*.cs" PackagePath="contentFiles\cs\$(TargetFramework)\$(ProjectName)\%(RelativeDir)%(Filename).cs" Exclude="$(BaseIntermediateOutputPath)/**/*.cs" />
     <PackageFile Include="../Bannerlord.ModuleManager.Source.props" PackagePath="build/Bannerlord.ModuleManager.Source.props" />
     <PackageFile Include="../../resources/Butter.png" PackagePath="Butter.png" />
   </ItemGroup>
@@ -47,8 +49,8 @@
     <PackageReference Include="Nullable" Version="1.3.1" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Bannerlord.ModuleManager.Models\*.cs" />
-    <Compile Include="..\Bannerlord.ModuleManager\*.cs" />
+    <Compile Include="../Bannerlord.ModuleManager.Models/*.cs" />
+    <Compile Include="../Bannerlord.ModuleManager/*.cs" />
   </ItemGroup>
 
 </Project>
