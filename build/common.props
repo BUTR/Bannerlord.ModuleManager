@@ -1,5 +1,10 @@
 <!--EXTERNAL_PROPERTIES: GITHUB_ACTIONS-->
 <Project>
+  
+  <PropertyGroup>
+    <VersionOverride>0</VersionOverride>
+    <Version>5.0.$(VersionOverride)</Version>
+  </PropertyGroup>
 
   <!--GitHub Actions-->
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
@@ -19,7 +24,7 @@
   </PropertyGroup>
   <!--SorceLink-->
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
   </ItemGroup>
   <!--CI Builds-->
   <ItemGroup Condition="$(TargetFramework) == 'net472' AND $(OS) != 'Windows_NT'">

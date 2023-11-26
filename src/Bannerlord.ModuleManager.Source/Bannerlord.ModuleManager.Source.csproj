@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>10.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <DefineConstants>$(DefineConstants);BANNERLORDBUTRMODULEMANAGER_PUBLIC;BANNERLORDBUTRMODULEMANAGER_ENABLE_WARNING;BANNERLORDBUTRMODULEMANAGER_NULLABLE;</DefineConstants>
+    <RootNamespace>Bannerlord.ModuleManager</RootNamespace>
+  </PropertyGroup>
+
+  <!--NuGet Package-->
+  <PropertyGroup>
+    <Authors>BUTR</Authors>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>Butter.png</PackageIcon>
+    <PackageProjectUrl>https://github.com/BUTR/Bannerlord.ModuleManager</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/BUTR/Bannerlord.ModuleManager.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Bannerlord.ModuleManager.Source</PackageId>
+    <PackageDescription>Source code for managing Mount &amp; Blade 2: Bannerlord Module dependencies.</PackageDescription>
+    <Title>Bannerlord ModuleManager Source</Title>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <BuildProjectReferences>false</BuildProjectReferences>
+    <BuildOnPack>false</BuildOnPack>
+    <PackOnBuild>false</PackOnBuild>
+    <PackBuildOutput>false</PackBuildOutput>
+    <PackCompile>true</PackCompile>
+    <PackEmbeddedResource>true</PackEmbeddedResource>
+    <EnablePackCleanup>false</EnablePackCleanup>
+    <EnablePackInference>false</EnablePackInference>
+    <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)' == ''">obj</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <!--NuGet Package-->
+
+  <ItemGroup>
+    <PackageReference Include="NuGetizer" Version="0.9.1" />
+    <PackageFile Include="**/*.cs" PackagePath="content\cs\$(TargetFramework)\$(ProjectName)\%(RelativeDir)%(Filename).cs" Exclude="$(BaseIntermediateOutputPath)/**/*.cs" />
+    <PackageFile Include="**/*.cs" PackagePath="contentFiles\cs\$(TargetFramework)\$(ProjectName)\%(RelativeDir)%(Filename).cs" Exclude="$(BaseIntermediateOutputPath)/**/*.cs" />
+    <PackageFile Include="../Bannerlord.ModuleManager.Source.props" PackagePath="build/Bannerlord.ModuleManager.Source.props" />
+    <PackageFile Include="../../resources/Butter.png" PackagePath="Butter.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Nullable" Version="1.3.1" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Bannerlord.ModuleManager.Models\*.cs" />
+    <Compile Include="..\Bannerlord.ModuleManager\*.cs" />
+  </ItemGroup>
+
+</Project>

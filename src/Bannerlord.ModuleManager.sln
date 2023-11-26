@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bannerlord.ModuleManager", "Bannerlord.ModuleManager\Bannerlord.ModuleManager.csproj", "{F9F1C4C6-93E8-4FA4-86CE-A840842D0DA2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bannerlord.ModuleManager.Source", "Bannerlord.ModuleManager.Source\Bannerlord.ModuleManager.Source.csproj", "{F9F1C4C6-93E8-4FA4-86CE-A840842D0DA2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bannerlord.ModuleManager.WASM", "Bannerlord.ModuleManager.WASM\Bannerlord.ModuleManager.WASM.csproj", "{6628D1C9-6234-493F-A240-F0B40024783E}"
 EndProject
@@ -37,6 +37,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bannerlord.ModuleManager.Do
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{FBDA325F-819E-4771-8FE1-15497B134C4A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bannerlord.ModuleManager.DependencyInjection", "Bannerlord.ModuleManager.DependencyInjection\Bannerlord.ModuleManager.DependencyInjection.csproj", "{62236515-1E3E-4FC2-B573-B04ACF6DBB80}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bannerlord.ModuleManager.Models", "Bannerlord.ModuleManager.Models\Bannerlord.ModuleManager.Models.csproj", "{B3F74AF9-9185-42DD-BCF8-89BA1CA4D5F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bannerlord.ModuleManager", "Bannerlord.ModuleManager\Bannerlord.ModuleManager.csproj", "{7263DA30-444A-44F5-ADB0-E5699AA983AC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +73,18 @@ Global
 		{3F49CC2C-D5A7-4C5F-A4C3-2F98CBF6461B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F49CC2C-D5A7-4C5F-A4C3-2F98CBF6461B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F49CC2C-D5A7-4C5F-A4C3-2F98CBF6461B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62236515-1E3E-4FC2-B573-B04ACF6DBB80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62236515-1E3E-4FC2-B573-B04ACF6DBB80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62236515-1E3E-4FC2-B573-B04ACF6DBB80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62236515-1E3E-4FC2-B573-B04ACF6DBB80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3F74AF9-9185-42DD-BCF8-89BA1CA4D5F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3F74AF9-9185-42DD-BCF8-89BA1CA4D5F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3F74AF9-9185-42DD-BCF8-89BA1CA4D5F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3F74AF9-9185-42DD-BCF8-89BA1CA4D5F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7263DA30-444A-44F5-ADB0-E5699AA983AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7263DA30-444A-44F5-ADB0-E5699AA983AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7263DA30-444A-44F5-ADB0-E5699AA983AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7263DA30-444A-44F5-ADB0-E5699AA983AC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -82,6 +100,9 @@ Global
 		{FBDA325F-819E-4771-8FE1-15497B134C4A} = {2D0B1C0E-1519-47CD-96AA-728A6A1F6BC0}
 		{74074D6D-EF2B-4575-9A1F-839EEEBEDAE4} = {FBDA325F-819E-4771-8FE1-15497B134C4A}
 		{C31AFBA4-016A-429B-B448-F4311A2151C5} = {FBDA325F-819E-4771-8FE1-15497B134C4A}
+		{62236515-1E3E-4FC2-B573-B04ACF6DBB80} = {8F14632F-6637-4E24-9C0E-D776516D4AC1}
+		{B3F74AF9-9185-42DD-BCF8-89BA1CA4D5F2} = {8F14632F-6637-4E24-9C0E-D776516D4AC1}
+		{7263DA30-444A-44F5-ADB0-E5699AA983AC} = {8F14632F-6637-4E24-9C0E-D776516D4AC1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5E629D17-E1D7-4E87-88BE-55D34F95D796}
