@@ -23,6 +23,8 @@ jobs:
         with:
           dotnet-version: 8.x.x
 
+      - run: dotnet pack -c Release src/Bannerlord.ModuleManager.Models -p:VersionOverride=$(git rev-list --no-merges --count master) -o ./packages
+        
       - run: dotnet pack -c Release src/Bannerlord.ModuleManager -p:VersionOverride=$(git rev-list --no-merges --count master) -o ./packages
       
       - run: dotnet pack -c Release src/Bannerlord.ModuleManager.Source -p:VersionOverride=$(git rev-list --no-merges --count master) -o ./packages
