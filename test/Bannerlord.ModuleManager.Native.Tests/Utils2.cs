@@ -13,7 +13,7 @@ namespace Bannerlord.ModuleManager.Native.Tests
 {
     internal static partial class Utils2
     {
-        public const string DllPath = "../../../../../src/Bannerlord.ModuleManager.Native/bin/Release/net7.0/win-x64/native/Bannerlord.ModuleManager.Native.dll";
+        public const string DllPath = "../../../../../src/Bannerlord.ModuleManager.Native/bin/Release/net8.0/win-x64/native/Bannerlord.ModuleManager.Native.dll";
 
 
         [LibraryImport(DllPath), UnmanagedCallConv(CallConvs = new[] { typeof(CallConvStdcall) })]
