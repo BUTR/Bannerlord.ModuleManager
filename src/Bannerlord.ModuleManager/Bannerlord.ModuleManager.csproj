@@ -5,7 +5,6 @@
     <LangVersion>10.0</LangVersion>
     <Nullable>enable</Nullable>
     <DefineConstants>$(DefineConstants);BANNERLORDBUTRMODULEMANAGER_PUBLIC;BANNERLORDBUTRMODULEMANAGER_ENABLE_WARNING;BANNERLORDBUTRMODULEMANAGER_NULLABLE;</DefineConstants>
-    <RootNamespace>Bannerlord.ModuleManager</RootNamespace>
   </PropertyGroup>
 
   <!--NuGet Package-->
