@@ -158,8 +158,7 @@ namespace Bannerlord.ModuleManager
             //
             var url = moduleNode?.SelectSingleNode("Url")?.Attributes?["value"]?.InnerText ?? string.Empty;
 
-            var updateInfoProvider = moduleNode?.SelectSingleNode("UpdateInfo")?.Attributes?["provider"]?.InnerText ?? string.Empty;
-            var updateInfoValue = moduleNode?.SelectSingleNode("UpdateInfo")?.Attributes?["value"]?.InnerText ?? string.Empty;
+            var updateInfo = moduleNode?.SelectSingleNode("UpdateInfo")?.Attributes?["value"]?.InnerText ?? string.Empty;
 
             var dependentModuleMetadatasNode = moduleNode?.SelectSingleNode("DependedModuleMetadatas");
             var dependentModuleMetadatasList = dependentModuleMetadatasNode?.SelectNodes("DependedModuleMetadata");
@@ -268,7 +267,7 @@ namespace Bannerlord.ModuleManager
                 ModulesToLoadAfterThis = modulesToLoadAfterThis,
                 IncompatibleModules = incompatibleModules,
                 Url = url,
-                UpdateInfo = !string.IsNullOrEmpty(updateInfoProvider) && !string.IsNullOrEmpty(updateInfoValue) ? $"{updateInfoProvider}:{updateInfoValue}" : string.Empty,
+                UpdateInfo = !string.IsNullOrEmpty(updateInfo) ? updateInfo : string.Empty,
                 DependentModuleMetadatas = dependentModuleMetadatas
             };
         }
