@@ -171,6 +171,10 @@ namespace Bannerlord.ModuleManager
         /// <returns>Any error that were detected during inspection</returns>
         public static IEnumerable<ModuleIssue> ValidateModule(IReadOnlyList<ModuleInfoExtended> modules, ModuleInfoExtended targetModule, HashSet<ModuleInfoExtended> visitedModules, Func<ModuleInfoExtended, bool> isSelected, Func<ModuleInfoExtended, bool> isValid)
         {
+            // Validate common data
+            foreach (var issue in ValidateModuleCommonData(targetModule))
+                yield return issue;
+            
             // Validate dependency declaration
             foreach (var issue in ValidateModuleDependenciesDeclarations(modules, targetModule))
                 yield return issue;
@@ -179,6 +183,64 @@ namespace Bannerlord.ModuleManager
             foreach (var issue in ValidateModuleDependencies(modules, targetModule, visitedModules, isSelected, isValid))
                 yield return issue;
         }
+
+        /// <summary>
+        /// Validates a module's common data
+        /// </summary>
+        public static IEnumerable<ModuleIssue> ValidateModuleCommonData(ModuleInfoExtended module)
+        {
+            if (string.IsNullOrWhiteSpace(module.Id))
+            {
+                yield return new ModuleIssue(module, "UNKNOWN", ModuleIssueType.MissingModuleId)
+                {
+                    Reason = $"Module Id is missing for '{module.Name}'"
+                };
+            }
+            if (string.IsNullOrWhiteSpace(module.Name))
+            {
+                yield return new ModuleIssue(module, module.Id, ModuleIssueType.MissingModuleName)
+                {
+                    Reason = $"Module Name is missing in '{module.Id}'"
+                };
+            }
+            foreach (var dependentModule in module.DependentModules)
+            {
+                if (dependentModule is null)
+                {
+                    yield return new ModuleIssue(module, "UNKNOWN", ModuleIssueType.DependencyIsNull)
+                    {
+                        Reason = $"Found a null dependency in '{module.Id}'",
+                    };
+                    break;
+                }
+                if (string.IsNullOrWhiteSpace(dependentModule.Id))
+                {
+                    yield return new ModuleIssue(module, "UNKNOWN", ModuleIssueType.DependencyMissingModuleId)
+                    {
+                        Reason = $"Module Id is missing for one if the dependencies of '{module.Id}'",
+                    };
+                }
+            }
+            foreach (var dependentModuleMetadata in module.DependentModuleMetadatas)
+            {
+                if (dependentModuleMetadata is null)
+                {
+                    yield return new ModuleIssue(module, "UNKNOWN", ModuleIssueType.DependencyIsNull)
+                    {
+                        Reason = $"Found a null dependency in '{module.Id}'",
+                    };
+                    break;
+                }
+                if (string.IsNullOrWhiteSpace(dependentModuleMetadata.Id))
+                {
+                    yield return new ModuleIssue(module, "UNKNOWN", ModuleIssueType.DependencyMissingModuleId)
+                    {
+                        Reason = $"Module Id is missing for one if the dependencies of '{module.Id}'",
+                    };
+                }
+            }
+        }
+        
         /// <summary>
         /// Validates a module metadata
         /// </summary>
@@ -475,7 +537,7 @@ namespace Bannerlord.ModuleManager
                 {
                     yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.DependencyNotLoadedBeforeThis)
                     {
-                        Reason = $"'{targetModule.Id}' should be loaded before '{metadata.Id}'"
+                        Reason = $"'{metadata.Id}' should be loaded before '{targetModule.Id}'"
                     };
                 }
 
@@ -483,7 +545,7 @@ namespace Bannerlord.ModuleManager
                 {
                     yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.DependencyNotLoadedAfterThis)
                     {
-                        Reason = $"'{targetModule.Id}' should be loaded after '{metadata.Id}'"
+                        Reason = $"'{metadata.Id}' should be loaded after '{targetModule.Id}'"
                     };
                 }
             }

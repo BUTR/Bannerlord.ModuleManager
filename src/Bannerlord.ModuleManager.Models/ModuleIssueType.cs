@@ -69,6 +69,11 @@ namespace Bannerlord.ModuleManager
 
         DependencyNotLoadedBeforeThis,
         DependencyNotLoadedAfterThis,
+        
+        MissingModuleId,
+        MissingModuleName,
+        DependencyIsNull,
+        DependencyMissingModuleId,
     }
 }
 #nullable restore
