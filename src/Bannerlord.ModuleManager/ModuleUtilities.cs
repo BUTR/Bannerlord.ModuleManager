@@ -474,6 +474,10 @@ namespace Bannerlord.ModuleManager
         /// <returns>Any error that were detected during inspection</returns>
         public static IEnumerable<ModuleIssue> ValidateLoadOrder(IReadOnlyList<ModuleInfoExtended> modules, ModuleInfoExtended targetModule)
         {
+            // Validate common data
+            foreach (var issue in ValidateModuleCommonData(targetModule))
+                yield return issue;
+
             var visited = new HashSet<ModuleInfoExtended>();
             foreach (var issue in ValidateLoadOrder(modules, targetModule, visited))
                 yield return issue;
@@ -497,10 +501,6 @@ namespace Bannerlord.ModuleManager
                 };
                 yield break;
             }
-
-            // Validate common data
-            foreach (var issue in ValidateModuleCommonData(targetModule))
-                yield return issue;
 
             // Check that all dependencies are present
             foreach (var metadata in targetModule.DependenciesToLoad().DistinctBy(x => x.Id))
