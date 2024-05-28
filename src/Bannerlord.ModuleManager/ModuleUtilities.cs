@@ -498,6 +498,10 @@ namespace Bannerlord.ModuleManager
                 yield break;
             }
 
+            // Validate common data
+            foreach (var issue in ValidateModuleCommonData(targetModule))
+                yield return issue;
+
             // Check that all dependencies are present
             foreach (var metadata in targetModule.DependenciesToLoad().DistinctBy(x => x.Id))
             {
