@@ -39,7 +39,7 @@ namespace Bannerlord.ModuleManager.Native.Tests
         public static int LibraryAliveCount() => common_alloc_alive_count();
 
         public static unsafe ReadOnlySpan<char> ToSpan(param_string* value) => new SafeStringMallocHandle((char*) value, false).ToSpan();
-        public static SafeStringMallocHandle ToJson<T>(T value) => Utils.SerializeJsonCopy(value, (JsonTypeInfo<T>) CustomSourceGenerationContext.GetTypeInfo(typeof(T)), true);
+        public static SafeStringMallocHandle ToJson<T>(T value) where T : class => Utils.SerializeJsonCopy(value, (JsonTypeInfo<T>) CustomSourceGenerationContext.GetTypeInfo(typeof(T)), true);
         private static TValue DeserializeJson<TValue>(SafeStringMallocHandle json, JsonTypeInfo<TValue> jsonTypeInfo, [CallerMemberName] string? caller = null)
         {
             if (json.DangerousGetHandle() == IntPtr.Zero)
@@ -66,7 +66,7 @@ namespace Bannerlord.ModuleManager.Native.Tests
             }
         }
 
-        public static unsafe T? GetResult<T>(return_value_json* ret)
+        public static unsafe T? GetResult<T>(return_value_json* ret) where T : class
         {
             using var result = SafeStructMallocHandle.Create(ret, true);
             return result.ValueAsJson((JsonTypeInfo<T>) CustomSourceGenerationContext.GetTypeInfo(typeof(T)));

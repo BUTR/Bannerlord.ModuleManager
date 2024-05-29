@@ -203,7 +203,7 @@ namespace Bannerlord.ModuleManager
                     Reason = $"Module Name is missing in '{module.Id}'"
                 };
             }
-            foreach (var dependentModule in module.DependentModules)
+            foreach (var dependentModule in module.DependentModules.Where(x => x is not null))
             {
                 if (dependentModule is null)
                 {
@@ -221,7 +221,7 @@ namespace Bannerlord.ModuleManager
                     };
                 }
             }
-            foreach (var dependentModuleMetadata in module.DependentModuleMetadatas)
+            foreach (var dependentModuleMetadata in module.DependentModuleMetadatas.Where(x => x is not null))
             {
                 if (dependentModuleMetadata is null)
                 {
@@ -249,6 +249,7 @@ namespace Bannerlord.ModuleManager
         public static IEnumerable<ModuleIssue> ValidateModuleDependenciesDeclarations(IReadOnlyList<ModuleInfoExtended> modules, ModuleInfoExtended targetModule)
         {
             // Any Incompatible module is depended on
+            // TODO: Will a null Id break things?
             foreach (var moduleId in targetModule.DependenciesToLoadDistinct().Select(x => x.Id).Intersect(targetModule.DependenciesIncompatiblesDistinct().Select(x => x.Id)))
             {
                 yield return new ModuleIssue(targetModule, moduleId, ModuleIssueType.DependencyConflictDependentAndIncompatible)
@@ -257,7 +258,7 @@ namespace Bannerlord.ModuleManager
                 };
             }
             // Check raw metadata too
-            foreach (var dependency in targetModule.DependentModuleMetadatas.Where(x => x.IsIncompatible && x.LoadType != LoadType.None))
+            foreach (var dependency in targetModule.DependentModuleMetadatas.Where(x => x is not null).Where(x => x.IsIncompatible && x.LoadType != LoadType.None))
             {
                 yield return new ModuleIssue(targetModule, dependency.Id, ModuleIssueType.DependencyConflictDependentAndIncompatible)
                 {
@@ -505,7 +506,7 @@ namespace Bannerlord.ModuleManager
             // Check that all dependencies are present
             foreach (var metadata in targetModule.DependenciesToLoad().DistinctBy(x => x.Id))
             {
-                var metadataIdx = CollectionsExtensions.IndexOf(modules, x => x.Id == metadata.Id);
+                var metadataIdx = CollectionsExtensions.IndexOf(modules, x => string.Equals(x.Id, metadata.Id, StringComparison.Ordinal));
                 if (metadataIdx == -1)
                 {
                     if (!metadata.IsOptional)

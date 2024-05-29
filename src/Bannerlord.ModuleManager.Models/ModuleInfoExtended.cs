@@ -236,7 +236,7 @@ namespace Bannerlord.ModuleManager
                     var isNative = moduleId.Equals(NativeModuleId);
 
                     // Override any existing metadata
-                    if (dependentModuleMetadatas.Find(dmm => dmm.Id.Equals(moduleId, StringComparison.Ordinal)) is { } module)
+                    if (dependentModuleMetadatas.Find(dmm => moduleId.Equals(dmm.Id, StringComparison.Ordinal)) is { } module)
                     {
                         dependentModuleMetadatas.Remove(module);
                     }
@@ -291,7 +291,7 @@ namespace Bannerlord.ModuleManager
             Url = url;
         }
 
-        public bool IsNative() => Id.Equals(NativeModuleId, StringComparison.OrdinalIgnoreCase);
+        public bool IsNative() => NativeModuleId.Equals(Id, StringComparison.OrdinalIgnoreCase);
 
         public override string ToString() => $"{Id} - {Version}";
 
