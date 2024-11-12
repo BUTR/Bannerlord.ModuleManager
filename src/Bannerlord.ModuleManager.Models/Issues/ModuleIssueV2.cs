@@ -1,7 +1,37 @@
-﻿using LegacyModuleIssue = Bannerlord.ModuleManager.ModuleIssue;
+﻿#region License
+// MIT License
+//
+// Copyright (c) Bannerlord's Unofficial Tools & Resources
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+#endregion
+
+#nullable enable
+#if !BANNERLORDBUTRMODULEMANAGER_ENABLE_WARNING
+#pragma warning disable
+#endif
+
 // ReSharper disable MemberCanBePrivate.Global
 
 namespace Bannerlord.ModuleManager.Models.Issues;
+
+using LegacyModuleIssue = ModuleIssue;
 
 /// <summary>
 ///     Base record type for all module-related issues that can occur during validation.
@@ -9,7 +39,12 @@ namespace Bannerlord.ModuleManager.Models.Issues;
 ///     providing a common structure and conversion capability to legacy formats.
 /// </summary>
 /// <param name="Module">The module in which the issue was detected. This is always required.</param>
-public abstract record ModuleIssueV2(ModuleInfoExtended Module)
+#if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
+internal
+#else
+public
+# endif
+    abstract record ModuleIssueV2(ModuleInfoExtended Module)
 {
     /// <summary>
     ///     Converts this issue instance to the legacy ModuleIssue format for backwards compatibility
@@ -25,13 +60,18 @@ public abstract record ModuleIssueV2(ModuleInfoExtended Module)
 /// </summary>
 /// <param name="Module">The module that was found to be missing</param>
 /// <param name="SourceVersion">The version range in which the module should exist</param>
-public sealed record ModuleMissingIssue(
+#if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
+internal
+#else
+public
+# endif
+    sealed record ModuleMissingIssue(
     ModuleInfoExtended Module,
     ApplicationVersionRange SourceVersion
 ) : ModuleIssueV2(Module)
 {
     public override string ToString() => $"Module '{Module.Id}' {Module.Version} is missing from modules list";
-    public override ModuleIssue ToLegacy() => new(Module, Module.Id, ModuleIssueType.Missing, ToString(), SourceVersion);
+    public override LegacyModuleIssue ToLegacy() => new(Module, Module.Id, ModuleIssueType.Missing, ToString(), SourceVersion);
 }
 
 /// <summary>
@@ -56,13 +96,18 @@ public sealed record ModuleMissingIssue(
 /// If `TournamentOverhaul` is not installed at all, this issue will be raised if `SimpleTournaments` is enabled.
 /// Note that it's recommended to use `DependedModuleMetadatas` with version specifications instead.
 /// </remarks>
-public sealed record ModuleMissingUnversionedDependencyIssue(
+#if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
+internal
+#else
+public
+# endif
+    sealed record ModuleMissingUnversionedDependencyIssue(
     ModuleInfoExtended Module,
     DependentModuleMetadata Dependency
 ) : ModuleIssueV2(Module)
 {
     public override string ToString() => $"Missing '{Dependency.Id}' module";
-    public override ModuleIssue ToLegacy() => new(
+    public override LegacyModuleIssue ToLegacy() => new(
         Module,
         Dependency.Id,
         ModuleIssueType.MissingDependencies,
@@ -92,13 +137,18 @@ public sealed record ModuleMissingUnversionedDependencyIssue(
 /// If `Bannerlord.UIExtenderEx` is not installed at all (any version), this issue will be raised.
 /// This is different from version mismatch issues where the module is present but with wrong version.
 /// </remarks>
-public sealed record ModuleMissingExactVersionDependencyIssue(
+#if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
+internal
+#else
+public
+# endif
+    sealed record ModuleMissingExactVersionDependencyIssue(
     ModuleInfoExtended Module,
     DependentModuleMetadata Dependency
 ) : ModuleIssueV2(Module)
 {
     public override string ToString() => $"Missing '{Dependency.Id}' with required version {Dependency.Version}";
-    public override ModuleIssue ToLegacy() => new(
+    public override LegacyModuleIssue ToLegacy() => new(
         Module,
         Dependency.Id,
         ModuleIssueType.MissingDependencies,
@@ -128,13 +178,18 @@ public sealed record ModuleMissingExactVersionDependencyIssue(
 /// If `Bannerlord.UIExtenderEx` module is not installed at all (any version), this issue will be raised.
 /// This is different from version mismatch issues where the module is present but with wrong version.
 /// </remarks>
-public sealed record ModuleMissingVersionRangeDependencyIssue(
+#if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
+internal
+#else
+public
+# endif
+    sealed record ModuleMissingVersionRangeDependencyIssue(
     ModuleInfoExtended Module,
     DependentModuleMetadata Dependency
 ) : ModuleIssueV2(Module)
 {
     public override string ToString() => $"Missing '{Dependency.Id}' with required version range [{Dependency.VersionRange}]";
-    public override ModuleIssue ToLegacy() => new(Module,
+    public override LegacyModuleIssue ToLegacy() => new(Module,
         Dependency.Id,
         ModuleIssueType.MissingDependencies,
         ToString(),
@@ -166,13 +221,18 @@ public sealed record ModuleMissingVersionRangeDependencyIssue(
 /// If `BetterTime` requires `Harmony` but `Harmony` is not installed, this issue will be raised for `RealisticWeather`
 /// because its dependency (`BetterTime`) has missing dependencies.
 /// </remarks>
-public sealed record ModuleDependencyMissingDependenciesIssue(
+#if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
+internal
+#else
+public
+# endif
+    sealed record ModuleDependencyMissingDependenciesIssue(
     ModuleInfoExtended Module,
     string DependencyId
 ) : ModuleIssueV2(Module)
 {
     public override string ToString() => $"Module '{Module.Id}': Required dependency '{DependencyId}' is missing its own dependencies";
-    public override ModuleIssue ToLegacy() => new(Module, DependencyId, ModuleIssueType.DependencyMissingDependencies, ToString(), ApplicationVersionRange.Empty);
+    public override LegacyModuleIssue ToLegacy() => new(Module, DependencyId, ModuleIssueType.DependencyMissingDependencies, ToString(), ApplicationVersionRange.Empty);
 }
 
 /// <summary>
@@ -199,13 +259,18 @@ public sealed record ModuleDependencyMissingDependenciesIssue(
 /// If `CustomSpawnsFramework` has its own issues (like missing dependencies or invalid configuration),
 /// this issue will be raised for `CustomSpawns` since its dependency needs to be fixed first.
 /// </remarks>
-public sealed record ModuleDependencyValidationIssue(
+#if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
+internal
+#else
+public
+# endif
+    sealed record ModuleDependencyValidationIssue(
     ModuleInfoExtended Module,
     string DependencyId
 ) : ModuleIssueV2(Module)
 {
     public override string ToString() => $"Module '{Module.Id}': Dependency '{DependencyId}' has unresolved validation issues";
-    public override ModuleIssue ToLegacy() => new(Module, DependencyId, ModuleIssueType.DependencyValidationError, ToString(), ApplicationVersionRange.Empty);
+    public override LegacyModuleIssue ToLegacy() => new(Module, DependencyId, ModuleIssueType.DependencyValidationError, ToString(), ApplicationVersionRange.Empty);
 }
 
 /// <summary>
@@ -214,7 +279,12 @@ public sealed record ModuleDependencyValidationIssue(
 /// </summary>
 /// <param name="Module">The module with the version mismatch</param>
 /// <param name="Dependency">The dependency module with mismatched version</param>
-public abstract record ModuleVersionMismatchIssue(
+#if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
+internal
+#else
+public
+# endif
+    abstract record ModuleVersionMismatchIssue(
     ModuleInfoExtended Module,
     ModuleInfoExtended Dependency
 ) : ModuleIssueV2(Module);
@@ -226,7 +296,12 @@ public abstract record ModuleVersionMismatchIssue(
 /// <param name="Module">The module with the version mismatch</param>
 /// <param name="Dependency">The dependency module with mismatched version</param>
 /// <param name="Version">The specific version being compared against</param>
-public abstract record ModuleVersionMismatchSpecificIssue(
+#if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
+internal
+#else
+public
+# endif
+    abstract record ModuleVersionMismatchSpecificIssue(
     ModuleInfoExtended Module,
     ModuleInfoExtended Dependency,
     ApplicationVersion Version
@@ -239,7 +314,12 @@ public abstract record ModuleVersionMismatchSpecificIssue(
 /// <param name="Module">The module with the version mismatch</param>
 /// <param name="Dependency">The dependency module with mismatched version</param>
 /// <param name="VersionRange">The version range being compared against</param>
-public abstract record ModuleVersionMismatchRangeIssue(
+#if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
+internal
+#else
+public
+# endif
+    abstract record ModuleVersionMismatchRangeIssue(
     ModuleInfoExtended Module,
     ModuleInfoExtended Dependency,
     ApplicationVersionRange VersionRange
@@ -271,7 +351,12 @@ public abstract record ModuleVersionMismatchRangeIssue(
 /// 
 /// If a higher version of Harmony (e.g., `v2.3.0`) is installed than allowed, this issue will be raised.
 /// </remarks>
-public sealed record ModuleVersionMismatchLessThanOrEqualSpecificIssue(
+#if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
+internal
+#else
+public
+# endif
+    sealed record ModuleVersionMismatchLessThanOrEqualSpecificIssue(
     ModuleInfoExtended Module,
     ModuleInfoExtended Dependency,
     ApplicationVersion Version
@@ -280,7 +365,7 @@ public sealed record ModuleVersionMismatchLessThanOrEqualSpecificIssue(
     public override string ToString() => 
         $"The module '{Module.Id}' requires version {Version} or lower of '{Dependency.Id}', but version {Dependency.Version} is installed";
 
-    public override ModuleIssue ToLegacy() => new(Module, Dependency.Id, ModuleIssueType.VersionMismatchLessThanOrEqual, ToString(), new ApplicationVersionRange(Version, Version));
+    public override LegacyModuleIssue ToLegacy() => new(Module, Dependency.Id, ModuleIssueType.VersionMismatchLessThanOrEqual, ToString(), new ApplicationVersionRange(Version, Version));
 }
 
 /// <summary>
@@ -308,7 +393,12 @@ public sealed record ModuleVersionMismatchLessThanOrEqualSpecificIssue(
 /// ```
 /// If an older version of ButterLib (e.g., v2.8.14) is installed, this issue will be raised.
 /// </remarks>
-public sealed record ModuleVersionMismatchLessThanRangeIssue(
+#if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
+internal
+#else
+public
+# endif
+    sealed record ModuleVersionMismatchLessThanRangeIssue(
     ModuleInfoExtended Module,
     ModuleInfoExtended Dependency,
     ApplicationVersionRange VersionRange
@@ -317,7 +407,7 @@ public sealed record ModuleVersionMismatchLessThanRangeIssue(
     public override string ToString() => 
         $"The module '{Module.Id}' requires '{Dependency.Id}' version {VersionRange}, but version {Dependency.Version} is installed (below minimum)";
 
-    public override ModuleIssue ToLegacy() => new(Module, Dependency.Id, ModuleIssueType.VersionMismatchLessThan, ToString(), VersionRange);
+    public override LegacyModuleIssue ToLegacy() => new(Module, Dependency.Id, ModuleIssueType.VersionMismatchLessThan, ToString(), VersionRange);
 }
 
 /// <summary>
@@ -345,7 +435,12 @@ public sealed record ModuleVersionMismatchLessThanRangeIssue(
 /// ```
 /// If a version of `ModB` that falls within the range is installed, this issue will be raised.
 /// </remarks>
-public sealed record ModuleVersionMismatchGreaterThanRangeIssue(
+#if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
+internal
+#else
+public
+# endif
+    sealed record ModuleVersionMismatchGreaterThanRangeIssue(
     ModuleInfoExtended Module,
     ModuleInfoExtended Dependency,
     ApplicationVersionRange VersionRange
@@ -353,7 +448,7 @@ public sealed record ModuleVersionMismatchGreaterThanRangeIssue(
 {
     public override string ToString() => 
         $"The module '{Module.Id}' requires '{Dependency.Id}' version {VersionRange}, but version {Dependency.Version} is installed (above maximum)";
-    public override ModuleIssue ToLegacy() => new(Module, Dependency.Id, ModuleIssueType.VersionMismatchGreaterThan, ToString(), VersionRange);
+    public override LegacyModuleIssue ToLegacy() => new(Module, Dependency.Id, ModuleIssueType.VersionMismatchGreaterThan, ToString(), VersionRange);
 }
 
 /// <summary>
@@ -378,7 +473,12 @@ public sealed record ModuleVersionMismatchGreaterThanRangeIssue(
 /// ```
 /// If both `AlternativeArmorSystem` is enabled when `RealisticBattleArmor` is already enabled, this issue will be raised.
 /// </remarks>
-public sealed record ModuleIncompatibleIssue(
+#if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
+internal
+#else
+public
+# endif
+    sealed record ModuleIncompatibleIssue(
     ModuleInfoExtended Module,
     string IncompatibleModuleId
 ) : ModuleIssueV2(Module)
@@ -414,13 +514,18 @@ public sealed record ModuleIncompatibleIssue(
 /// ```
 /// This is a configuration error as `TroopOverhaul` cannot be both required and incompatible.
 /// </remarks>
-public sealed record ModuleDependencyConflictDependentAndIncompatibleIssue(
+#if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
+internal
+#else
+public
+# endif
+    sealed record ModuleDependencyConflictDependentAndIncompatibleIssue(
     ModuleInfoExtended Module,
     string ConflictingModuleId
 ) : ModuleIssueV2(Module)
 {
     public override string ToString() => $"Module '{Module.Id}' has conflicting configuration: '{ConflictingModuleId}' is marked as both required and incompatible";
-    public override ModuleIssue ToLegacy() => new(Module, ConflictingModuleId, ModuleIssueType.DependencyConflictDependentAndIncompatible, ToString(), ApplicationVersionRange.Empty);
+    public override LegacyModuleIssue ToLegacy() => new(Module, ConflictingModuleId, ModuleIssueType.DependencyConflictDependentAndIncompatible, ToString(), ApplicationVersionRange.Empty);
 }
 
 /// <summary>
@@ -448,13 +553,18 @@ public sealed record ModuleDependencyConflictDependentAndIncompatibleIssue(
 /// ```
 /// This creates an impossible load order requirement as `ArenaOverhaul` cannot load both before and after `ImprovedTournaments`.
 /// </remarks>
-public sealed record ModuleDependencyConflictLoadBeforeAndAfterIssue(
+#if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
+internal
+#else
+public
+# endif
+    sealed record ModuleDependencyConflictLoadBeforeAndAfterIssue(
     ModuleInfoExtended Module,
     DependentModuleMetadata ConflictingModule
 ) : ModuleIssueV2(Module)
 {
     public override string ToString() => $"Module '{Module.Id}' has conflicting load order requirements with '{ConflictingModule.Id}' (both LoadBefore and LoadAfter)";
-    public override ModuleIssue ToLegacy() => new(Module, ConflictingModule.Id, ModuleIssueType.DependencyConflictDependentLoadBeforeAndAfter, ToString(), ApplicationVersionRange.Empty);
+    public override LegacyModuleIssue ToLegacy() => new(Module, ConflictingModule.Id, ModuleIssueType.DependencyConflictDependentLoadBeforeAndAfter, ToString(), ApplicationVersionRange.Empty);
 }
 
 /// <summary>
@@ -493,13 +603,18 @@ public sealed record ModuleDependencyConflictLoadBeforeAndAfterIssue(
 /// 
 /// ❌ This creates an impossible situation where each module must load before the other.
 /// </remarks>
-public sealed record ModuleDependencyConflictCircularIssue(
+#if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
+internal
+#else
+public
+# endif
+    sealed record ModuleDependencyConflictCircularIssue(
     ModuleInfoExtended Module,
     DependentModuleMetadata CircularDependency
 ) : ModuleIssueV2(Module)
 {
     public override string ToString() => $"Module '{Module.Id}' and '{CircularDependency.Id}' have circular dependencies";
-    public override ModuleIssue ToLegacy() => new(Module, CircularDependency.Id, ModuleIssueType.DependencyConflictCircular, ToString(), ApplicationVersionRange.Empty);
+    public override LegacyModuleIssue ToLegacy() => new(Module, CircularDependency.Id, ModuleIssueType.DependencyConflictCircular, ToString(), ApplicationVersionRange.Empty);
 }
 
 /// <summary>
@@ -526,7 +641,12 @@ public sealed record ModuleDependencyConflictCircularIssue(
 /// ```
 /// If `Harmony` is loading after `BetterBattles` in the actual load order, this issue will be raised.
 /// </remarks>
-public sealed record ModuleDependencyNotLoadedBeforeIssue(
+#if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
+internal
+#else
+public
+# endif
+    sealed record ModuleDependencyNotLoadedBeforeIssue(
     ModuleInfoExtended Module,
     string DependencyId
 ) : ModuleIssueV2(Module)
@@ -559,7 +679,12 @@ public sealed record ModuleDependencyNotLoadedBeforeIssue(
 /// ```
 /// If `ImprovedGarrisons` is loading before `BetterSettlements`, this issue will be raised.
 /// </remarks>
-public sealed record ModuleDependencyNotLoadedAfterIssue(
+#if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
+internal
+#else
+public
+# endif
+    sealed record ModuleDependencyNotLoadedAfterIssue(
     ModuleInfoExtended Module,
     string DependencyId
 ) : ModuleIssueV2(Module)
@@ -588,12 +713,17 @@ public sealed record ModuleDependencyNotLoadedAfterIssue(
 /// ```
 /// The Id field is required for module identification and dependency management.
 /// </remarks>
-public sealed record ModuleMissingIdIssue(
+#if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
+internal
+#else
+public
+# endif
+    sealed record ModuleMissingIdIssue(
     ModuleInfoExtended Module
 ) : ModuleIssueV2(Module)
 {
     public override string ToString() => $"Module with Name '{Module.Name}' is missing its Id field";
-    public override ModuleIssue ToLegacy() => new(Module, "UNKNOWN", ModuleIssueType.MissingModuleId, ToString(), ApplicationVersionRange.Empty);
+    public override LegacyModuleIssue ToLegacy() => new(Module, "UNKNOWN", ModuleIssueType.MissingModuleId, ToString(), ApplicationVersionRange.Empty);
 }
 
 /// <remarks>
@@ -616,12 +746,17 @@ public sealed record ModuleMissingIdIssue(
 /// ```
 /// The Name field is required for module identification and display purposes.
 /// </remarks>
-public sealed record ModuleMissingNameIssue(
+#if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
+internal
+#else
+public
+# endif
+    sealed record ModuleMissingNameIssue(
     ModuleInfoExtended Module
 ) : ModuleIssueV2(Module)
 {
     public override string ToString() => $"Module with Id '{Module.Id}' is missing its Name field";
-    public override ModuleIssue ToLegacy() => new(Module, Module.Id, ModuleIssueType.MissingModuleName, ToString(), ApplicationVersionRange.Empty);
+    public override LegacyModuleIssue ToLegacy() => new(Module, Module.Id, ModuleIssueType.MissingModuleName, ToString(), ApplicationVersionRange.Empty);
 }
 
 /// <remarks>
@@ -648,12 +783,17 @@ public sealed record ModuleMissingNameIssue(
 /// ```
 /// All dependency entries must be properly formed with required attributes.
 /// </remarks>
-public sealed record ModuleDependencyNullIssue(
+#if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
+internal
+#else
+public
+# endif
+    sealed record ModuleDependencyNullIssue(
     ModuleInfoExtended Module
 ) : ModuleIssueV2(Module)
 {
     public override string ToString() => $"Module '{Module.Id}' has a null dependency entry";
-    public override ModuleIssue ToLegacy() => new(Module, "UNKNOWN", ModuleIssueType.DependencyIsNull, ToString(), ApplicationVersionRange.Empty);
+    public override LegacyModuleIssue ToLegacy() => new(Module, "UNKNOWN", ModuleIssueType.DependencyIsNull, ToString(), ApplicationVersionRange.Empty);
 }
 
 /// <remarks>
@@ -680,10 +820,20 @@ public sealed record ModuleDependencyNullIssue(
 /// ```
 /// All dependency entries must include an Id to identify the required module.
 /// </remarks>
-public sealed record ModuleDependencyMissingIdIssue(
+#if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
+internal
+#else
+public
+# endif
+    sealed record ModuleDependencyMissingIdIssue(
     ModuleInfoExtended Module
 ) : ModuleIssueV2(Module)
 {
     public override string ToString() => $"Module '{Module.Id}' has a dependency entry missing its Id field";
-    public override ModuleIssue ToLegacy() => new(Module, "UNKNOWN", ModuleIssueType.DependencyMissingModuleId, ToString(), ApplicationVersionRange.Empty);
+    public override LegacyModuleIssue ToLegacy() => new(Module, "UNKNOWN", ModuleIssueType.DependencyMissingModuleId, ToString(), ApplicationVersionRange.Empty);
 }
+
+#nullable restore
+#if !BANNERLORDBUTRMODULEMANAGER_ENABLE_WARNING
+#pragma warning restore
+#endif

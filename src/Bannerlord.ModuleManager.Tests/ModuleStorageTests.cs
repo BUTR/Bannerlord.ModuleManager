@@ -162,7 +162,7 @@ namespace Bannerlord.ModuleManager.Tests
             Assert.That(validationResult1, Is.Empty, () => string.Join(", ", validationResult1?.Select(x => x.Reason) ?? Enumerable.Empty<string>()));
 
             var validationResult2 = ModuleUtilities.ValidateModule(unsortedInvalid, invalid, validationManager.IsSelected).ToArray();
-            Assert.That(validationResult2, Has.Length.EqualTo(1), () => string.Join(", ", validationResult2?.Select(x => x.Reason) ?? Enumerable.Empty<string>()));
+            Assert.That(validationResult2, Has.Length.EqualTo(2), () => string.Join(", ", validationResult2?.Select(x => x.Reason) ?? Enumerable.Empty<string>()));
 
             var enableDisableManager = new EnableDisableManager();
             ModuleUtilities.EnableModule(unsorted, uiExtenderEx, enableDisableManager.GetSelected, enableDisableManager.SetSelected, enableDisableManager.GetDisabled, enableDisableManager.SetDisabled);
