@@ -221,7 +221,7 @@ namespace Bannerlord.ModuleManager
         /// <summary>
         /// Validates whether the load order is correctly sorted
         /// </summary>
-        /// <param name="modules">Assumed that only valid and selected to launch modules are in the list</param>
+        /// <param name="modules">All available modules in they order they are expected to be loaded in</param>
         /// <param name="targetModule">Assumed that it's present in <paramref name="modules"/></param>
         /// <returns>Any errors that were detected during inspection</returns>
         public static IEnumerable<ModuleIssue> ValidateLoadOrder(
@@ -240,7 +240,7 @@ namespace Bannerlord.ModuleManager
         /// <summary>
         /// Validates whether the load order is correctly sorted
         /// </summary>
-        /// <param name="modules">Assumed that only valid and selected to launch modules are in the list</param>
+        /// <param name="modules">All available modules in they order they are expected to be loaded in</param>
         /// <param name="targetModule">Assumed that it's present in <paramref name="modules"/></param>
         /// <param name="visitedModules">Used to track that we traverse each module only once</param>
         /// <returns>Any errors that were detected during inspection</returns>
@@ -430,21 +430,23 @@ namespace Bannerlord.ModuleManager
                 {
                     if (metadata.Version != ApplicationVersion.Empty)
                     {
-                        yield return new ModuleMissingDependenciesIssue(
-                            targetModule, 
+                        yield return new ModuleMissingExactVersionDependencyIssue(
+                            targetModule,
                             metadata.Id,
-                            new ApplicationVersionRange(metadata.Version, metadata.Version));
+                            metadata.Version);
                     }
                     else if (metadata.VersionRange != ApplicationVersionRange.Empty)
                     {
-                        yield return new ModuleMissingDependenciesIssue(
+                        yield return new ModuleMissingVersionRangeDependencyIssue(
                             targetModule,
                             metadata.Id,
                             metadata.VersionRange);
                     }
                     else
                     {
-                        yield return new ModuleMissingDependenciesIssue(targetModule, metadata.Id);
+                        yield return new ModuleMissingUnversionedDependencyIssue(
+                            targetModule,
+                            metadata.Id);
                     }
                     yield break;
                 }
@@ -481,7 +483,7 @@ namespace Bannerlord.ModuleManager
                 }
             }
 
-,            // Check that the dependencies have the minimum required version set by DependedModuleMetadatas
+            // Check that the dependencies have the minimum required version set by DependedModuleMetadatas
             foreach (var metadata in targetModule.DependenciesToLoadDistinct())
             {
                 // Ignore the check for empty versions
@@ -561,7 +563,7 @@ namespace Bannerlord.ModuleManager
         /// <summary>
         /// Validates whether the load order is correctly sorted using the new variant-based issue system
         /// </summary>
-        /// <param name="modules">All available modules </param>
+        /// <param name="modules">All available modules in they order they are expected to be loaded in</param>
         /// <param name="targetModule">The module whose load order is being validated</param>
         /// <returns>Any errors that were detected during inspection</returns>
         public static IEnumerable<ModuleIssueV2> ValidateLoadOrderEx(
@@ -579,10 +581,13 @@ namespace Bannerlord.ModuleManager
         /// <summary>
         /// Validates whether the load order is correctly sorted using the new variant-based issue system
         /// </summary>
-        /// <param name="modules">All available modules</param>
+        /// <param name="modules">All available modules in they order they are expected to be loaded in</param>
         /// <param name="targetModule">The module whose load order is being validated</param>
         /// <param name="visitedModules">Set of modules already validated to prevent cycles</param>
         /// <returns>Any errors that were detected during inspection</returns>
+        /// <remarks>
+        ///     In this case 'load order' means the set of enabled mods.
+        /// </remarks>
         public static IEnumerable<ModuleIssueV2> ValidateLoadOrderEx(
             IReadOnlyList<ModuleInfoExtended> modules,
             ModuleInfoExtended targetModule,
@@ -597,6 +602,7 @@ namespace Bannerlord.ModuleManager
                 yield break;
             }
 
+            // Check that all dependencies are present
             foreach (var metadata in targetModule.DependenciesToLoad().DistinctBy(x => x.Id))
             {
                 var metadataIdx = CollectionsExtensions.IndexOf(modules, x => 
@@ -608,21 +614,23 @@ namespace Bannerlord.ModuleManager
                     {
                         if (metadata.Version != ApplicationVersion.Empty)
                         {
-                            yield return new ModuleMissingDependenciesIssue(
+                            yield return new ModuleMissingExactVersionDependencyIssue(
                                 targetModule,
                                 metadata.Id,
-                                new ApplicationVersionRange(metadata.Version, metadata.Version));
+                                metadata.Version);
                         }
                         else if (metadata.VersionRange != ApplicationVersionRange.Empty)
                         {
-                            yield return new ModuleMissingDependenciesIssue(
+                            yield return new ModuleMissingVersionRangeDependencyIssue(
                                 targetModule,
                                 metadata.Id,
                                 metadata.VersionRange);
                         }
                         else
                         {
-                            yield return new ModuleMissingDependenciesIssue(targetModule, metadata.Id);
+                            yield return new ModuleMissingUnversionedDependencyIssue(
+                                targetModule,
+                                metadata.Id);
                         }
                     }
                     continue;
