@@ -46,6 +46,7 @@ namespace Bannerlord.ModuleManager
     using global::System;
     using global::System.Collections.Generic;
     using global::System.Linq;
+    using Bannerlord.ModuleManager.Models.Issues;
 
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
     internal
@@ -142,139 +143,250 @@ namespace Bannerlord.ModuleManager
             }
         }
 
+#region Polyfills
         /// <summary>
         /// Validates a module
         /// </summary>
-        /// <param name="modules">All available modules</param>
-        /// <returns>Any error that were detected during inspection</returns>
-        public static IEnumerable<ModuleIssue> ValidateModule(IReadOnlyList<ModuleInfoExtended> modules, ModuleInfoExtended targetModule, Func<ModuleInfoExtended, bool> isSelected)
+        /// <param name="modules">All available modules (in any order)</param>
+        /// <param name="targetModule">The module to validate</param>
+        /// <param name="isSelected">Function that determines if a module is selected (is enabled)</param>
+        /// <returns>Any errors that were detected during inspection</returns>
+        public static IEnumerable<ModuleIssue> ValidateModule(
+            IReadOnlyList<ModuleInfoExtended> modules, 
+            ModuleInfoExtended targetModule, 
+            Func<ModuleInfoExtended, bool> isSelected)
         {
             var visited = new HashSet<ModuleInfoExtended>();
-            foreach (var issue in ValidateModule(modules, targetModule, visited, isSelected, x => ValidateModule(modules, x, isSelected).Count() == 0))
-                yield return issue;
+            return ValidateModuleEx(modules, targetModule, visited, isSelected, 
+                x => ValidateModuleEx(modules, x, isSelected).Count() == 0)
+                .Select(x => x.ToLegacy());
         }
+
         /// <summary>
         /// Validates a module
         /// </summary>
-        /// <param name="modules">All available modules</param>
-        /// <returns>Any error that were detected during inspection</returns>
-        public static IEnumerable<ModuleIssue> ValidateModule(IReadOnlyList<ModuleInfoExtended> modules, ModuleInfoExtended targetModule, Func<ModuleInfoExtended, bool> isSelected, Func<ModuleInfoExtended, bool> isValid)
+        /// <param name="modules">All available modules (in any order)</param>
+        /// <param name="targetModule">The module to validate</param>
+        /// <param name="isSelected">Function that determines if a module is selected (is enabled)</param>
+        /// <param name="isValid">Function that determines if a module is valid</param>
+        /// <returns>Any errors that were detected during inspection</returns>
+        public static IEnumerable<ModuleIssue> ValidateModule(
+            IReadOnlyList<ModuleInfoExtended> modules, 
+            ModuleInfoExtended targetModule, 
+            Func<ModuleInfoExtended, bool> isSelected, 
+            Func<ModuleInfoExtended, bool> isValid)
         {
             var visited = new HashSet<ModuleInfoExtended>();
-            foreach (var issue in ValidateModule(modules, targetModule, visited, isSelected, isValid))
-                yield return issue;
-        }
-        /// <summary>
-        /// Validates a module
-        /// </summary>
-        /// <param name="modules">All available modules</param>
-        /// <returns>Any error that were detected during inspection</returns>
-        public static IEnumerable<ModuleIssue> ValidateModule(IReadOnlyList<ModuleInfoExtended> modules, ModuleInfoExtended targetModule, HashSet<ModuleInfoExtended> visitedModules, Func<ModuleInfoExtended, bool> isSelected, Func<ModuleInfoExtended, bool> isValid)
-        {
-            // Validate common data
-            foreach (var issue in ValidateModuleCommonData(targetModule))
-                yield return issue;
-            
-            // Validate dependency declaration
-            foreach (var issue in ValidateModuleDependenciesDeclarations(modules, targetModule))
-                yield return issue;
-            
-            // Check that all dependencies are present
-            foreach (var issue in ValidateModuleDependencies(modules, targetModule, visitedModules, isSelected, isValid))
-                yield return issue;
+            return ValidateModuleEx(modules, targetModule, visited, isSelected, isValid)
+                .Select(x => x.ToLegacy());
         }
 
         /// <summary>
         /// Validates a module's common data
         /// </summary>
-        public static IEnumerable<ModuleIssue> ValidateModuleCommonData(ModuleInfoExtended module)
+        /// <param name="module">The module to validate</param>
+        /// <returns>Any errors that were detected during inspection of common data</returns>
+        public static IEnumerable<ModuleIssue> ValidateModuleCommonData(ModuleInfoExtended module) =>
+            ValidateModuleCommonDataEx(module).Select(x => x.ToLegacy());
+
+        /// <summary>
+        /// Validates a module's dependency declarations
+        /// </summary>
+        /// <param name="modules">All available modules (in any order)</param>
+        /// <param name="targetModule">The module whose dependencies are being validated</param>
+        /// <returns>Any errors that were detected during inspection of dependencies</returns>
+        public static IEnumerable<ModuleIssue> ValidateModuleDependenciesDeclarations(
+            IReadOnlyList<ModuleInfoExtended> modules, 
+            ModuleInfoExtended targetModule) =>
+            ValidateModuleDependenciesDeclarationsEx(modules, targetModule).Select(x => x.ToLegacy());
+
+        /// <summary>
+        /// Validates module dependencies
+        /// </summary>
+        /// <param name="modules">All available modules (in any order)</param>
+        /// <param name="targetModule">The module whose dependencies are being validated</param>
+        /// <param name="visitedModules">Set of modules already validated to prevent cycles</param>
+        /// <param name="isSelected">Function that determines if a module is selected</param>
+        /// <param name="isValid">Function that determines if a module is valid</param>
+        /// <returns>Any errors that were detected during inspection of dependencies</returns>
+        public static IEnumerable<ModuleIssue> ValidateModuleDependencies(
+            IReadOnlyList<ModuleInfoExtended> modules,
+            ModuleInfoExtended targetModule,
+            HashSet<ModuleInfoExtended> visitedModules,
+            Func<ModuleInfoExtended, bool> isSelected,
+            Func<ModuleInfoExtended, bool> isValid) =>
+            ValidateModuleDependenciesEx(modules, targetModule, visitedModules, isSelected, isValid)
+                .Select(x => x.ToLegacy());
+
+        /// <summary>
+        /// Validates whether the load order is correctly sorted
+        /// </summary>
+        /// <param name="modules">Assumed that only valid and selected to launch modules are in the list</param>
+        /// <param name="targetModule">Assumed that it's present in <paramref name="modules"/></param>
+        /// <returns>Any errors that were detected during inspection</returns>
+        public static IEnumerable<ModuleIssue> ValidateLoadOrder(
+            IReadOnlyList<ModuleInfoExtended> modules, 
+            ModuleInfoExtended targetModule)
+        {
+            foreach (var issue in ValidateModuleCommonData(targetModule))
+                yield return issue;
+
+            var visited = new HashSet<ModuleInfoExtended>();
+            foreach (var issue in ValidateLoadOrderEx(modules, targetModule, visited)
+                .Select(x => x.ToLegacy()))
+                yield return issue;
+        }
+
+        /// <summary>
+        /// Validates whether the load order is correctly sorted
+        /// </summary>
+        /// <param name="modules">Assumed that only valid and selected to launch modules are in the list</param>
+        /// <param name="targetModule">Assumed that it's present in <paramref name="modules"/></param>
+        /// <param name="visitedModules">Used to track that we traverse each module only once</param>
+        /// <returns>Any errors that were detected during inspection</returns>
+        public static IEnumerable<ModuleIssue> ValidateLoadOrder(
+            IReadOnlyList<ModuleInfoExtended> modules, 
+            ModuleInfoExtended targetModule, 
+            HashSet<ModuleInfoExtended> visitedModules) =>
+            ValidateLoadOrderEx(modules, targetModule, visitedModules).Select(x => x.ToLegacy());
+#endregion
+
+        /// <summary>
+        /// Validates a module using the new variant-based issue system
+        /// </summary>
+        /// <param name="modules">All available modules (in any order)</param>
+        /// <param name="targetModule">The module to validate</param>
+        /// <param name="isSelected">Function that determines if a module is enabled</param>
+        /// <returns>Any errors that were detected during inspection</returns>
+        public static IEnumerable<ModuleIssueV2> ValidateModuleEx(
+            IReadOnlyList<ModuleInfoExtended> modules,
+            ModuleInfoExtended targetModule,
+            Func<ModuleInfoExtended, bool> isSelected)
+        {
+            var visited = new HashSet<ModuleInfoExtended>();
+            foreach (var issue in ValidateModuleEx(modules, targetModule, visited, isSelected, x => ValidateModuleEx(modules, x, isSelected).Count() == 0))
+            {
+                yield return issue;
+            }
+        }
+
+        /// <summary>
+        /// Validates a module using the new variant-based issue system
+        /// </summary>
+        /// <param name="modules">All available modules (in any order)</param>
+        /// <param name="targetModule">The module to validate</param>
+        /// <param name="isSelected">Function that determines if a module is enabled</param>
+        /// <param name="isValid">Function that determines if a module is valid</param>
+        /// <returns>Any errors that were detected during inspection</returns>
+        public static IEnumerable<ModuleIssueV2> ValidateModuleEx(
+            IReadOnlyList<ModuleInfoExtended> modules,
+            ModuleInfoExtended targetModule,
+            Func<ModuleInfoExtended, bool> isSelected,
+            Func<ModuleInfoExtended, bool> isValid)
+        {
+            var visited = new HashSet<ModuleInfoExtended>();
+            foreach (var issue in ValidateModuleEx(modules, targetModule, visited, isSelected, isValid))
+            {
+                yield return issue;
+            }
+        }
+
+        /// <summary>
+        /// Internal validation method that handles the core validation logic
+        /// </summary>
+        /// <param name="modules">All available modules (in any order)</param>
+        /// <param name="targetModule">The module to validate</param>
+        /// <param name="visitedModules">Set of modules already validated to prevent cycles</param>
+        /// <param name="isSelected">Function that determines if a module is enabled</param>
+        /// <param name="isValid">Function that determines if a module is valid</param>
+        /// <returns>Any errors that were detected during inspection</returns>
+        private static IEnumerable<ModuleIssueV2> ValidateModuleEx(
+            IReadOnlyList<ModuleInfoExtended> modules,
+            ModuleInfoExtended targetModule,
+            HashSet<ModuleInfoExtended> visitedModules,
+            Func<ModuleInfoExtended, bool> isSelected,
+            Func<ModuleInfoExtended, bool> isValid)
+        {
+            foreach (var issue in ValidateModuleCommonDataEx(targetModule))
+                yield return issue;
+            
+            foreach (var issue in ValidateModuleDependenciesDeclarationsEx(modules, targetModule))
+                yield return issue;
+            
+            foreach (var issue in ValidateModuleDependenciesEx(modules, targetModule, visitedModules, isSelected, isValid))
+                yield return issue;
+        }
+
+        /// <summary>
+        /// Validates a module's common data using the new variant-based issue system
+        /// </summary>
+        /// <param name="module">The module whose common data is being validated</param>
+        /// <returns>Any errors that were detected during inspection</returns>
+        public static IEnumerable<ModuleIssueV2> ValidateModuleCommonDataEx(ModuleInfoExtended module)
         {
             if (string.IsNullOrWhiteSpace(module.Id))
-            {
-                yield return new ModuleIssue(module, "UNKNOWN", ModuleIssueType.MissingModuleId)
-                {
-                    Reason = $"Module Id is missing for '{module.Name}'"
-                };
-            }
+                yield return new ModuleMissingIdIssue(module);
+
             if (string.IsNullOrWhiteSpace(module.Name))
-            {
-                yield return new ModuleIssue(module, module.Id, ModuleIssueType.MissingModuleName)
-                {
-                    Reason = $"Module Name is missing in '{module.Id}'"
-                };
-            }
+                yield return new ModuleMissingNameIssue(module);
+
             foreach (var dependentModule in module.DependentModules.Where(x => x is not null))
             {
                 if (dependentModule is null)
                 {
-                    yield return new ModuleIssue(module, "UNKNOWN", ModuleIssueType.DependencyIsNull)
-                    {
-                        Reason = $"Found a null dependency in '{module.Id}'",
-                    };
+                    yield return new ModuleDependencyNullIssue(module);
                     break;
                 }
                 if (string.IsNullOrWhiteSpace(dependentModule.Id))
-                {
-                    yield return new ModuleIssue(module, "UNKNOWN", ModuleIssueType.DependencyMissingModuleId)
-                    {
-                        Reason = $"Module Id is missing for one if the dependencies of '{module.Id}'",
-                    };
-                }
+                    yield return new ModuleDependencyMissingIdIssue(module);
             }
+
             foreach (var dependentModuleMetadata in module.DependentModuleMetadatas.Where(x => x is not null))
             {
                 if (dependentModuleMetadata is null)
                 {
-                    yield return new ModuleIssue(module, "UNKNOWN", ModuleIssueType.DependencyIsNull)
-                    {
-                        Reason = $"Found a null dependency in '{module.Id}'",
-                    };
+                    yield return new ModuleDependencyNullIssue(module);
                     break;
                 }
                 if (string.IsNullOrWhiteSpace(dependentModuleMetadata.Id))
-                {
-                    yield return new ModuleIssue(module, "UNKNOWN", ModuleIssueType.DependencyMissingModuleId)
-                    {
-                        Reason = $"Module Id is missing for one if the dependencies of '{module.Id}'",
-                    };
-                }
+                    yield return new ModuleDependencyMissingIdIssue(module);
             }
         }
         
         /// <summary>
-        /// Validates a module metadata
+        /// Validates module dependencies declarations using the new variant-based issue system
         /// </summary>
-        /// <param name="modules">All available modules</param>
-        /// <returns>Any error that were detected during inspection</returns>
-        public static IEnumerable<ModuleIssue> ValidateModuleDependenciesDeclarations(IReadOnlyList<ModuleInfoExtended> modules, ModuleInfoExtended targetModule)
+        /// <param name="modules">All available modules (in any order)</param>
+        /// <param name="targetModule">The module whose dependency declarations are being validated</param>
+        /// <returns>Any errors that were detected during inspection</returns>
+        public static IEnumerable<ModuleIssueV2> ValidateModuleDependenciesDeclarationsEx(
+            IReadOnlyList<ModuleInfoExtended> modules,
+            ModuleInfoExtended targetModule)
         {
             // Any Incompatible module is depended on
             // TODO: Will a null Id break things?
-            foreach (var moduleId in targetModule.DependenciesToLoadDistinct().Select(x => x.Id).Intersect(targetModule.DependenciesIncompatiblesDistinct().Select(x => x.Id)))
+            foreach (var moduleId in targetModule.DependenciesToLoadDistinct()
+                         .Select(x => x.Id)
+                         .Intersect(targetModule.DependenciesIncompatiblesDistinct().Select(x => x.Id)))
             {
-                yield return new ModuleIssue(targetModule, moduleId, ModuleIssueType.DependencyConflictDependentAndIncompatible)
-                {
-                    Reason = $"Module '{moduleId}' is both depended upon and marked as incompatible"
-                };
+                yield return new ModuleDependencyConflictDependentAndIncompatibleIssue(targetModule, moduleId);
             }
+
             // Check raw metadata too
-            foreach (var dependency in targetModule.DependentModuleMetadatas.Where(x => x is not null).Where(x => x.IsIncompatible && x.LoadType != LoadType.None))
+            foreach (var dependency in targetModule.DependentModuleMetadatas
+                .Where(x => x is not null)
+                .Where(x => x.IsIncompatible && x.LoadType != LoadType.None))
             {
-                yield return new ModuleIssue(targetModule, dependency.Id, ModuleIssueType.DependencyConflictDependentAndIncompatible)
-                {
-                    Reason = $"Module '{dependency.Id}' is both depended upon and marked as incompatible"
-                };
+                yield return new ModuleDependencyConflictDependentAndIncompatibleIssue(targetModule, dependency.Id);
             }
 
             // LoadBeforeThis conflicts with LoadAfterThis
             foreach (var module in targetModule.DependenciesLoadBeforeThisDistinct())
             {
-                if (targetModule.DependenciesLoadAfterThisDistinct().FirstOrDefault(x => string.Equals(x.Id, module.Id, StringComparison.Ordinal)) is { } metadata)
+                if (targetModule.DependenciesLoadAfterThisDistinct()
+                    .FirstOrDefault(x => string.Equals(x.Id, module.Id, StringComparison.Ordinal)) is { } metadata)
                 {
-                    yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.DependencyConflictDependentLoadBeforeAndAfter)
-                    {
-                        Reason = $"Module '{metadata.Id}' is both depended upon as LoadBefore and LoadAfter"
-                    };
+                    yield return new ModuleDependencyConflictLoadBeforeAndAfterIssue(targetModule, metadata.Id);
                 }
             }
 
@@ -282,25 +394,31 @@ namespace Bannerlord.ModuleManager
             foreach (var module in targetModule.DependenciesToLoadDistinct().Where(x => x.LoadType != LoadType.None))
             {
                 var moduleInfo = modules.FirstOrDefault(x => string.Equals(x.Id, module.Id, StringComparison.Ordinal));
-                if (moduleInfo?.DependenciesToLoadDistinct().Where(x => x.LoadType != LoadType.None).FirstOrDefault(x => string.Equals(x.Id, targetModule.Id, StringComparison.Ordinal)) is { } metadata)
+                if (moduleInfo?.DependenciesToLoadDistinct()
+                    .Where(x => x.LoadType != LoadType.None)
+                    .FirstOrDefault(x => string.Equals(x.Id, targetModule.Id, StringComparison.Ordinal)) is { } metadata)
                 {
                     if (metadata.LoadType == module.LoadType)
-                    {
-                        yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.DependencyConflictCircular)
-                        {
-                            Reason = $"Circular dependencies. '{targetModule.Id}' and '{moduleInfo.Id}' depend on each other"
-                        };
-                    }
+                        yield return new ModuleDependencyConflictCircularIssue(targetModule, metadata.Id);
                 }
             }
         }
+
         /// <summary>
-        /// Validates a module relative to other modules
+        /// Validates module dependencies using the new variant-based issue system
         /// </summary>
-        /// <param name="modules">All available modules</param>
-        /// <param name="isValid">Whether another module is valid. Can be checked by this function</param>
-        /// <returns>Any error that were detected during inspection</returns>
-        public static IEnumerable<ModuleIssue> ValidateModuleDependencies(IReadOnlyList<ModuleInfoExtended> modules, ModuleInfoExtended targetModule, HashSet<ModuleInfoExtended> visitedModules, Func<ModuleInfoExtended, bool> isSelected, Func<ModuleInfoExtended, bool> isValid)
+        /// <param name="modules">All available modules (in any order)</param>
+        /// <param name="targetModule">The module whose dependencies are being validated</param>
+        /// <param name="visitedModules">Set of modules already validated to prevent cycles</param>
+        /// <param name="isSelected">Function that determines if a module is enabled</param>
+        /// <param name="isValid">Function that determines if a module is valid</param>
+        /// <returns>Any errors that were detected during inspection</returns>
+        private static IEnumerable<ModuleIssueV2> ValidateModuleDependenciesEx(
+            IReadOnlyList<ModuleInfoExtended> modules,
+            ModuleInfoExtended targetModule,
+            HashSet<ModuleInfoExtended> visitedModules,
+            Func<ModuleInfoExtended, bool> isSelected,
+            Func<ModuleInfoExtended, bool> isValid)
         {
             // Check that all dependencies are present
             foreach (var metadata in targetModule.DependenciesToLoadDistinct())
@@ -312,135 +430,114 @@ namespace Bannerlord.ModuleManager
                 {
                     if (metadata.Version != ApplicationVersion.Empty)
                     {
-                        yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.MissingDependencies)
-                        {
-                            Reason = $"Missing '{metadata.Id}' {metadata.Version}",
-                            SourceVersion = new(metadata.Version, metadata.Version)
-                        };
+                        yield return new ModuleMissingDependenciesIssue(
+                            targetModule, 
+                            metadata.Id,
+                            new ApplicationVersionRange(metadata.Version, metadata.Version));
                     }
                     else if (metadata.VersionRange != ApplicationVersionRange.Empty)
                     {
-                        yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.MissingDependencies)
-                        {
-                            Reason = $"Missing '{metadata.Id}' {metadata.VersionRange}",
-                            SourceVersion = metadata.VersionRange
-                        };
+                        yield return new ModuleMissingDependenciesIssue(
+                            targetModule,
+                            metadata.Id,
+                            metadata.VersionRange);
                     }
                     else
                     {
-                        yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.MissingDependencies)
-                        {
-                            Reason = $"Missing '{metadata.Id}'"
-                        };
+                        yield return new ModuleMissingDependenciesIssue(targetModule, metadata.Id);
                     }
                     yield break;
                 }
             }
-            
+
             // Check that the dependencies themselves have all dependencies present
             var opts = new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true };
             var dependencies = GetDependencies(modules, targetModule, visitedModules, opts).ToArray();
+            
             foreach (var dependency in dependencies)
             {
-                if (targetModule.DependenciesAllDistinct().FirstOrDefault(x => string.Equals(x.Id, dependency.Id, StringComparison.Ordinal)) is { } metadata)
+                if (targetModule.DependenciesAllDistinct().FirstOrDefault(x => 
+                    string.Equals(x.Id, dependency.Id, StringComparison.Ordinal)) is { } metadata)
                 {
                     // Not found, should not be possible
                     if (metadata is null) continue;
-                    
                     // Handle only direct dependencies
                     if (metadata.LoadType != LoadType.LoadBeforeThis) continue;
-                    
                     // Ignore the check for Optional
                     if (metadata.IsOptional) continue;
-                    
                     // Ignore the check for Incompatible
                     if (metadata.IsIncompatible) continue;
-                    
+
                     // Check missing dependency dependencies
-                    if (modules.FirstOrDefault(x => string.Equals(x.Id, dependency.Id, StringComparison.Ordinal)) is not { } depencencyModuleInfo)
+                    if (modules.FirstOrDefault(x => string.Equals(x.Id, dependency.Id, StringComparison.Ordinal)) is not { } dependencyModuleInfo)
                     {
-                        yield return new ModuleIssue(targetModule, dependency.Id, ModuleIssueType.DependencyMissingDependencies)
-                        {
-                            Reason = $"'{dependency.Id}' is missing it's dependencies!"
-                        };
+                        yield return new ModuleDependencyMissingDependenciesIssue(targetModule, dependency.Id);
                         continue;
                     }
 
                     // Check depencency correctness
-                    if (!isValid(depencencyModuleInfo))
-                    {
-                        yield return new ModuleIssue(targetModule, dependency.Id, ModuleIssueType.DependencyValidationError)
-                        {
-                            Reason = $"'{dependency.Id}' has unresolved issues!"
-                        };
-                    }
+                    if (!isValid(dependencyModuleInfo))
+                        yield return new ModuleDependencyValidationIssue(targetModule, dependency.Id);
                 }
             }
 
-            // Check that the dependencies have the minimum required version set by DependedModuleMetadatas
+,            // Check that the dependencies have the minimum required version set by DependedModuleMetadatas
             foreach (var metadata in targetModule.DependenciesToLoadDistinct())
             {
                 // Ignore the check for empty versions
-                if (metadata.Version == ApplicationVersion.Empty && metadata.VersionRange == ApplicationVersionRange.Empty) continue;
+                if (metadata.Version == ApplicationVersion.Empty && metadata.VersionRange == ApplicationVersionRange.Empty) 
+                    continue;
 
                 // Dependency is loaded
-                if (modules.FirstOrDefault(x => string.Equals(x.Id, metadata.Id, StringComparison.Ordinal)) is not { } metadataModule) continue;
+                if (modules.FirstOrDefault(x => string.Equals(x.Id, metadata.Id, StringComparison.Ordinal)) is not { } metadataModule) 
+                    continue;
 
                 if (metadata.Version != ApplicationVersion.Empty)
                 {
                     // dependedModuleMetadata.Version > dependedModule.Version
                     if (!metadata.IsOptional && (ApplicationVersionComparer.CompareStandard(metadata.Version, metadataModule.Version) > 0))
                     {
-                        yield return new ModuleIssue(targetModule, metadataModule.Id, ModuleIssueType.VersionMismatchLessThanOrEqual)
-                        {
-                            Reason = $"'{metadataModule.Id}' wrong version <= {metadata.Version}",
-                            SourceVersion = new(metadata.Version, metadata.Version)
-                        };
+                        yield return new ModuleVersionMismatchLessThanOrEqualSpecificIssue(
+                            targetModule,
+                            metadataModule.Id,
+                            metadata.Version);
                         continue;
                     }
                 }
-                if (metadata.VersionRange != ApplicationVersionRange.Empty)
+
+                if (metadata.VersionRange != ApplicationVersionRange.Empty && !metadata.IsOptional)
                 {
                     // dependedModuleMetadata.Version > dependedModule.VersionRange.Min
                     // dependedModuleMetadata.Version < dependedModule.VersionRange.Max
-                    if (!metadata.IsOptional)
+                    if (ApplicationVersionComparer.CompareStandard(metadata.VersionRange.Min, metadataModule.Version) > 0)
                     {
-                        if (ApplicationVersionComparer.CompareStandard(metadata.VersionRange.Min, metadataModule.Version) > 0)
-                        {
-                            yield return new ModuleIssue(targetModule, metadataModule.Id, ModuleIssueType.VersionMismatchLessThan)
-                            {
-                                Reason = $"'{metadataModule?.Id}' wrong version < [{metadata.VersionRange}]",
-                                SourceVersion = metadata.VersionRange
-                            };
-                            continue;
-                        }
-                        if (ApplicationVersionComparer.CompareStandard(metadata.VersionRange.Max, metadataModule.Version) < 0)
-                        {
-                            yield return new ModuleIssue(targetModule, metadataModule.Id, ModuleIssueType.VersionMismatchGreaterThan)
-                            {
-                                Reason = $"'{metadataModule.Id}' wrong version > [{metadata.VersionRange}]",
-                                SourceVersion = metadata.VersionRange
-                            };
-                            continue;
-                        }
+                        yield return new ModuleVersionMismatchLessThanRangeIssue(
+                            targetModule,
+                            metadataModule.Id,
+                            metadata.VersionRange);
+                        continue;
+                    }
+                    if (ApplicationVersionComparer.CompareStandard(metadata.VersionRange.Max, metadataModule.Version) < 0)
+                    {
+                        yield return new ModuleVersionMismatchGreaterThanRangeIssue(
+                            targetModule,
+                            metadataModule.Id,
+                            metadata.VersionRange);
+                        continue;
                     }
                 }
             }
-            
+
             // Do not load this mod if an incompatible mod is selected
             foreach (var metadata in targetModule.DependenciesIncompatiblesDistinct())
             {
                 // Dependency is loaded
-                if (modules.FirstOrDefault(x => string.Equals(x.Id, metadata.Id, StringComparison.Ordinal)) is not { } metadataModule || !isSelected(metadataModule)) continue;
+                if (modules.FirstOrDefault(x => string.Equals(x.Id, metadata.Id, StringComparison.Ordinal)) is not { } metadataModule || 
+                    !isSelected(metadataModule)) continue;
 
                 // If the incompatible mod is selected, this mod should be disabled
                 if (isSelected(metadataModule))
-                {
-                    yield return new ModuleIssue(targetModule, metadataModule.Id, ModuleIssueType.Incompatible)
-                    {
-                        Reason = $"'{metadataModule.Id}' is incompatible with this module"
-                    };
-                }
+                    yield return new ModuleIncompatibleIssue(targetModule, metadataModule.Id);
             }
 
             // If another mod declared incompatibility and is selected, disable this
@@ -448,91 +545,84 @@ namespace Bannerlord.ModuleManager
             {
                 // Ignore self
                 if (string.Equals(module.Id, targetModule.Id, StringComparison.Ordinal)) continue;
-
                 if (!isSelected(module)) continue;
-                
+
                 foreach (var metadata in module.DependenciesIncompatiblesDistinct())
                 {
                     if (!string.Equals(metadata.Id, targetModule.Id, StringComparison.Ordinal)) continue;
-                    
+
                     // If the incompatible mod is selected, this mod is disabled
                     if (isSelected(module))
-                    {
-                        yield return new ModuleIssue(targetModule, module.Id, ModuleIssueType.Incompatible)
-                        {
-                            Reason = $"'{module.Id}' is incompatible with this module"
-                        };
-                    }
+                        yield return new ModuleIncompatibleIssue(targetModule, module.Id);
                 }
             }
         }
       
         /// <summary>
-        /// Validates whether the load order is correctly sorted
+        /// Validates whether the load order is correctly sorted using the new variant-based issue system
         /// </summary>
-        /// <param name="modules">Assumed that only valid and selected to launch modules are in the list</param>
-        /// <param name="targetModule">Assumed that it's present in <paramref name="modules"/></param>
-        /// <returns>Any error that were detected during inspection</returns>
-        public static IEnumerable<ModuleIssue> ValidateLoadOrder(IReadOnlyList<ModuleInfoExtended> modules, ModuleInfoExtended targetModule)
+        /// <param name="modules">All available modules </param>
+        /// <param name="targetModule">The module whose load order is being validated</param>
+        /// <returns>Any errors that were detected during inspection</returns>
+        public static IEnumerable<ModuleIssueV2> ValidateLoadOrderEx(
+            IReadOnlyList<ModuleInfoExtended> modules, 
+            ModuleInfoExtended targetModule)
         {
-            // Validate common data
-            foreach (var issue in ValidateModuleCommonData(targetModule))
+            foreach (var issue in ValidateModuleCommonDataEx(targetModule))
                 yield return issue;
 
             var visited = new HashSet<ModuleInfoExtended>();
-            foreach (var issue in ValidateLoadOrder(modules, targetModule, visited))
+            foreach (var issue in ValidateLoadOrderEx(modules, targetModule, visited))
                 yield return issue;
         }
+
         /// <summary>
-        /// Validates whether the load order is correctly sorted
+        /// Validates whether the load order is correctly sorted using the new variant-based issue system
         /// </summary>
-        /// <param name="modules">Assumed that only valid and selected to launch modules are in the list</param>
-        /// <param name="targetModule">Assumed that it's present in <paramref name="modules"/></param>
-        /// <param name="visitedModules">Used to track that we traverse each module only once</param>
-        /// <returns>Any error that were detected during inspection</returns>
-        public static IEnumerable<ModuleIssue> ValidateLoadOrder(IReadOnlyList<ModuleInfoExtended> modules, ModuleInfoExtended targetModule, HashSet<ModuleInfoExtended> visitedModules)
+        /// <param name="modules">All available modules</param>
+        /// <param name="targetModule">The module whose load order is being validated</param>
+        /// <param name="visitedModules">Set of modules already validated to prevent cycles</param>
+        /// <returns>Any errors that were detected during inspection</returns>
+        public static IEnumerable<ModuleIssueV2> ValidateLoadOrderEx(
+            IReadOnlyList<ModuleInfoExtended> modules,
+            ModuleInfoExtended targetModule,
+            HashSet<ModuleInfoExtended> visitedModules)
         {
             var targetModuleIdx = CollectionsExtensions.IndexOf(modules, targetModule);
             if (targetModuleIdx == -1)
             {
-                yield return new ModuleIssue(targetModule, targetModule.Id, ModuleIssueType.Missing)
-                {
-                    Reason = $"Missing '{targetModule.Id}' {targetModule.Version} in modules list",
-                    SourceVersion = new(targetModule.Version, targetModule.Version)
-                };
+                yield return new ModuleMissingIssue(
+                    targetModule, 
+                    new ApplicationVersionRange(targetModule.Version, targetModule.Version));
                 yield break;
             }
 
-            // Check that all dependencies are present
             foreach (var metadata in targetModule.DependenciesToLoad().DistinctBy(x => x.Id))
             {
-                var metadataIdx = CollectionsExtensions.IndexOf(modules, x => string.Equals(x.Id, metadata.Id, StringComparison.Ordinal));
+                var metadataIdx = CollectionsExtensions.IndexOf(modules, x => 
+                    string.Equals(x.Id, metadata.Id, StringComparison.Ordinal));
+                
                 if (metadataIdx == -1)
                 {
                     if (!metadata.IsOptional)
                     {
                         if (metadata.Version != ApplicationVersion.Empty)
                         {
-                            yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.MissingDependencies)
-                            {
-                                Reason = $"Missing '{metadata.Id}' {metadata.Version}",
-                                SourceVersion = new(metadata.Version, metadata.Version)
-                            };
+                            yield return new ModuleMissingDependenciesIssue(
+                                targetModule,
+                                metadata.Id,
+                                new ApplicationVersionRange(metadata.Version, metadata.Version));
                         }
                         else if (metadata.VersionRange != ApplicationVersionRange.Empty)
                         {
-                            yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.MissingDependencies)
-                            {
-                                Reason = $"Missing '{metadata.Id}' {metadata.VersionRange}",
-                                SourceVersion = metadata.VersionRange
-                            };
+                            yield return new ModuleMissingDependenciesIssue(
+                                targetModule,
+                                metadata.Id,
+                                metadata.VersionRange);
                         }
                         else
                         {
-                            yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.MissingDependencies)
-                            {
-                                Reason = $"Missing '{metadata.Id}'"
-                            };
+                            yield return new ModuleMissingDependenciesIssue(targetModule, metadata.Id);
                         }
                     }
                     continue;
@@ -540,18 +630,12 @@ namespace Bannerlord.ModuleManager
 
                 if (metadata.LoadType == LoadType.LoadBeforeThis && metadataIdx > targetModuleIdx)
                 {
-                    yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.DependencyNotLoadedBeforeThis)
-                    {
-                        Reason = $"'{metadata.Id}' should be loaded before '{targetModule.Id}'"
-                    };
+                    yield return new ModuleDependencyNotLoadedBeforeIssue(targetModule, metadata.Id);
                 }
 
                 if (metadata.LoadType == LoadType.LoadAfterThis && metadataIdx < targetModuleIdx)
                 {
-                    yield return new ModuleIssue(targetModule, metadata.Id, ModuleIssueType.DependencyNotLoadedAfterThis)
-                    {
-                        Reason = $"'{metadata.Id}' should be loaded after '{targetModule.Id}'"
-                    };
+                    yield return new ModuleDependencyNotLoadedAfterIssue(targetModule, metadata.Id);
                 }
             }
         }
