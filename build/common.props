@@ -3,7 +3,7 @@
   
   <PropertyGroup>
     <VersionOverride>0</VersionOverride>
-    <Version>5.0.$(VersionOverride)</Version>
+    <Version>6.0.$(VersionOverride)</Version>
   </PropertyGroup>
 
   <!--GitHub Actions-->
