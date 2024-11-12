@@ -299,13 +299,15 @@ namespace Bannerlord.ModuleManager
         /// <param name="visitedModules">Set of modules already validated to prevent cycles</param>
         /// <param name="isSelected">Function that determines if a module is enabled</param>
         /// <param name="isValid">Function that determines if a module is valid</param>
+        /// <param name="validateDependencies">Set this to true to also report errors in the target module's dependencies. e.g. Missing dependencies of dependencies.</param>
         /// <returns>Any errors that were detected during inspection</returns>
         private static IEnumerable<ModuleIssueV2> ValidateModuleEx(
             IReadOnlyList<ModuleInfoExtended> modules,
             ModuleInfoExtended targetModule,
             HashSet<ModuleInfoExtended> visitedModules,
             Func<ModuleInfoExtended, bool> isSelected,
-            Func<ModuleInfoExtended, bool> isValid)
+            Func<ModuleInfoExtended, bool> isValid,
+            bool validateDependencies = true)
         {
             foreach (var issue in ValidateModuleCommonDataEx(targetModule))
                 yield return issue;
@@ -313,7 +315,7 @@ namespace Bannerlord.ModuleManager
             foreach (var issue in ValidateModuleDependenciesDeclarationsEx(modules, targetModule))
                 yield return issue;
             
-            foreach (var issue in ValidateModuleDependenciesEx(modules, targetModule, visitedModules, isSelected, isValid))
+            foreach (var issue in ValidateModuleDependenciesEx(modules, targetModule, visitedModules, isSelected, isValid, validateDependencies))
                 yield return issue;
         }
 
@@ -412,13 +414,15 @@ namespace Bannerlord.ModuleManager
         /// <param name="visitedModules">Set of modules already validated to prevent cycles</param>
         /// <param name="isSelected">Function that determines if a module is enabled</param>
         /// <param name="isValid">Function that determines if a module is valid</param>
+        /// <param name="validateDependencies">Set this to true to also report errors in the target module's dependencies. e.g. Missing dependencies of dependencies.</param>
         /// <returns>Any errors that were detected during inspection</returns>
         private static IEnumerable<ModuleIssueV2> ValidateModuleDependenciesEx(
             IReadOnlyList<ModuleInfoExtended> modules,
             ModuleInfoExtended targetModule,
             HashSet<ModuleInfoExtended> visitedModules,
             Func<ModuleInfoExtended, bool> isSelected,
-            Func<ModuleInfoExtended, bool> isValid)
+            Func<ModuleInfoExtended, bool> isValid,
+            bool validateDependencies = true)
         {
             // Check that all dependencies are present
             foreach (var metadata in targetModule.DependenciesToLoadDistinct())
@@ -453,33 +457,35 @@ namespace Bannerlord.ModuleManager
             }
 
             // Check that the dependencies themselves have all dependencies present
-            var opts = new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true };
-            var dependencies = GetDependencies(modules, targetModule, visitedModules, opts).ToArray();
-            
-            foreach (var dependency in dependencies)
+            if (validateDependencies)
             {
-                if (targetModule.DependenciesAllDistinct().FirstOrDefault(x => 
-                    string.Equals(x.Id, dependency.Id, StringComparison.Ordinal)) is { } metadata)
+                var opts = new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true };
+                var dependencies = GetDependencies(modules, targetModule, visitedModules, opts).ToArray();
+                foreach (var dependency in dependencies)
                 {
-                    // Not found, should not be possible
-                    if (metadata is null) continue;
-                    // Handle only direct dependencies
-                    if (metadata.LoadType != LoadType.LoadBeforeThis) continue;
-                    // Ignore the check for Optional
-                    if (metadata.IsOptional) continue;
-                    // Ignore the check for Incompatible
-                    if (metadata.IsIncompatible) continue;
-
-                    // Check missing dependency dependencies
-                    if (modules.FirstOrDefault(x => string.Equals(x.Id, dependency.Id, StringComparison.Ordinal)) is not { } dependencyModuleInfo)
+                    if (targetModule.DependenciesAllDistinct().FirstOrDefault(x => 
+                            string.Equals(x.Id, dependency.Id, StringComparison.Ordinal)) is { } metadata)
                     {
-                        yield return new ModuleDependencyMissingDependenciesIssue(targetModule, dependency.Id);
-                        continue;
-                    }
+                        // Not found, should not be possible
+                        if (metadata is null) continue;
+                        // Handle only direct dependencies
+                        if (metadata.LoadType != LoadType.LoadBeforeThis) continue;
+                        // Ignore the check for Optional
+                        if (metadata.IsOptional) continue;
+                        // Ignore the check for Incompatible
+                        if (metadata.IsIncompatible) continue;
 
-                    // Check depencency correctness
-                    if (!isValid(dependencyModuleInfo))
-                        yield return new ModuleDependencyValidationIssue(targetModule, dependency.Id);
+                        // Check missing dependency dependencies
+                        if (modules.FirstOrDefault(x => string.Equals(x.Id, dependency.Id, StringComparison.Ordinal)) is not { } dependencyModuleInfo)
+                        {
+                            yield return new ModuleDependencyMissingDependenciesIssue(targetModule, dependency.Id);
+                            continue;
+                        }
+
+                        // Check dependency correctness
+                        if (!isValid(dependencyModuleInfo))
+                            yield return new ModuleDependencyValidationIssue(targetModule, dependency.Id);
+                    }
                 }
             }
 
@@ -543,19 +549,22 @@ namespace Bannerlord.ModuleManager
             }
 
             // If another mod declared incompatibility and is selected, disable this
-            foreach (var module in modules)
+            if (validateDependencies)
             {
-                // Ignore self
-                if (string.Equals(module.Id, targetModule.Id, StringComparison.Ordinal)) continue;
-                if (!isSelected(module)) continue;
-
-                foreach (var metadata in module.DependenciesIncompatiblesDistinct())
+                foreach (var module in modules)
                 {
-                    if (!string.Equals(metadata.Id, targetModule.Id, StringComparison.Ordinal)) continue;
+                    // Ignore self
+                    if (string.Equals(module.Id, targetModule.Id, StringComparison.Ordinal)) continue;
+                    if (!isSelected(module)) continue;
 
-                    // If the incompatible mod is selected, this mod is disabled
-                    if (isSelected(module))
-                        yield return new ModuleIncompatibleIssue(targetModule, module.Id);
+                    foreach (var metadata in module.DependenciesIncompatiblesDistinct())
+                    {
+                        if (!string.Equals(metadata.Id, targetModule.Id, StringComparison.Ordinal)) continue;
+
+                        // If the incompatible mod is selected, this mod is disabled
+                        if (isSelected(module))
+                            yield return new ModuleIncompatibleIssue(targetModule, module.Id);
+                    }
                 }
             }
         }
