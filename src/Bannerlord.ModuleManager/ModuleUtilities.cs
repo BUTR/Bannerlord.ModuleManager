@@ -388,7 +388,7 @@ namespace Bannerlord.ModuleManager
                 if (targetModule.DependenciesLoadAfterThisDistinct()
                     .FirstOrDefault(x => string.Equals(x.Id, module.Id, StringComparison.Ordinal)) is { } metadata)
                 {
-                    yield return new ModuleDependencyConflictLoadBeforeAndAfterIssue(targetModule, metadata.Id);
+                    yield return new ModuleDependencyConflictLoadBeforeAndAfterIssue(targetModule, metadata);
                 }
             }
 
@@ -401,7 +401,7 @@ namespace Bannerlord.ModuleManager
                     .FirstOrDefault(x => string.Equals(x.Id, targetModule.Id, StringComparison.Ordinal)) is { } metadata)
                 {
                     if (metadata.LoadType == module.LoadType)
-                        yield return new ModuleDependencyConflictCircularIssue(targetModule, metadata.Id);
+                        yield return new ModuleDependencyConflictCircularIssue(targetModule, metadata);
                 }
             }
         }
@@ -433,25 +433,11 @@ namespace Bannerlord.ModuleManager
                 if (!modules.Any(x => string.Equals(x.Id, metadata.Id, StringComparison.Ordinal)))
                 {
                     if (metadata.Version != ApplicationVersion.Empty)
-                    {
-                        yield return new ModuleMissingExactVersionDependencyIssue(
-                            targetModule,
-                            metadata.Id,
-                            metadata.Version);
-                    }
+                        yield return new ModuleMissingExactVersionDependencyIssue(targetModule, metadata);
                     else if (metadata.VersionRange != ApplicationVersionRange.Empty)
-                    {
-                        yield return new ModuleMissingVersionRangeDependencyIssue(
-                            targetModule,
-                            metadata.Id,
-                            metadata.VersionRange);
-                    }
+                        yield return new ModuleMissingVersionRangeDependencyIssue(targetModule, metadata);
                     else
-                    {
-                        yield return new ModuleMissingUnversionedDependencyIssue(
-                            targetModule,
-                            metadata.Id);
-                    }
+                        yield return new ModuleMissingUnversionedDependencyIssue(targetModule, metadata);
                     yield break;
                 }
             }
@@ -507,7 +493,7 @@ namespace Bannerlord.ModuleManager
                     {
                         yield return new ModuleVersionMismatchLessThanOrEqualSpecificIssue(
                             targetModule,
-                            metadataModule.Id,
+                            metadataModule,
                             metadata.Version);
                         continue;
                     }
@@ -521,7 +507,7 @@ namespace Bannerlord.ModuleManager
                     {
                         yield return new ModuleVersionMismatchLessThanRangeIssue(
                             targetModule,
-                            metadataModule.Id,
+                            metadataModule,
                             metadata.VersionRange);
                         continue;
                     }
@@ -529,7 +515,7 @@ namespace Bannerlord.ModuleManager
                     {
                         yield return new ModuleVersionMismatchGreaterThanRangeIssue(
                             targetModule,
-                            metadataModule.Id,
+                            metadataModule,
                             metadata.VersionRange);
                         continue;
                     }
@@ -622,25 +608,11 @@ namespace Bannerlord.ModuleManager
                     if (!metadata.IsOptional)
                     {
                         if (metadata.Version != ApplicationVersion.Empty)
-                        {
-                            yield return new ModuleMissingExactVersionDependencyIssue(
-                                targetModule,
-                                metadata.Id,
-                                metadata.Version);
-                        }
+                            yield return new ModuleMissingExactVersionDependencyIssue(targetModule, metadata);
                         else if (metadata.VersionRange != ApplicationVersionRange.Empty)
-                        {
-                            yield return new ModuleMissingVersionRangeDependencyIssue(
-                                targetModule,
-                                metadata.Id,
-                                metadata.VersionRange);
-                        }
+                            yield return new ModuleMissingVersionRangeDependencyIssue(targetModule, metadata);
                         else
-                        {
-                            yield return new ModuleMissingUnversionedDependencyIssue(
-                                targetModule,
-                                metadata.Id);
-                        }
+                            yield return new ModuleMissingUnversionedDependencyIssue(targetModule, metadata);
                     }
                     continue;
                 }

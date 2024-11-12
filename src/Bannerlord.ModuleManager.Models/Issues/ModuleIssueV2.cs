@@ -38,7 +38,7 @@ public sealed record ModuleMissingIssue(
 ///     Represents an issue where a required dependency module is missing and no version was specified
 /// </summary>
 /// <param name="Module">The module with the missing dependency</param>
-/// <param name="DependencyId">The ID of the missing dependency module</param>
+/// <param name="Dependency">The missing dependency module</param>
 /// <remarks>
 /// This issue occurs when a required unversioned dependency is missing.
 /// 
@@ -58,13 +58,13 @@ public sealed record ModuleMissingIssue(
 /// </remarks>
 public sealed record ModuleMissingUnversionedDependencyIssue(
     ModuleInfoExtended Module,
-    string DependencyId
+    DependentModuleMetadata Dependency
 ) : ModuleIssueV2(Module)
 {
-    public override string ToString() => $"Missing '{DependencyId}' module";
+    public override string ToString() => $"Missing '{Dependency.Id}' module";
     public override ModuleIssue ToLegacy() => new(
         Module,
-        DependencyId,
+        Dependency.Id,
         ModuleIssueType.MissingDependencies,
         ToString(),
         ApplicationVersionRange.Empty);
@@ -74,8 +74,7 @@ public sealed record ModuleMissingUnversionedDependencyIssue(
 ///     Represents an issue where a required dependency module is missing AND an exact version was specified
 /// </summary>
 /// <param name="Module">The module with the missing dependency</param>
-/// <param name="DependencyId">The ID of the missing dependency module</param>
-/// <param name="RequiredVersion">The specific version that was required</param>
+/// <param name="Dependency">The missing dependency module</param>
 /// <remarks>
 /// This issue occurs when a required dependency with an exact version requirement is missing.
 /// 
@@ -95,25 +94,23 @@ public sealed record ModuleMissingUnversionedDependencyIssue(
 /// </remarks>
 public sealed record ModuleMissingExactVersionDependencyIssue(
     ModuleInfoExtended Module,
-    string DependencyId,
-    ApplicationVersion RequiredVersion
+    DependentModuleMetadata Dependency
 ) : ModuleIssueV2(Module)
 {
-    public override string ToString() => $"Missing '{DependencyId}' with required version {RequiredVersion}";
+    public override string ToString() => $"Missing '{Dependency.Id}' with required version {Dependency.Version}";
     public override ModuleIssue ToLegacy() => new(
         Module,
-        DependencyId,
+        Dependency.Id,
         ModuleIssueType.MissingDependencies,
         ToString(),
-        new ApplicationVersionRange(RequiredVersion, RequiredVersion));
+        new ApplicationVersionRange(Dependency.Version, Dependency.Version));
 }
 
 /// <summary>
 ///     Represents an issue where a required dependency module is missing and a version range was specified
 /// </summary>
 /// <param name="Module">The module with the missing dependency</param>
-/// <param name="DependencyId">The ID of the missing dependency module</param>
-/// <param name="RequiredVersionRange">The version range that was required</param>
+/// <param name="Dependency">The missing dependency module</param>
 /// <remarks>
 /// This issue occurs when a required dependency with a version range requirement is missing.
 /// 
@@ -133,16 +130,15 @@ public sealed record ModuleMissingExactVersionDependencyIssue(
 /// </remarks>
 public sealed record ModuleMissingVersionRangeDependencyIssue(
     ModuleInfoExtended Module,
-    string DependencyId,
-    ApplicationVersionRange RequiredVersionRange
+    DependentModuleMetadata Dependency
 ) : ModuleIssueV2(Module)
 {
-    public override string ToString() => $"Missing '{DependencyId}' with required version range [{RequiredVersionRange}]";
+    public override string ToString() => $"Missing '{Dependency.Id}' with required version range [{Dependency.VersionRange}]";
     public override ModuleIssue ToLegacy() => new(Module,
-        DependencyId,
+        Dependency.Id,
         ModuleIssueType.MissingDependencies,
         ToString(),
-        RequiredVersionRange);
+        Dependency.VersionRange);
 }
 
 /// <summary>
@@ -217,10 +213,10 @@ public sealed record ModuleDependencyValidationIssue(
 ///     This serves as an abstract base for both specific version and version range issues.
 /// </summary>
 /// <param name="Module">The module with the version mismatch</param>
-/// <param name="DependencyId">The ID of the dependency module with mismatched version</param>
+/// <param name="Dependency">The dependency module with mismatched version</param>
 public abstract record ModuleVersionMismatchIssue(
     ModuleInfoExtended Module,
-    string DependencyId
+    ModuleInfoExtended Dependency
 ) : ModuleIssueV2(Module);
 
 /// <summary>
@@ -228,33 +224,33 @@ public abstract record ModuleVersionMismatchIssue(
 ///     Used when comparing against exact version numbers rather than ranges.
 /// </summary>
 /// <param name="Module">The module with the version mismatch</param>
-/// <param name="DependencyId">The ID of the dependency module with mismatched version</param>
+/// <param name="Dependency">The dependency module with mismatched version</param>
 /// <param name="Version">The specific version being compared against</param>
 public abstract record ModuleVersionMismatchSpecificIssue(
     ModuleInfoExtended Module,
-    string DependencyId,
+    ModuleInfoExtended Dependency,
     ApplicationVersion Version
-) : ModuleVersionMismatchIssue(Module, DependencyId);
+) : ModuleVersionMismatchIssue(Module, Dependency);
 
 /// <summary>
 ///     Base record type for version mismatch issues involving version ranges.
 ///     Used when comparing against version ranges rather than specific versions.
 /// </summary>
 /// <param name="Module">The module with the version mismatch</param>
-/// <param name="DependencyId">The ID of the dependency module with mismatched version</param>
+/// <param name="Dependency">The dependency module with mismatched version</param>
 /// <param name="VersionRange">The version range being compared against</param>
 public abstract record ModuleVersionMismatchRangeIssue(
     ModuleInfoExtended Module,
-    string DependencyId,
+    ModuleInfoExtended Dependency,
     ApplicationVersionRange VersionRange
-) : ModuleVersionMismatchIssue(Module, DependencyId);
+) : ModuleVersionMismatchIssue(Module, Dependency);
 
 /// <summary>
 ///     Represents an issue where a dependency's version is higher than the maximum allowed specific version.
 ///     This occurs when a dependency module's version exceeds an exact version requirement.
 /// </summary>
 /// <param name="Module">The module with the version constraint</param>
-/// <param name="DependencyId">The ID of the dependency module that exceeds the version requirement</param>
+/// <param name="Dependency">The dependency module that exceeds the version requirement</param>
 /// <param name="Version">The specific version that should not be exceeded</param>
 /// <remarks>
 /// This issue occurs when a module specifies incompatible versions.
@@ -277,12 +273,14 @@ public abstract record ModuleVersionMismatchRangeIssue(
 /// </remarks>
 public sealed record ModuleVersionMismatchLessThanOrEqualSpecificIssue(
     ModuleInfoExtended Module,
-    string DependencyId,
+    ModuleInfoExtended Dependency,
     ApplicationVersion Version
-) : ModuleVersionMismatchSpecificIssue(Module, DependencyId, Version)
+) : ModuleVersionMismatchSpecificIssue(Module, Dependency, Version)
 {
-    public override string ToString() => $"Module '{Module.Id}': Dependency '{DependencyId}' has wrong version (required <= {Version})";
-    public override ModuleIssue ToLegacy() => new(Module, DependencyId, ModuleIssueType.VersionMismatchLessThanOrEqual, ToString(), new ApplicationVersionRange(Version, Version));
+    public override string ToString() => 
+        $"The module '{Module.Id}' requires version {Version} or lower of '{Dependency.Id}', but version {Dependency.Version} is installed";
+
+    public override ModuleIssue ToLegacy() => new(Module, Dependency.Id, ModuleIssueType.VersionMismatchLessThanOrEqual, ToString(), new ApplicationVersionRange(Version, Version));
 }
 
 /// <summary>
@@ -290,7 +288,7 @@ public sealed record ModuleVersionMismatchLessThanOrEqualSpecificIssue(
 ///     This occurs when a dependency module's version is below the minimum version specified in a range.
 /// </summary>
 /// <param name="Module">The module with the version requirement</param>
-/// <param name="DependencyId">The ID of the dependency module that doesn't meet the minimum version</param>
+/// <param name="Dependency">The dependency module that doesn't meet the minimum version</param>
 /// <param name="VersionRange">The version range containing the minimum version requirement</param>
 /// <remarks>
 /// This issue occurs when a dependency's version is below the minimum required version range.
@@ -312,12 +310,14 @@ public sealed record ModuleVersionMismatchLessThanOrEqualSpecificIssue(
 /// </remarks>
 public sealed record ModuleVersionMismatchLessThanRangeIssue(
     ModuleInfoExtended Module,
-    string DependencyId,
+    ModuleInfoExtended Dependency,
     ApplicationVersionRange VersionRange
-) : ModuleVersionMismatchRangeIssue(Module, DependencyId, VersionRange)
+) : ModuleVersionMismatchRangeIssue(Module, Dependency, VersionRange)
 {
-    public override string ToString() => $"Module '{Module.Id}': Dependency '{DependencyId}' version is below minimum required range ($version < [{VersionRange}])";
-    public override ModuleIssue ToLegacy() => new(Module, DependencyId, ModuleIssueType.VersionMismatchLessThan, ToString(), VersionRange);
+    public override string ToString() => 
+        $"The module '{Module.Id}' requires '{Dependency.Id}' version {VersionRange}, but version {Dependency.Version} is installed (below minimum)";
+
+    public override ModuleIssue ToLegacy() => new(Module, Dependency.Id, ModuleIssueType.VersionMismatchLessThan, ToString(), VersionRange);
 }
 
 /// <summary>
@@ -325,7 +325,7 @@ public sealed record ModuleVersionMismatchLessThanRangeIssue(
 ///     This occurs when a dependency module's version is above the maximum version specified in a range.
 /// </summary>
 /// <param name="Module">The module with the version constraint</param>
-/// <param name="DependencyId">The ID of the dependency module that exceeds the version limit</param>
+/// <param name="Dependency">The dependency module that exceeds the version limit</param>
 /// <param name="VersionRange">The version range containing the maximum version requirement</param>
 /// <remarks>
 /// This issue occurs when a dependency's version exceeds the maximum allowed version range.
@@ -347,12 +347,13 @@ public sealed record ModuleVersionMismatchLessThanRangeIssue(
 /// </remarks>
 public sealed record ModuleVersionMismatchGreaterThanRangeIssue(
     ModuleInfoExtended Module,
-    string DependencyId,
+    ModuleInfoExtended Dependency,
     ApplicationVersionRange VersionRange
-) : ModuleVersionMismatchRangeIssue(Module, DependencyId, VersionRange)
+) : ModuleVersionMismatchRangeIssue(Module, Dependency, VersionRange)
 {
-    public override string ToString() => $"Module '{Module.Id}': Dependency '{DependencyId}' version exceeds maximum allowed range ($version > [{VersionRange}])";
-    public override ModuleIssue ToLegacy() => new(Module, DependencyId, ModuleIssueType.VersionMismatchGreaterThan, ToString(), VersionRange);
+    public override string ToString() => 
+        $"The module '{Module.Id}' requires '{Dependency.Id}' version {VersionRange}, but version {Dependency.Version} is installed (above maximum)";
+    public override ModuleIssue ToLegacy() => new(Module, Dependency.Id, ModuleIssueType.VersionMismatchGreaterThan, ToString(), VersionRange);
 }
 
 /// <summary>
@@ -427,7 +428,7 @@ public sealed record ModuleDependencyConflictDependentAndIncompatibleIssue(
 ///     This indicates a contradictory load order configuration that cannot be satisfied.
 /// </summary>
 /// <param name="Module">The module with the conflicting load order declaration</param>
-/// <param name="ConflictingModuleId">The ID of the module that has conflicting load order requirements</param>
+/// <param name="ConflictingModule">The module that has conflicting load order requirements</param>
 /// <remarks>
 /// This issue occurs when a module has conflicting load order requirements.
 /// 
@@ -449,11 +450,11 @@ public sealed record ModuleDependencyConflictDependentAndIncompatibleIssue(
 /// </remarks>
 public sealed record ModuleDependencyConflictLoadBeforeAndAfterIssue(
     ModuleInfoExtended Module,
-    string ConflictingModuleId
+    DependentModuleMetadata ConflictingModule
 ) : ModuleIssueV2(Module)
 {
-    public override string ToString() => $"Module '{Module.Id}' has conflicting load order requirements with '{ConflictingModuleId}' (both LoadBefore and LoadAfter)";
-    public override ModuleIssue ToLegacy() => new(Module, ConflictingModuleId, ModuleIssueType.DependencyConflictDependentLoadBeforeAndAfter, ToString(), ApplicationVersionRange.Empty);
+    public override string ToString() => $"Module '{Module.Id}' has conflicting load order requirements with '{ConflictingModule.Id}' (both LoadBefore and LoadAfter)";
+    public override ModuleIssue ToLegacy() => new(Module, ConflictingModule.Id, ModuleIssueType.DependencyConflictDependentLoadBeforeAndAfter, ToString(), ApplicationVersionRange.Empty);
 }
 
 /// <summary>
@@ -461,7 +462,7 @@ public sealed record ModuleDependencyConflictLoadBeforeAndAfterIssue(
 ///     This occurs when two or more modules form a dependency cycle that cannot be resolved.
 /// </summary>
 /// <param name="Module">One of the modules in the circular dependency chain</param>
-/// <param name="CircularDependencyId">The ID of another module in the circular dependency chain</param>
+/// <param name="CircularDependency">The other module in the circular dependency chain</param>
 /// <remarks>
 /// This issue occurs when modules create a circular dependency chain.
 /// 
@@ -494,11 +495,11 @@ public sealed record ModuleDependencyConflictLoadBeforeAndAfterIssue(
 /// </remarks>
 public sealed record ModuleDependencyConflictCircularIssue(
     ModuleInfoExtended Module,
-    string CircularDependencyId
+    DependentModuleMetadata CircularDependency
 ) : ModuleIssueV2(Module)
 {
-    public override string ToString() => $"Module '{Module.Id}' and '{CircularDependencyId}' have circular dependencies";
-    public override ModuleIssue ToLegacy() => new(Module, CircularDependencyId, ModuleIssueType.DependencyConflictCircular, ToString(), ApplicationVersionRange.Empty);
+    public override string ToString() => $"Module '{Module.Id}' and '{CircularDependency.Id}' have circular dependencies";
+    public override ModuleIssue ToLegacy() => new(Module, CircularDependency.Id, ModuleIssueType.DependencyConflictCircular, ToString(), ApplicationVersionRange.Empty);
 }
 
 /// <summary>
