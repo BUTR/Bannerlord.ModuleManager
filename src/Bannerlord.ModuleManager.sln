@@ -5,8 +5,6 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bannerlord.ModuleManager.Source", "Bannerlord.ModuleManager.Source\Bannerlord.ModuleManager.Source.csproj", "{F9F1C4C6-93E8-4FA4-86CE-A840842D0DA2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bannerlord.ModuleManager.WASM", "Bannerlord.ModuleManager.WASM\Bannerlord.ModuleManager.WASM.csproj", "{6628D1C9-6234-493F-A240-F0B40024783E}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bannerlord.ModuleManager.Tests", "Bannerlord.ModuleManager.Tests\Bannerlord.ModuleManager.Tests.csproj", "{C31AFBA4-016A-429B-B448-F4311A2151C5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{2D0B1C0E-1519-47CD-96AA-728A6A1F6BC0}"
@@ -24,20 +22,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{16F53495-2C0C-4101-A965-ACB8227DF822}"
 	ProjectSection(SolutionItems) = preProject
 		..\.github\workflows\dotnet-format-daily.yml = ..\.github\workflows\dotnet-format-daily.yml
-		..\.github\workflows\publish-native-ts.yml = ..\.github\workflows\publish-native-ts.yml
 		..\.github\workflows\publish-nuget.yml = ..\.github\workflows\publish-nuget.yml
-		..\.github\workflows\publish-wasm.yml = ..\.github\workflows\publish-wasm.yml
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bannerlord.ModuleManager.Native", "Bannerlord.ModuleManager.Native\Bannerlord.ModuleManager.Native.csproj", "{F91F0C16-57B3-4BCC-A721-2C86029B2C44}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bannerlord.ModuleManager.Native.Tests", "..\test\Bannerlord.ModuleManager.Native.Tests\Bannerlord.ModuleManager.Native.Tests.csproj", "{74074D6D-EF2B-4575-9A1F-839EEEBEDAE4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bannerlord.ModuleManager.DotNetJS", "Bannerlord.ModuleManager.DotNetJS\Bannerlord.ModuleManager.DotNetJS.csproj", "{3F49CC2C-D5A7-4C5F-A4C3-2F98CBF6461B}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{FBDA325F-819E-4771-8FE1-15497B134C4A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bannerlord.ModuleManager.DependencyInjection", "Bannerlord.ModuleManager.DependencyInjection\Bannerlord.ModuleManager.DependencyInjection.csproj", "{62236515-1E3E-4FC2-B573-B04ACF6DBB80}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bannerlord.ModuleManager.Models", "Bannerlord.ModuleManager.Models\Bannerlord.ModuleManager.Models.csproj", "{B3F74AF9-9185-42DD-BCF8-89BA1CA4D5F2}"
 EndProject
@@ -53,30 +41,10 @@ Global
 		{F9F1C4C6-93E8-4FA4-86CE-A840842D0DA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9F1C4C6-93E8-4FA4-86CE-A840842D0DA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9F1C4C6-93E8-4FA4-86CE-A840842D0DA2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6628D1C9-6234-493F-A240-F0B40024783E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6628D1C9-6234-493F-A240-F0B40024783E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6628D1C9-6234-493F-A240-F0B40024783E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6628D1C9-6234-493F-A240-F0B40024783E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C31AFBA4-016A-429B-B448-F4311A2151C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C31AFBA4-016A-429B-B448-F4311A2151C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C31AFBA4-016A-429B-B448-F4311A2151C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C31AFBA4-016A-429B-B448-F4311A2151C5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F91F0C16-57B3-4BCC-A721-2C86029B2C44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F91F0C16-57B3-4BCC-A721-2C86029B2C44}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F91F0C16-57B3-4BCC-A721-2C86029B2C44}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F91F0C16-57B3-4BCC-A721-2C86029B2C44}.Release|Any CPU.Build.0 = Release|Any CPU
-		{74074D6D-EF2B-4575-9A1F-839EEEBEDAE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{74074D6D-EF2B-4575-9A1F-839EEEBEDAE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{74074D6D-EF2B-4575-9A1F-839EEEBEDAE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{74074D6D-EF2B-4575-9A1F-839EEEBEDAE4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3F49CC2C-D5A7-4C5F-A4C3-2F98CBF6461B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3F49CC2C-D5A7-4C5F-A4C3-2F98CBF6461B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3F49CC2C-D5A7-4C5F-A4C3-2F98CBF6461B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3F49CC2C-D5A7-4C5F-A4C3-2F98CBF6461B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{62236515-1E3E-4FC2-B573-B04ACF6DBB80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{62236515-1E3E-4FC2-B573-B04ACF6DBB80}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{62236515-1E3E-4FC2-B573-B04ACF6DBB80}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{62236515-1E3E-4FC2-B573-B04ACF6DBB80}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B3F74AF9-9185-42DD-BCF8-89BA1CA4D5F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B3F74AF9-9185-42DD-BCF8-89BA1CA4D5F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3F74AF9-9185-42DD-BCF8-89BA1CA4D5F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -91,16 +59,11 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F9F1C4C6-93E8-4FA4-86CE-A840842D0DA2} = {8F14632F-6637-4E24-9C0E-D776516D4AC1}
-		{6628D1C9-6234-493F-A240-F0B40024783E} = {8F14632F-6637-4E24-9C0E-D776516D4AC1}
 		{8F14632F-6637-4E24-9C0E-D776516D4AC1} = {2D0B1C0E-1519-47CD-96AA-728A6A1F6BC0}
 		{8AA497C6-5F1B-45C4-BFBA-C542E134A4B2} = {2D0B1C0E-1519-47CD-96AA-728A6A1F6BC0}
 		{16F53495-2C0C-4101-A965-ACB8227DF822} = {2D0B1C0E-1519-47CD-96AA-728A6A1F6BC0}
-		{F91F0C16-57B3-4BCC-A721-2C86029B2C44} = {8F14632F-6637-4E24-9C0E-D776516D4AC1}
-		{3F49CC2C-D5A7-4C5F-A4C3-2F98CBF6461B} = {8F14632F-6637-4E24-9C0E-D776516D4AC1}
 		{FBDA325F-819E-4771-8FE1-15497B134C4A} = {2D0B1C0E-1519-47CD-96AA-728A6A1F6BC0}
-		{74074D6D-EF2B-4575-9A1F-839EEEBEDAE4} = {FBDA325F-819E-4771-8FE1-15497B134C4A}
 		{C31AFBA4-016A-429B-B448-F4311A2151C5} = {FBDA325F-819E-4771-8FE1-15497B134C4A}
-		{62236515-1E3E-4FC2-B573-B04ACF6DBB80} = {8F14632F-6637-4E24-9C0E-D776516D4AC1}
 		{B3F74AF9-9185-42DD-BCF8-89BA1CA4D5F2} = {8F14632F-6637-4E24-9C0E-D776516D4AC1}
 		{7263DA30-444A-44F5-ADB0-E5699AA983AC} = {8F14632F-6637-4E24-9C0E-D776516D4AC1}
 	EndGlobalSection
