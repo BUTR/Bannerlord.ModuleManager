@@ -28,8 +28,6 @@ jobs:
       - run: dotnet pack -c Release src/Bannerlord.ModuleManager -p:VersionOverride=$(git rev-list --no-merges --count master) -o ./packages
       
       - run: dotnet pack -c Release src/Bannerlord.ModuleManager.Source -p:VersionOverride=$(git rev-list --no-merges --count master) -o ./packages
-
-      - run: dotnet pack -c Release src/Bannerlord.ModuleManager.DependencyInjection -p:VersionOverride=$(git rev-list --no-merges --count master) -o ./packages
       
       - name: Push to NuGet
         run: dotnet nuget push "./packages/*.nupkg" -k ${{secrets.NUGET_API_KEY}} -s https://www.nuget.org --skip-duplicate
