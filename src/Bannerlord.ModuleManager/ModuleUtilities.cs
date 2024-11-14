@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // MIT License
 //
 // Copyright (c) Bannerlord's Unofficial Tools & Resources
@@ -481,7 +481,7 @@ public
                 // dependedModuleMetadata.Version > dependedModule.Version
                 if (!metadata.IsOptional && (ApplicationVersionComparer.CompareStandard(metadata.Version, metadataModule.Version) > 0))
                 {
-                    yield return new ModuleVersionMismatchLessThanOrEqualSpecificIssue(
+                    yield return new ModuleVersionTooLowIssue(
                         targetModule,
                         metadataModule,
                         metadata.Version);
