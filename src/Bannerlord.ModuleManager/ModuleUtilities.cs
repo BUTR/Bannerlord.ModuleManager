@@ -517,7 +517,7 @@ public
 
             // If the incompatible mod is selected, this mod should be disabled
             if (isSelected(metadataModule))
-                yield return new ModuleIncompatibleIssue(targetModule, metadataModule.Id);
+                yield return new ModuleIncompatibleIssue(targetModule, metadataModule);
         }
 
         // If another mod declared incompatibility and is selected, disable this
@@ -535,7 +535,7 @@ public
 
                     // If the incompatible mod is selected, this mod is disabled
                     if (isSelected(module))
-                        yield return new ModuleIncompatibleIssue(targetModule, module.Id);
+                        yield return new ModuleIncompatibleIssue(targetModule, module);
                 }
             }
         }

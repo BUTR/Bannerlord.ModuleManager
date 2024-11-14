@@ -456,7 +456,7 @@ public
 ///     This occurs when one module explicitly declares it cannot work with another module.
 /// </summary>
 /// <param name="Module">The module that has declared an incompatibility</param>
-/// <param name="IncompatibleModuleId">The ID of the module that is incompatible with the target</param>
+/// <param name="IncompatibleModule">The module that is incompatible with the target</param>
 /// <remarks>
 /// This issue occurs when a module explicitly marks another module as incompatible.
 /// 
@@ -480,11 +480,11 @@ public
 # endif
     sealed record ModuleIncompatibleIssue(
     ModuleInfoExtended Module,
-    string IncompatibleModuleId
+    ModuleInfoExtended IncompatibleModule
 ) : ModuleIssueV2(Module)
 {
-    public override string ToString() => $"'{IncompatibleModuleId}' is incompatible with this module";
-    public override LegacyModuleIssue ToLegacy() => new(Module, IncompatibleModuleId, ModuleIssueType.Incompatible, ToString(), ApplicationVersionRange.Empty);
+    public override string ToString() => $"'{IncompatibleModule.Id}' is incompatible with this module";
+    public override LegacyModuleIssue ToLegacy() => new(Module, IncompatibleModule.Id, ModuleIssueType.Incompatible, ToString(), ApplicationVersionRange.Empty);
 }
 
 /// <summary>
