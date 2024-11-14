@@ -392,7 +392,7 @@ public
                     continue;
 
                 // Find the full module with given ID.
-                var fullModule = modules.First(x => x.Id == metadata.Id);
+                var fullModule = modules.First(x => moduleInfo.Id == x.Id);
                 yield return new ModuleDependencyConflictCircularIssue(targetModule, fullModule);
             }
         }
