@@ -1,4 +1,4 @@
-#region License
+﻿#region License
 // MIT License
 //
 // Copyright (c) Bannerlord's Unofficial Tools & Resources
@@ -263,12 +263,14 @@ public
     /// <param name="targetModule">The module to validate</param>
     /// <param name="isSelected">Function that determines if a module is enabled</param>
     /// <param name="isValid">Function that determines if a module is valid</param>
+    /// <param name="validateDependencies">Set this to true to also report errors in the target module's dependencies. e.g. Missing dependencies of dependencies.</param>
     /// <returns>Any errors that were detected during inspection</returns>
     public static IEnumerable<ModuleIssueV2> ValidateModuleEx(
         IReadOnlyList<ModuleInfoExtended> modules,
         ModuleInfoExtended targetModule,
         Func<ModuleInfoExtended, bool> isSelected,
-        Func<ModuleInfoExtended, bool> isValid)
+        Func<ModuleInfoExtended, bool> isValid,
+        bool validateDependencies = true)
     {
         var visited = new HashSet<ModuleInfoExtended>();
         foreach (var issue in ValidateModuleEx(modules, targetModule, visited, isSelected, isValid))
@@ -287,7 +289,7 @@ public
     /// <param name="isValid">Function that determines if a module is valid</param>
     /// <param name="validateDependencies">Set this to true to also report errors in the target module's dependencies. e.g. Missing dependencies of dependencies.</param>
     /// <returns>Any errors that were detected during inspection</returns>
-    private static IEnumerable<ModuleIssueV2> ValidateModuleEx(
+    public static IEnumerable<ModuleIssueV2> ValidateModuleEx(
         IReadOnlyList<ModuleInfoExtended> modules,
         ModuleInfoExtended targetModule,
         HashSet<ModuleInfoExtended> visitedModules,
