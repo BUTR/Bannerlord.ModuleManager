@@ -636,9 +636,8 @@ public
     }
     private static void EnableModuleInternal(IReadOnlyCollection<ModuleInfoExtended> modules, ModuleInfoExtended targetModule, HashSet<ModuleInfoExtended> visitedModules, Func<ModuleInfoExtended, bool> getSelected, Action<ModuleInfoExtended, bool> setSelected, Func<ModuleInfoExtended, bool> getDisabled, Action<ModuleInfoExtended, bool> setDisabled)
     {
-        if (visitedModules.Contains(targetModule)) return;
-        visitedModules.Add(targetModule);
-            
+        if (!visitedModules.Add(targetModule)) return;
+
         setSelected(targetModule, true);
 
         var opt = new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true };
@@ -709,9 +708,8 @@ public
     }
     private static void DisableModuleInternal(IReadOnlyCollection<ModuleInfoExtended> modules, ModuleInfoExtended targetModule, HashSet<ModuleInfoExtended> visitedModules, Func<ModuleInfoExtended, bool> getSelected, Action<ModuleInfoExtended, bool> setSelected, Func<ModuleInfoExtended, bool> getDisabled, Action<ModuleInfoExtended, bool> setDisabled)
     {
-        if (visitedModules.Contains(targetModule)) return;
-        visitedModules.Add(targetModule);
-            
+        if (!visitedModules.Add(targetModule)) return;
+
         setSelected(targetModule, false);
 
         var opt = new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true };
