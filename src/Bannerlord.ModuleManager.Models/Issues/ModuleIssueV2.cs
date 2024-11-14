@@ -610,7 +610,7 @@ public
 # endif
     sealed record ModuleDependencyConflictCircularIssue(
     ModuleInfoExtended Module,
-    DependentModuleMetadata CircularDependency
+    ModuleInfoExtended CircularDependency
 ) : ModuleIssueV2(Module)
 {
     public override string ToString() => $"Module '{Module.Id}' and '{CircularDependency.Id}' have circular dependencies";
@@ -648,11 +648,11 @@ public
 # endif
     sealed record ModuleDependencyNotLoadedBeforeIssue(
     ModuleInfoExtended Module,
-    string DependencyId
+    DependentModuleMetadata Dependency
 ) : ModuleIssueV2(Module)
 {
-    public override string ToString() => $"'{DependencyId}' should be loaded before '{Module.Id}'";
-    public override LegacyModuleIssue ToLegacy() => new(Module, DependencyId, ModuleIssueType.DependencyNotLoadedBeforeThis, ToString(), ApplicationVersionRange.Empty);
+    public override string ToString() => $"'{Dependency.Id}' should be loaded before '{Module.Id}'";
+    public override LegacyModuleIssue ToLegacy() => new(Module, Dependency.Id, ModuleIssueType.DependencyNotLoadedBeforeThis, ToString(), ApplicationVersionRange.Empty);
 }
 
 /// <summary>
@@ -686,11 +686,11 @@ public
 # endif
     sealed record ModuleDependencyNotLoadedAfterIssue(
     ModuleInfoExtended Module,
-    string DependencyId
+    DependentModuleMetadata Dependency
 ) : ModuleIssueV2(Module)
 {
-    public override string ToString() => $"'{DependencyId}' should be loaded after '{Module.Id}'";
-    public override LegacyModuleIssue ToLegacy() => new(Module, DependencyId, ModuleIssueType.DependencyNotLoadedAfterThis, ToString(), ApplicationVersionRange.Empty);
+    public override string ToString() => $"'{Dependency.Id}' should be loaded after '{Module.Id}'";
+    public override LegacyModuleIssue ToLegacy() => new(Module, Dependency.Id, ModuleIssueType.DependencyNotLoadedAfterThis, ToString(), ApplicationVersionRange.Empty);
 }
 
 /// <summary>
@@ -773,8 +773,8 @@ public
 ///     <!-- 👇 Current mod is `ImprovedGarrisons` -->
 ///     <Id value="ImprovedGarrisons"/>
 ///     <DependedModules>
-///         <!-- ❌ Empty/invalid dependency entry -->
-///         <DependedModule />
+///         <!-- ❌ Empty/invalid dependency entry (empty id) -->
+///         <DependedModule id="" />
 ///         <!-- 💡 Consider adding an `id` field
 ///              <DependedModuleMetadata id="GarrisonsExtensions" />
 ///         -->

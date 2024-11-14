@@ -386,8 +386,12 @@ public
                     .Where(x => x.LoadType != LoadType.None)
                     .FirstOrDefault(x => string.Equals(x.Id, targetModule.Id, StringComparison.Ordinal)) is { } metadata)
             {
-                if (metadata.LoadType == module.LoadType)
-                    yield return new ModuleDependencyConflictCircularIssue(targetModule, metadata);
+                if (metadata.LoadType != module.LoadType) 
+                    continue;
+
+                // Find the full module with given ID.
+                var fullModule = modules.First(x => x.Id == metadata.Id);
+                yield return new ModuleDependencyConflictCircularIssue(targetModule, fullModule);
             }
         }
     }
@@ -603,14 +607,15 @@ public
                 continue;
             }
 
+            // TODO(sewer): Return full module here later. Right now I don't have a good way to test some assertions.
             if (metadata.LoadType == LoadType.LoadBeforeThis && metadataIdx > targetModuleIdx)
             {
-                yield return new ModuleDependencyNotLoadedBeforeIssue(targetModule, metadata.Id);
+                yield return new ModuleDependencyNotLoadedBeforeIssue(targetModule, metadata);
             }
 
             if (metadata.LoadType == LoadType.LoadAfterThis && metadataIdx < targetModuleIdx)
             {
-                yield return new ModuleDependencyNotLoadedAfterIssue(targetModule, metadata.Id);
+                yield return new ModuleDependencyNotLoadedAfterIssue(targetModule, metadata);
             }
         }
     }
