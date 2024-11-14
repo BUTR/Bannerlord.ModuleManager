@@ -62,7 +62,14 @@ public
     public bool IsSameWithChangeSet(ApplicationVersion? other) =>
         Major == other?.Major && Minor == other.Minor && Revision == other.Revision && ChangeSet == other.ChangeSet;
 
-    public override string ToString() => $"{GetPrefix(ApplicationVersionType)}{Major}.{Minor}.{Revision}.{ChangeSet}";
+    public override string ToString()
+    {
+        // Most user mods skip this, so to be user-friendly we can omit it if it was not originally specified.
+        return ChangeSet == 0 
+            ? $"{GetPrefix(ApplicationVersionType)}{Major}.{Minor}.{Revision}" 
+            : $"{GetPrefix(ApplicationVersionType)}{Major}.{Minor}.{Revision}.{ChangeSet}";
+    }
+    public string ToStringWithoutChangeset() => $"{GetPrefix(ApplicationVersionType)}{Major}.{Minor}.{Revision}";
 
     public int CompareTo(ApplicationVersion? other) => ApplicationVersionComparer.CompareStandard(this, other);
 

@@ -326,11 +326,11 @@ public
 ) : ModuleVersionMismatchIssue(Module, Dependency);
 
 /// <summary>
-///     Represents an issue where a dependency's version is higher than the maximum allowed specific version.
-///     This occurs when a dependency module's version exceeds an exact version requirement.
+///     Represents an issue where a dependency's version is lower than the minimum allowed specific version.
+///     This occurs when a dependency module's version is below an version requirement.
 /// </summary>
 /// <param name="Module">The module with the version constraint</param>
-/// <param name="Dependency">The dependency module that exceeds the version requirement</param>
+/// <param name="Dependency">The dependency module that is under the version requirement</param>
 /// <param name="Version">The specific version that should not be exceeded</param>
 /// <remarks>
 /// This issue occurs when a module specifies incompatible versions.
@@ -338,32 +338,32 @@ public
 /// Example scenario:
 /// ```xml
 /// <Module>
-///     <!-- 👇 Current mod is `BetterSiege` -->
-///     <Id value="BetterSiege"/>
+///     <!-- 👇 Current mod is `Better Sieges` with id `BetterSieges` -->
+///     <Id value="BetterSieges"/>
+///     <Name value="Better Sieges"/>
 ///     <DependedModuleMetadatas>
-///         <!-- ✅ `Bannerlord.Harmony` is installed -->
-///         <DependedModuleMetadata id="Bannerlord.Harmony" order="LoadBeforeThis" version="v2.2.2" />
-///         <!-- ❌ However the installed version of `Bannerlord.Harmony` (`v2.3.0`)
-///                 is greater than requested version `v2.2.2` -->
+///         <!-- 💡 The required mod `Harmony` has id `Bannerlord.Harmony` -->
+///         <!-- ❌ `Bannerlord.Harmony` version `v2.2.2` is older than minimum allowed version `v2.3.0` -->
+///         <DependedModuleMetadata id="Bannerlord.Harmony" version="v2.3.0" />
 ///     </DependedModuleMetadatas>
 /// </Module>
 /// ```
 /// 
-/// If a higher version of Harmony (e.g., `v2.3.0`) is installed than allowed, this issue will be raised.
+/// If a higher or equal version of Harmony (e.g., `v2.3.0`) is installed than allowed, this issue will be solved.
 /// </remarks>
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
 internal
 #else
 public
 # endif
-    sealed record ModuleVersionMismatchLessThanOrEqualSpecificIssue(
+    sealed record ModuleVersionTooLowIssue(
     ModuleInfoExtended Module,
     ModuleInfoExtended Dependency,
     ApplicationVersion Version
 ) : ModuleVersionMismatchSpecificIssue(Module, Dependency, Version)
 {
     public override string ToString() => 
-        $"The module '{Module.Id}' requires version {Version} or lower of '{Dependency.Id}', but version {Dependency.Version} is installed";
+        $"The module '{Module.Id}' requires version {Version} or higher of '{Dependency.Id}', but version {Dependency.Version} is installed";
 
     public override LegacyModuleIssue ToLegacy() => new(Module, Dependency.Id, ModuleIssueType.VersionMismatchLessThanOrEqual, ToString(), new ApplicationVersionRange(Version, Version));
 }
@@ -456,7 +456,7 @@ public
 ///     This occurs when one module explicitly declares it cannot work with another module.
 /// </summary>
 /// <param name="Module">The module that has declared an incompatibility</param>
-/// <param name="IncompatibleModuleId">The ID of the module that is incompatible with the target</param>
+/// <param name="IncompatibleModule">The module that is incompatible with the target</param>
 /// <remarks>
 /// This issue occurs when a module explicitly marks another module as incompatible.
 /// 
@@ -480,11 +480,11 @@ public
 # endif
     sealed record ModuleIncompatibleIssue(
     ModuleInfoExtended Module,
-    string IncompatibleModuleId
+    ModuleInfoExtended IncompatibleModule
 ) : ModuleIssueV2(Module)
 {
-    public override string ToString() => $"'{IncompatibleModuleId}' is incompatible with this module";
-    public override LegacyModuleIssue ToLegacy() => new(Module, IncompatibleModuleId, ModuleIssueType.Incompatible, ToString(), ApplicationVersionRange.Empty);
+    public override string ToString() => $"'{IncompatibleModule.Id}' is incompatible with this module";
+    public override LegacyModuleIssue ToLegacy() => new(Module, IncompatibleModule.Id, ModuleIssueType.Incompatible, ToString(), ApplicationVersionRange.Empty);
 }
 
 /// <summary>
@@ -610,7 +610,7 @@ public
 # endif
     sealed record ModuleDependencyConflictCircularIssue(
     ModuleInfoExtended Module,
-    DependentModuleMetadata CircularDependency
+    ModuleInfoExtended CircularDependency
 ) : ModuleIssueV2(Module)
 {
     public override string ToString() => $"Module '{Module.Id}' and '{CircularDependency.Id}' have circular dependencies";
@@ -648,11 +648,11 @@ public
 # endif
     sealed record ModuleDependencyNotLoadedBeforeIssue(
     ModuleInfoExtended Module,
-    string DependencyId
+    DependentModuleMetadata Dependency
 ) : ModuleIssueV2(Module)
 {
-    public override string ToString() => $"'{DependencyId}' should be loaded before '{Module.Id}'";
-    public override LegacyModuleIssue ToLegacy() => new(Module, DependencyId, ModuleIssueType.DependencyNotLoadedBeforeThis, ToString(), ApplicationVersionRange.Empty);
+    public override string ToString() => $"'{Dependency.Id}' should be loaded before '{Module.Id}'";
+    public override LegacyModuleIssue ToLegacy() => new(Module, Dependency.Id, ModuleIssueType.DependencyNotLoadedBeforeThis, ToString(), ApplicationVersionRange.Empty);
 }
 
 /// <summary>
@@ -686,11 +686,11 @@ public
 # endif
     sealed record ModuleDependencyNotLoadedAfterIssue(
     ModuleInfoExtended Module,
-    string DependencyId
+    DependentModuleMetadata Dependency
 ) : ModuleIssueV2(Module)
 {
-    public override string ToString() => $"'{DependencyId}' should be loaded after '{Module.Id}'";
-    public override LegacyModuleIssue ToLegacy() => new(Module, DependencyId, ModuleIssueType.DependencyNotLoadedAfterThis, ToString(), ApplicationVersionRange.Empty);
+    public override string ToString() => $"'{Dependency.Id}' should be loaded after '{Module.Id}'";
+    public override LegacyModuleIssue ToLegacy() => new(Module, Dependency.Id, ModuleIssueType.DependencyNotLoadedAfterThis, ToString(), ApplicationVersionRange.Empty);
 }
 
 /// <summary>
@@ -773,8 +773,8 @@ public
 ///     <!-- 👇 Current mod is `ImprovedGarrisons` -->
 ///     <Id value="ImprovedGarrisons"/>
 ///     <DependedModules>
-///         <!-- ❌ Empty/invalid dependency entry -->
-///         <DependedModule />
+///         <!-- ❌ Empty/invalid dependency entry (empty id) -->
+///         <DependedModule id="" />
 ///         <!-- 💡 Consider adding an `id` field
 ///              <DependedModuleMetadata id="GarrisonsExtensions" />
 ///         -->

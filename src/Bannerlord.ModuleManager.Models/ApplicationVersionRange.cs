@@ -54,7 +54,16 @@ public
     public bool IsSameWithChangeSet(ApplicationVersionRange? other) =>
         Min.IsSameWithChangeSet(other?.Min) && Max.IsSameWithChangeSet(other?.Max);
 
-    public override string ToString() => $"{Min} - {Max}";
+    public override string ToString() 
+    {
+        // If the min and max changeset are at their default (0 and i32::MAX), we can
+        // simplify how we print the version. End user mods rarely use the changeset,
+        // it's only really used in official packages.
+        if (Min.ChangeSet == 0 && Max.ChangeSet == int.MaxValue)
+            return $"{Min.ToStringWithoutChangeset()} - {Max.ToStringWithoutChangeset()}";
+
+        return $"{Min} - {Max}";
+    }
 
     public static bool TryParse(string versionRangeAsString, out ApplicationVersionRange versionRange)
     {

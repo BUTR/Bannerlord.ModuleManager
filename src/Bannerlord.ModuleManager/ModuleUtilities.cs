@@ -263,12 +263,14 @@ public
     /// <param name="targetModule">The module to validate</param>
     /// <param name="isSelected">Function that determines if a module is enabled</param>
     /// <param name="isValid">Function that determines if a module is valid</param>
+    /// <param name="validateDependencies">Set this to true to also report errors in the target module's dependencies. e.g. Missing dependencies of dependencies.</param>
     /// <returns>Any errors that were detected during inspection</returns>
     public static IEnumerable<ModuleIssueV2> ValidateModuleEx(
         IReadOnlyList<ModuleInfoExtended> modules,
         ModuleInfoExtended targetModule,
         Func<ModuleInfoExtended, bool> isSelected,
-        Func<ModuleInfoExtended, bool> isValid)
+        Func<ModuleInfoExtended, bool> isValid,
+        bool validateDependencies = true)
     {
         var visited = new HashSet<ModuleInfoExtended>();
         foreach (var issue in ValidateModuleEx(modules, targetModule, visited, isSelected, isValid))
@@ -287,7 +289,7 @@ public
     /// <param name="isValid">Function that determines if a module is valid</param>
     /// <param name="validateDependencies">Set this to true to also report errors in the target module's dependencies. e.g. Missing dependencies of dependencies.</param>
     /// <returns>Any errors that were detected during inspection</returns>
-    private static IEnumerable<ModuleIssueV2> ValidateModuleEx(
+    public static IEnumerable<ModuleIssueV2> ValidateModuleEx(
         IReadOnlyList<ModuleInfoExtended> modules,
         ModuleInfoExtended targetModule,
         HashSet<ModuleInfoExtended> visitedModules,
@@ -386,8 +388,12 @@ public
                     .Where(x => x.LoadType != LoadType.None)
                     .FirstOrDefault(x => string.Equals(x.Id, targetModule.Id, StringComparison.Ordinal)) is { } metadata)
             {
-                if (metadata.LoadType == module.LoadType)
-                    yield return new ModuleDependencyConflictCircularIssue(targetModule, metadata);
+                if (metadata.LoadType != module.LoadType) 
+                    continue;
+
+                // Find the full module with given ID.
+                var fullModule = modules.First(x => moduleInfo.Id == x.Id);
+                yield return new ModuleDependencyConflictCircularIssue(targetModule, fullModule);
             }
         }
     }
@@ -477,7 +483,7 @@ public
                 // dependedModuleMetadata.Version > dependedModule.Version
                 if (!metadata.IsOptional && (ApplicationVersionComparer.CompareStandard(metadata.Version, metadataModule.Version) > 0))
                 {
-                    yield return new ModuleVersionMismatchLessThanOrEqualSpecificIssue(
+                    yield return new ModuleVersionTooLowIssue(
                         targetModule,
                         metadataModule,
                         metadata.Version);
@@ -517,7 +523,7 @@ public
 
             // If the incompatible mod is selected, this mod should be disabled
             if (isSelected(metadataModule))
-                yield return new ModuleIncompatibleIssue(targetModule, metadataModule.Id);
+                yield return new ModuleIncompatibleIssue(targetModule, metadataModule);
         }
 
         // If another mod declared incompatibility and is selected, disable this
@@ -535,7 +541,7 @@ public
 
                     // If the incompatible mod is selected, this mod is disabled
                     if (isSelected(module))
-                        yield return new ModuleIncompatibleIssue(targetModule, module.Id);
+                        yield return new ModuleIncompatibleIssue(targetModule, module);
                 }
             }
         }
@@ -603,14 +609,15 @@ public
                 continue;
             }
 
+            // TODO(sewer): Return full module here later. Right now I don't have a good way to test some assertions.
             if (metadata.LoadType == LoadType.LoadBeforeThis && metadataIdx > targetModuleIdx)
             {
-                yield return new ModuleDependencyNotLoadedBeforeIssue(targetModule, metadata.Id);
+                yield return new ModuleDependencyNotLoadedBeforeIssue(targetModule, metadata);
             }
 
             if (metadata.LoadType == LoadType.LoadAfterThis && metadataIdx < targetModuleIdx)
             {
-                yield return new ModuleDependencyNotLoadedAfterIssue(targetModule, metadata.Id);
+                yield return new ModuleDependencyNotLoadedAfterIssue(targetModule, metadata);
             }
         }
     }
