@@ -419,6 +419,9 @@ public
         // Check that all dependencies are present
         foreach (var metadata in targetModule.DependenciesToLoadDistinct())
         {
+            // Ignore the check if the Id is incorrect
+            if (string.IsNullOrWhiteSpace(metadata.Id)) continue;
+
             // Ignore the check for Optional
             if (metadata.IsOptional) continue;
 
@@ -597,7 +600,8 @@ public
                 
             if (metadataIdx == -1)
             {
-                if (!metadata.IsOptional)
+                // If the dependency lacks an Id, it's not valid
+                if (!string.IsNullOrWhiteSpace(metadata.Id) && !metadata.IsOptional)
                 {
                     if (metadata.Version != ApplicationVersion.Empty)
                         yield return new ModuleMissingExactVersionDependencyIssue(targetModule, metadata);
