@@ -144,7 +144,7 @@ public
     {
         var visited = new HashSet<ModuleInfoExtended>();
         return ValidateModuleEx(modules, targetModule, visited, isSelected, 
-                x => ValidateModuleEx(modules, x, isSelected).Count() == 0)
+                x => !ValidateModuleEx(modules, x, isSelected).Any())
             .Select(x => x.ToLegacy());
     }
 
@@ -250,7 +250,7 @@ public
         Func<ModuleInfoExtended, bool> isSelected)
     {
         var visited = new HashSet<ModuleInfoExtended>();
-        foreach (var issue in ValidateModuleEx(modules, targetModule, visited, isSelected, x => ValidateModuleEx(modules, x, isSelected).Count() == 0))
+        foreach (var issue in ValidateModuleEx(modules, targetModule, visited, isSelected, x => !ValidateModuleEx(modules, x, isSelected).Any()))
         {
             yield return issue;
         }
