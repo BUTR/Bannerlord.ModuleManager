@@ -429,12 +429,8 @@ public
             {
                 // For BLSE, there is a special case, 
                 if (metadata.Id is "BLSE.LoadingInterceptor" or "BLSE.AssemblyResolver")
-                {
                     yield return new ModuleMissingBLSEDependencyIssue(targetModule, metadata);
-                    yield break;
-                }
-
-                if (metadata.Version != ApplicationVersion.Empty)
+                else if (metadata.Version != ApplicationVersion.Empty)
                     yield return new ModuleMissingExactVersionDependencyIssue(targetModule, metadata);
                 else if (metadata.VersionRange != ApplicationVersionRange.Empty)
                     yield return new ModuleMissingVersionRangeDependencyIssue(targetModule, metadata);
@@ -609,13 +605,10 @@ public
             {
                 // For BLSE, there is a special case, 
                 if (metadata.Id is "BLSE.LoadingInterceptor" or "BLSE.AssemblyResolver")
-                {
                     yield return new ModuleMissingBLSEDependencyIssue(targetModule, metadata);
-                    yield break;
-                }
                 
                 // If the dependency lacks an Id, it's not valid
-                if (!string.IsNullOrWhiteSpace(metadata.Id) && !metadata.IsOptional)
+                else if (!string.IsNullOrWhiteSpace(metadata.Id) && !metadata.IsOptional)
                 {
                     if (metadata.Version != ApplicationVersion.Empty)
                         yield return new ModuleMissingExactVersionDependencyIssue(targetModule, metadata);
