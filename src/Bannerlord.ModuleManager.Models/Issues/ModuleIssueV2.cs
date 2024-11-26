@@ -101,7 +101,7 @@ internal
 #else
 public
 # endif
-    sealed record ModuleMissingUnversionedDependencyIssue(
+    record ModuleMissingUnversionedDependencyIssue(
     ModuleInfoExtended Module,
     DependentModuleMetadata Dependency
 ) : ModuleIssueV2(Module)
@@ -111,6 +111,50 @@ public
         Module,
         Dependency.Id,
         ModuleIssueType.MissingDependencies,
+        ToString(),
+        ApplicationVersionRange.Empty);
+}
+
+/// <summary>
+///     Represents an issue where the `Bannerlord Software Extender` (BLSE) is missing.
+/// </summary>
+/// <param name="Module">The module with the missing dependency</param>
+/// <param name="Dependency">The missing dependency module</param>
+/// <remarks>
+/// This issue occurs when a mod requires the `Bannerlord Software Extender` (BLSE)
+/// but it is not installed.
+/// 
+/// Example scenario:
+/// ```xml
+/// <Module>
+///     <!-- 👇 Current mod is `SimpleTournaments` -->
+///     <Id value="SimpleTournaments"/>
+///     <DependedModules>
+///         <!-- 👇 This dependency `BLSE.AssemblyResolver` is provided by BLSE -->
+///         <DependedModule Id="BLSE.AssemblyResolver" />
+/// 
+///         <!-- 👇 This dependency `BLSE.LoadingInterceptor` is provided by BLSE -->
+///         <DependedModule Id="BLSE.LoadingInterceptor" />
+///     </DependedModules>
+/// </Module>
+/// ```
+/// If `BLSE` is not installed at all, this issue will be raised if `SimpleTournaments` is enabled.
+/// </remarks>
+#if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
+internal
+#else
+public
+# endif
+    sealed record ModuleMissingBLSEDependencyIssue(
+        ModuleInfoExtended Module,
+        DependentModuleMetadata Dependency
+    ) : ModuleMissingUnversionedDependencyIssue(Module, Dependency)
+{
+    public override string ToString() => $"Missing Bannerlord Software Extender";
+    public override LegacyModuleIssue ToLegacy() => new(
+        Module,
+        Dependency.Id,
+        ModuleIssueType.MissingBLSE,
         ToString(),
         ApplicationVersionRange.Empty);
 }

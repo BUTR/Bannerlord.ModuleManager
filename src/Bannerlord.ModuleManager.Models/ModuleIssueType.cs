@@ -56,6 +56,8 @@ public
     MissingModuleName,
     DependencyIsNull,
     DependencyMissingModuleId,
+    
+    MissingBLSE,
 }
 
 #nullable restore

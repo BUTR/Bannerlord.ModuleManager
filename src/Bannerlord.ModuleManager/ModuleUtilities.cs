@@ -1,4 +1,4 @@
-#region License
+﻿#region License
 // MIT License
 //
 // Copyright (c) Bannerlord's Unofficial Tools & Resources
@@ -427,6 +427,13 @@ public
 
             if (!modules.Any(x => string.Equals(x.Id, metadata.Id, StringComparison.Ordinal)))
             {
+                // For BLSE, there is a special case, 
+                if (metadata.Id is "BLSE.LoadingInterceptor" or "BLSE.AssemblyResolver")
+                {
+                    yield return new ModuleMissingBLSEDependencyIssue(targetModule, metadata);
+                    yield break;
+                }
+
                 if (metadata.Version != ApplicationVersion.Empty)
                     yield return new ModuleMissingExactVersionDependencyIssue(targetModule, metadata);
                 else if (metadata.VersionRange != ApplicationVersionRange.Empty)
@@ -600,6 +607,13 @@ public
                 
             if (metadataIdx == -1)
             {
+                // For BLSE, there is a special case, 
+                if (metadata.Id is "BLSE.LoadingInterceptor" or "BLSE.AssemblyResolver")
+                {
+                    yield return new ModuleMissingBLSEDependencyIssue(targetModule, metadata);
+                    yield break;
+                }
+                
                 // If the dependency lacks an Id, it's not valid
                 if (!string.IsNullOrWhiteSpace(metadata.Id) && !metadata.IsOptional)
                 {
