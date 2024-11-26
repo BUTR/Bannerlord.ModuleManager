@@ -101,7 +101,7 @@ internal
 #else
 public
 # endif
-    record ModuleMissingUnversionedDependencyIssue(
+    sealed record ModuleMissingUnversionedDependencyIssue(
     ModuleInfoExtended Module,
     DependentModuleMetadata Dependency
 ) : ModuleIssueV2(Module)
@@ -148,7 +148,7 @@ public
     sealed record ModuleMissingBLSEDependencyIssue(
         ModuleInfoExtended Module,
         DependentModuleMetadata Dependency
-    ) : ModuleMissingUnversionedDependencyIssue(Module, Dependency)
+    ) : ModuleIssueV2(Module)
 {
     public override string ToString() => $"Missing Bannerlord Software Extender";
     public override LegacyModuleIssue ToLegacy() => new(
