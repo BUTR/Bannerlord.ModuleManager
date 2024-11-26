@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // MIT License
 //
 // Copyright (c) Bannerlord's Unofficial Tools & Resources
@@ -273,7 +273,7 @@ public
         bool validateDependencies = true)
     {
         var visited = new HashSet<ModuleInfoExtended>();
-        foreach (var issue in ValidateModuleEx(modules, targetModule, visited, isSelected, isValid))
+        foreach (var issue in ValidateModuleEx(modules, targetModule, visited, isSelected, isValid, validateDependencies))
         {
             yield return issue;
         }
