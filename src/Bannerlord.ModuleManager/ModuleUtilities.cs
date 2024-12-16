@@ -273,7 +273,7 @@ public
         bool validateDependencies = true)
     {
         var visited = new HashSet<ModuleInfoExtended>();
-        foreach (var issue in ValidateModuleEx(modules, targetModule, visited, isSelected, isValid))
+        foreach (var issue in ValidateModuleEx(modules, targetModule, visited, isSelected, isValid, validateDependencies))
         {
             yield return issue;
         }
@@ -427,7 +427,10 @@ public
 
             if (!modules.Any(x => string.Equals(x.Id, metadata.Id, StringComparison.Ordinal)))
             {
-                if (metadata.Version != ApplicationVersion.Empty)
+                // For BLSE, there is a special case, 
+                if (metadata.Id is "BLSE.LoadingInterceptor" or "BLSE.AssemblyResolver")
+                    yield return new ModuleMissingBLSEDependencyIssue(targetModule, metadata);
+                else if (metadata.Version != ApplicationVersion.Empty)
                     yield return new ModuleMissingExactVersionDependencyIssue(targetModule, metadata);
                 else if (metadata.VersionRange != ApplicationVersionRange.Empty)
                     yield return new ModuleMissingVersionRangeDependencyIssue(targetModule, metadata);
@@ -600,8 +603,12 @@ public
                 
             if (metadataIdx == -1)
             {
+                // For BLSE, there is a special case, 
+                if (metadata.Id is "BLSE.LoadingInterceptor" or "BLSE.AssemblyResolver")
+                    yield return new ModuleMissingBLSEDependencyIssue(targetModule, metadata);
+                
                 // If the dependency lacks an Id, it's not valid
-                if (!string.IsNullOrWhiteSpace(metadata.Id) && !metadata.IsOptional)
+                else if (!string.IsNullOrWhiteSpace(metadata.Id) && !metadata.IsOptional)
                 {
                     if (metadata.Version != ApplicationVersion.Empty)
                         yield return new ModuleMissingExactVersionDependencyIssue(targetModule, metadata);
