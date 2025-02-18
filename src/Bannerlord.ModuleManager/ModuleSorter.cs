@@ -27,89 +27,89 @@
 #pragma warning disable
 #endif
 
-namespace Bannerlord.ModuleManager;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
+namespace Bannerlord.ModuleManager
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
 
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
     internal
 #else
-public
+    public
 # endif
-    sealed record ModuleSorterOptions
-{
-    public bool SkipOptionals { get; set; }
-    public bool SkipExternalDependencies { get; set; }
-
-    public ModuleSorterOptions() { }
-    public ModuleSorterOptions(bool skipOptionals, bool skipExternalDependencies)
+        sealed record ModuleSorterOptions
     {
-        SkipOptionals = skipOptionals;
-        SkipExternalDependencies = skipExternalDependencies;
+        public bool SkipOptionals { get; set; }
+        public bool SkipExternalDependencies { get; set; }
+
+        public ModuleSorterOptions() { }
+        public ModuleSorterOptions(bool skipOptionals, bool skipExternalDependencies)
+        {
+            SkipOptionals = skipOptionals;
+            SkipExternalDependencies = skipExternalDependencies;
+        }
     }
-}
 
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
     internal
 #else
-public
+    public
 # endif
-    static class ModuleSorter
-{
-    public static IList<ModuleInfoExtended> Sort(IReadOnlyCollection<ModuleInfoExtended> source)
+        static class ModuleSorter
     {
-        var correctModules = source
-            .Where(x => ModuleUtilities.AreDependenciesPresent(source, x))
-            .OrderByDescending(x => x.IsOfficial)
-            .ThenByDescending(mim => mim.Id, new AlphanumComparatorFast())
-            .ToArray();
-
-        return TopologySort(correctModules, module => ModuleUtilities.GetDependencies(correctModules, module));
-    }
-    public static IList<ModuleInfoExtended> Sort(IReadOnlyCollection<ModuleInfoExtended> source, ModuleSorterOptions options)
-    {
-        var correctModules = source
-            .Where(x => ModuleUtilities.AreDependenciesPresent(source, x))
-            .OrderByDescending(x => x.IsOfficial)
-            .ThenByDescending(mim => mim.Id, new AlphanumComparatorFast())
-            .ToArray();
-
-        return TopologySort(correctModules, module => ModuleUtilities.GetDependencies(correctModules, module, options));
-    }
-
-    public static IList<T> TopologySort<T>(IEnumerable<T> source, Func<T, IEnumerable<T>> getDependencies)
-    {
-        var list = new List<T>();
-        var visited = new HashSet<T>();
-        foreach (var item in source)
+        public static IList<ModuleInfoExtended> Sort(IReadOnlyCollection<ModuleInfoExtended> source)
         {
-            Visit(item, getDependencies, item => list.Add(item), visited);
+            var correctModules = source
+                .Where(x => ModuleUtilities.AreDependenciesPresent(source, x))
+                .OrderByDescending(x => x.IsOfficial)
+                .ThenByDescending(mim => mim.Id, new AlphanumComparatorFast())
+                .ToArray();
+
+            return TopologySort(correctModules, module => ModuleUtilities.GetDependencies(correctModules, module));
         }
-        return list;
-    }
-
-    public static void Visit<T>(T item, Func<T, IEnumerable<T>> getDependencies, Action<T> addItem, HashSet<T> visited)
-    {
-        if (visited.Contains(item))
+        public static IList<ModuleInfoExtended> Sort(IReadOnlyCollection<ModuleInfoExtended> source, ModuleSorterOptions options)
         {
-            return;
+            var correctModules = source
+                .Where(x => ModuleUtilities.AreDependenciesPresent(source, x))
+                .OrderByDescending(x => x.IsOfficial)
+                .ThenByDescending(mim => mim.Id, new AlphanumComparatorFast())
+                .ToArray();
+
+            return TopologySort(correctModules, module => ModuleUtilities.GetDependencies(correctModules, module, options));
         }
 
-        visited.Add(item);
-        if (getDependencies(item) is { } enumerable)
+        public static IList<T> TopologySort<T>(IEnumerable<T> source, Func<T, IEnumerable<T>> getDependencies)
         {
-            foreach (var item2 in enumerable)
+            var list = new List<T>();
+            var visited = new HashSet<T>();
+            foreach (var item in source)
             {
-                Visit(item2, getDependencies, addItem, visited);
+                Visit(item, getDependencies, item => list.Add(item), visited);
             }
+            return list;
         }
-        addItem(item);
-    }
-}
 
+        public static void Visit<T>(T item, Func<T, IEnumerable<T>> getDependencies, Action<T> addItem, HashSet<T> visited)
+        {
+            if (visited.Contains(item))
+            {
+                return;
+            }
+
+            visited.Add(item);
+            if (getDependencies(item) is { } enumerable)
+            {
+                foreach (var item2 in enumerable)
+                {
+                    Visit(item2, getDependencies, addItem, visited);
+                }
+            }
+            addItem(item);
+        }
+    }
 #nullable restore
 #if !BANNERLORDBUTRMODULEMANAGER_ENABLE_WARNING
 #pragma warning restore
 #endif
+}

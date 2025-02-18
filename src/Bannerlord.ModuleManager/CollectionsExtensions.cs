@@ -27,63 +27,63 @@
 #pragma warning disable
 #endif
 
-namespace Bannerlord.ModuleManager;
-
-using System;
-using System.Collections.Generic;
-
-internal static class CollectionsExtensions
+namespace Bannerlord.ModuleManager
 {
-    public static int IndexOf<T>(this IReadOnlyList<T> self, T elementToFind)
+    using System;
+    using System.Collections.Generic;
+
+    internal static class CollectionsExtensions
     {
-        var i = 0;
-        foreach (T element in self)
+        public static int IndexOf<T>(this IReadOnlyList<T> self, T elementToFind)
         {
-            if (Equals(element, elementToFind))
-                return i;
-            i++;
-        }
-        return -1;
-    }
-    public static int IndexOf<T>(this IReadOnlyList<T> self, Func<T, bool> preficate)
-    {
-        var i = 0;
-        foreach (T element in self)
-        {
-            if (preficate(element))
-                return i;
-            i++;
-        }
-        return -1;
-    }
-
-    public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector) =>
-        DistinctBy(source, keySelector, null);
-
-    public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey>? comparer) =>
-        DistinctByIterator(source, keySelector, comparer);
-
-    private static IEnumerable<TSource> DistinctByIterator<TSource, TKey>(IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey>? comparer)
-    {
-        using var enumerator = source.GetEnumerator();
-
-        if (enumerator.MoveNext())
-        {
-            var set = new HashSet<TKey>(comparer);
-            do
+            var i = 0;
+            foreach (T element in self)
             {
-                TSource element = enumerator.Current;
-                if (set.Add(keySelector(element)))
-                {
-                    yield return element;
-                }
+                if (Equals(element, elementToFind))
+                    return i;
+                i++;
             }
-            while (enumerator.MoveNext());
+            return -1;
+        }
+        public static int IndexOf<T>(this IReadOnlyList<T> self, Func<T, bool> preficate)
+        {
+            var i = 0;
+            foreach (T element in self)
+            {
+                if (preficate(element))
+                    return i;
+                i++;
+            }
+            return -1;
+        }
+
+        public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector) =>
+            DistinctBy(source, keySelector, null);
+
+        public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey>? comparer) =>
+            DistinctByIterator(source, keySelector, comparer);
+
+        private static IEnumerable<TSource> DistinctByIterator<TSource, TKey>(IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey>? comparer)
+        {
+            using var enumerator = source.GetEnumerator();
+
+            if (enumerator.MoveNext())
+            {
+                var set = new HashSet<TKey>(comparer);
+                do
+                {
+                    TSource element = enumerator.Current;
+                    if (set.Add(keySelector(element)))
+                    {
+                        yield return element;
+                    }
+                }
+                while (enumerator.MoveNext());
+            }
         }
     }
-}
-
 #nullable restore
 #if !BANNERLORDBUTRMODULEMANAGER_ENABLE_WARNING
 #pragma warning restore
 #endif
+}

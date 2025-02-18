@@ -27,55 +27,55 @@
 #pragma warning disable
 #endif
 
-namespace Bannerlord.ModuleManager;
-
-using System.Collections;
-using System.Collections.Generic;
+namespace Bannerlord.ModuleManager
+{
+    using System.Collections;
+    using System.Collections.Generic;
 
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
     internal
 #else
-public
+    public
 # endif
-    class ApplicationVersionComparer : IComparer<ApplicationVersion?>, IComparer
-{
-    /// <inheritdoc/>
-    public int Compare(object? x, object? y) => Compare(x as ApplicationVersion, y as ApplicationVersion);
-
-    /// <inheritdoc/>
-    public virtual int Compare(ApplicationVersion? x, ApplicationVersion? y) => CompareStandard(x, y);
-
-    public static int CompareStandard(ApplicationVersion? x, ApplicationVersion? y)
+        class ApplicationVersionComparer : IComparer<ApplicationVersion?>, IComparer
     {
-        if (x is null && y is null)
+        /// <inheritdoc/>
+        public int Compare(object? x, object? y) => Compare(x as ApplicationVersion, y as ApplicationVersion);
+
+        /// <inheritdoc/>
+        public virtual int Compare(ApplicationVersion? x, ApplicationVersion? y) => CompareStandard(x, y);
+
+        public static int CompareStandard(ApplicationVersion? x, ApplicationVersion? y)
+        {
+            if (x is null && y is null)
+                return 0;
+
+            if (x is null)
+                return -1;
+
+            if (y is null)
+                return 1;
+
+            var versionTypeComparison = x.ApplicationVersionType.CompareTo(y.ApplicationVersionType);
+            if (versionTypeComparison != 0) return versionTypeComparison;
+
+            var majorComparison = x.Major.CompareTo(y.Major);
+            if (majorComparison != 0) return majorComparison;
+
+            var minorComparison = x.Minor.CompareTo(y.Minor);
+            if (minorComparison != 0) return minorComparison;
+
+            var revisionComparison = x.Revision.CompareTo(y.Revision);
+            if (revisionComparison != 0) return revisionComparison;
+
+            var changeSetComparison = x.ChangeSet.CompareTo(y.ChangeSet);
+            if (changeSetComparison != 0) return changeSetComparison;
+
             return 0;
-
-        if (x is null)
-            return -1;
-
-        if (y is null)
-            return 1;
-
-        var versionTypeComparison = x.ApplicationVersionType.CompareTo(y.ApplicationVersionType);
-        if (versionTypeComparison != 0) return versionTypeComparison;
-
-        var majorComparison = x.Major.CompareTo(y.Major);
-        if (majorComparison != 0) return majorComparison;
-
-        var minorComparison = x.Minor.CompareTo(y.Minor);
-        if (minorComparison != 0) return minorComparison;
-
-        var revisionComparison = x.Revision.CompareTo(y.Revision);
-        if (revisionComparison != 0) return revisionComparison;
-
-        var changeSetComparison = x.ChangeSet.CompareTo(y.ChangeSet);
-        if (changeSetComparison != 0) return changeSetComparison;
-
-        return 0;
+        }
     }
-}
-
 #nullable restore
 #if !BANNERLORDBUTRMODULEMANAGER_ENABLE_WARNING
 #pragma warning restore
 #endif
+}

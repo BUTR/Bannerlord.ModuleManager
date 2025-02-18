@@ -27,40 +27,40 @@
 #pragma warning disable
 #endif
 
-namespace Bannerlord.ModuleManager;
-
+namespace Bannerlord.ModuleManager
+{
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
     internal
 #else
-public
+    public
 # endif
-    enum ModuleIssueType
-{
-    NONE,
-    Missing,
-    MissingDependencies,
-    DependencyMissingDependencies,
-    DependencyValidationError,
-    VersionMismatchLessThanOrEqual,
-    VersionMismatchLessThan,
-    VersionMismatchGreaterThan,
-    Incompatible,
-    DependencyConflictDependentAndIncompatible,
-    DependencyConflictDependentLoadBeforeAndAfter,
-    DependencyConflictCircular,
+        enum ModuleIssueType
+    {
+        NONE,
+        Missing,
+        MissingDependencies,
+        DependencyMissingDependencies,
+        DependencyValidationError,
+        VersionMismatchLessThanOrEqual,
+        VersionMismatchLessThan,
+        VersionMismatchGreaterThan,
+        Incompatible,
+        DependencyConflictDependentAndIncompatible,
+        DependencyConflictDependentLoadBeforeAndAfter,
+        DependencyConflictCircular,
 
-    DependencyNotLoadedBeforeThis,
-    DependencyNotLoadedAfterThis,
+        DependencyNotLoadedBeforeThis,
+        DependencyNotLoadedAfterThis,
         
-    MissingModuleId,
-    MissingModuleName,
-    DependencyIsNull,
-    DependencyMissingModuleId,
+        MissingModuleId,
+        MissingModuleName,
+        DependencyIsNull,
+        DependencyMissingModuleId,
     
-    MissingBLSE,
-}
-
+        MissingBLSE,
+    }
 #nullable restore
 #if !BANNERLORDBUTRMODULEMANAGER_ENABLE_WARNING
 #pragma warning restore
 #endif
+}

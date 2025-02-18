@@ -27,25 +27,25 @@
 #pragma warning disable
 #endif
 
-namespace Bannerlord.ModuleManager;
-
+namespace Bannerlord.ModuleManager
+{
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
     internal
 #else
-public
+    public
 # endif
-    enum SubModuleTags
-{
-    RejectedPlatform,
-    ExclusivePlatform,
-    DedicatedServerType,
-    IsNoRenderModeElement,
-    DependantRuntimeLibrary,
-    PlayerHostedDedicatedServer,
-    EngineType
-}
-
+        enum SubModuleTags
+    {
+        RejectedPlatform,
+        ExclusivePlatform,
+        DedicatedServerType,
+        IsNoRenderModeElement,
+        DependantRuntimeLibrary,
+        PlayerHostedDedicatedServer,
+        EngineType
+    }
 #nullable restore
 #if !BANNERLORDBUTRMODULEMANAGER_ENABLE_WARNING
 #pragma warning restore
 #endif
+}

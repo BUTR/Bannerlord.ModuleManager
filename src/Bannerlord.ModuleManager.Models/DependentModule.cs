@@ -41,29 +41,29 @@
 #pragma warning disable
 #endif
 
-namespace Bannerlord.ModuleManager;
-
+namespace Bannerlord.ModuleManager
+{
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
     internal
 #else
-public
+    public
 # endif
-    record DependentModule
-{
-    public string Id { get; set; } = string.Empty;
-    public ApplicationVersion Version { get; set; } = ApplicationVersion.Empty;
-    public bool IsOptional { get; set; } = false;
-
-    public DependentModule() { }
-    public DependentModule(string id, ApplicationVersion version, bool isOptional)
+        record DependentModule
     {
-        Id = id;
-        Version = version;
-        IsOptional = isOptional;
-    }
-}
+        public string Id { get; set; } = string.Empty;
+        public ApplicationVersion Version { get; set; } = ApplicationVersion.Empty;
+        public bool IsOptional { get; set; } = false;
 
+        public DependentModule() { }
+        public DependentModule(string id, ApplicationVersion version, bool isOptional)
+        {
+            Id = id;
+            Version = version;
+            IsOptional = isOptional;
+        }
+    }
 #nullable restore
 #if !BANNERLORDBUTRMODULEMANAGER_ENABLE_WARNING
 #pragma warning restore
 #endif
+}

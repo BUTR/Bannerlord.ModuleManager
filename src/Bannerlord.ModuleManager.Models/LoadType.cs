@@ -27,27 +27,27 @@
 #pragma warning disable
 #endif
 
-namespace Bannerlord.ModuleManager;
-
+namespace Bannerlord.ModuleManager
+{
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
     internal
 #else
-public
+    public
 # endif
-    enum LoadType
-{
-    None = 0,
-    LoadAfterThis = 1,
-    LoadBeforeThis = 2
-}
+        enum LoadType
+    {
+        None = 0,
+        LoadAfterThis = 1,
+        LoadBeforeThis = 2
+    }
 
-internal enum LoadTypeParse
-{
-    LoadAfterThis = 1,
-    LoadBeforeThis = 2
-}
-
+    internal enum LoadTypeParse
+    {
+        LoadAfterThis = 1,
+        LoadBeforeThis = 2
+    }
 #nullable restore
 #if !BANNERLORDBUTRMODULEMANAGER_ENABLE_WARNING
 #pragma warning restore
 #endif
+}

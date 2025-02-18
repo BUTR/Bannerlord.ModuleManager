@@ -27,24 +27,24 @@
 #pragma warning disable
 #endif
 
-namespace Bannerlord.ModuleManager;
-
+namespace Bannerlord.ModuleManager
+{
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
     internal
 #else
-public
+    public
 # endif
-    enum ApplicationVersionType
-{
-    Alpha,
-    Beta,
-    EarlyAccess,
-    Release,
-    Development,
-    Invalid
-}
-
+        enum ApplicationVersionType
+    {
+        Alpha,
+        Beta,
+        EarlyAccess,
+        Release,
+        Development,
+        Invalid
+    }
 #nullable restore
 #if !BANNERLORDBUTRMODULEMANAGER_ENABLE_WARNING
 #pragma warning restore
 #endif
+}

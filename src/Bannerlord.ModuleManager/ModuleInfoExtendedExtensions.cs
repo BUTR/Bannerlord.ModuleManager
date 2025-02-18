@@ -27,145 +27,145 @@
 #pragma warning disable
 #endif
 
-namespace Bannerlord.ModuleManager;
-
-using System.Collections.Generic;
-using System.Linq;
+namespace Bannerlord.ModuleManager
+{
+    using System.Collections.Generic;
+    using System.Linq;
 
 #if !BANNERLORDBUTRMODULEMANAGER_PUBLIC
     internal
 #else
-public
+    public
 # endif
-    static class ModuleInfoExtendedExtensions
-{
-    public static IEnumerable<DependentModuleMetadata> DependenciesAllDistinct(this ModuleInfoExtended module) => DependenciesAll(module).DistinctBy(x => x.Id);
-    public static IEnumerable<DependentModuleMetadata> DependenciesAll(this ModuleInfoExtended module)
+        static class ModuleInfoExtendedExtensions
     {
-        foreach (var metadata in module.DependentModuleMetadatas.Where(x => x is not null))
+        public static IEnumerable<DependentModuleMetadata> DependenciesAllDistinct(this ModuleInfoExtended module) => DependenciesAll(module).DistinctBy(x => x.Id);
+        public static IEnumerable<DependentModuleMetadata> DependenciesAll(this ModuleInfoExtended module)
         {
-            yield return metadata;
-        }
-        foreach (var metadata in module.DependentModules.Where(x => x is not null))
-        {
-            yield return new DependentModuleMetadata
+            foreach (var metadata in module.DependentModuleMetadatas.Where(x => x is not null))
             {
-                Id = metadata.Id,
-                LoadType = LoadType.LoadBeforeThis,
-                IsOptional = metadata.IsOptional,
-                Version = metadata.Version
-            };
-        }
-        foreach (var metadata in module.ModulesToLoadAfterThis.Where(x => x is not null))
-        {
-            yield return new DependentModuleMetadata
+                yield return metadata;
+            }
+            foreach (var metadata in module.DependentModules.Where(x => x is not null))
             {
-                Id = metadata.Id,
-                LoadType = LoadType.LoadAfterThis,
-                IsOptional = metadata.IsOptional,
-                Version = metadata.Version
-            };
-        }
-        foreach (var metadata in module.IncompatibleModules.Where(x => x is not null))
-        {
-            yield return new DependentModuleMetadata
+                yield return new DependentModuleMetadata
+                {
+                    Id = metadata.Id,
+                    LoadType = LoadType.LoadBeforeThis,
+                    IsOptional = metadata.IsOptional,
+                    Version = metadata.Version
+                };
+            }
+            foreach (var metadata in module.ModulesToLoadAfterThis.Where(x => x is not null))
             {
-                Id = metadata.Id,
-                IsIncompatible = true,
-                IsOptional = metadata.IsOptional,
-                Version = metadata.Version
-            };
+                yield return new DependentModuleMetadata
+                {
+                    Id = metadata.Id,
+                    LoadType = LoadType.LoadAfterThis,
+                    IsOptional = metadata.IsOptional,
+                    Version = metadata.Version
+                };
+            }
+            foreach (var metadata in module.IncompatibleModules.Where(x => x is not null))
+            {
+                yield return new DependentModuleMetadata
+                {
+                    Id = metadata.Id,
+                    IsIncompatible = true,
+                    IsOptional = metadata.IsOptional,
+                    Version = metadata.Version
+                };
+            }
         }
-    }
         
-    public static IEnumerable<DependentModuleMetadata> DependenciesToLoadDistinct(this ModuleInfoExtended module) => DependenciesToLoad(module).DistinctBy(x => x.Id);
-    public static IEnumerable<DependentModuleMetadata> DependenciesToLoad(this ModuleInfoExtended module)
-    {
-        foreach (var metadata in module.DependentModuleMetadatas.Where(x => x is not null).Where(x => !x.IsIncompatible))
+        public static IEnumerable<DependentModuleMetadata> DependenciesToLoadDistinct(this ModuleInfoExtended module) => DependenciesToLoad(module).DistinctBy(x => x.Id);
+        public static IEnumerable<DependentModuleMetadata> DependenciesToLoad(this ModuleInfoExtended module)
         {
-            yield return metadata;
-        }
-        foreach (var metadata in module.DependentModules.Where(x => x is not null))
-        {
-            yield return new DependentModuleMetadata
+            foreach (var metadata in module.DependentModuleMetadatas.Where(x => x is not null).Where(x => !x.IsIncompatible))
             {
-                Id = metadata.Id,
-                LoadType = LoadType.LoadBeforeThis,
-                IsOptional = metadata.IsOptional,
-                Version = metadata.Version
-            };
-        }
-        foreach (var metadata in module.ModulesToLoadAfterThis.Where(x => x is not null))
-        {
-            yield return new DependentModuleMetadata
+                yield return metadata;
+            }
+            foreach (var metadata in module.DependentModules.Where(x => x is not null))
             {
-                Id = metadata.Id,
-                LoadType = LoadType.LoadAfterThis,
-                IsOptional = metadata.IsOptional,
-                Version = metadata.Version
-            };
+                yield return new DependentModuleMetadata
+                {
+                    Id = metadata.Id,
+                    LoadType = LoadType.LoadBeforeThis,
+                    IsOptional = metadata.IsOptional,
+                    Version = metadata.Version
+                };
+            }
+            foreach (var metadata in module.ModulesToLoadAfterThis.Where(x => x is not null))
+            {
+                yield return new DependentModuleMetadata
+                {
+                    Id = metadata.Id,
+                    LoadType = LoadType.LoadAfterThis,
+                    IsOptional = metadata.IsOptional,
+                    Version = metadata.Version
+                };
+            }
         }
-    }
         
-    public static IEnumerable<DependentModuleMetadata> DependenciesLoadBeforeThisDistinct(this ModuleInfoExtended module) => DependenciesLoadBeforeThis(module).DistinctBy(x => x.Id);
-    public static IEnumerable<DependentModuleMetadata> DependenciesLoadBeforeThis(this ModuleInfoExtended module)
-    {
-        foreach (var metadata in module.DependentModuleMetadatas.Where(x => x is not null).Where(x => x.LoadType == LoadType.LoadBeforeThis))
+        public static IEnumerable<DependentModuleMetadata> DependenciesLoadBeforeThisDistinct(this ModuleInfoExtended module) => DependenciesLoadBeforeThis(module).DistinctBy(x => x.Id);
+        public static IEnumerable<DependentModuleMetadata> DependenciesLoadBeforeThis(this ModuleInfoExtended module)
         {
-            yield return metadata;
-        }
-        foreach (var metadata in module.DependentModules.Where(x => x is not null))
-        {
-            yield return new DependentModuleMetadata
+            foreach (var metadata in module.DependentModuleMetadatas.Where(x => x is not null).Where(x => x.LoadType == LoadType.LoadBeforeThis))
             {
-                Id = metadata.Id,
-                LoadType = LoadType.LoadBeforeThis,
-                IsOptional = metadata.IsOptional,
-                Version = metadata.Version
-            };
+                yield return metadata;
+            }
+            foreach (var metadata in module.DependentModules.Where(x => x is not null))
+            {
+                yield return new DependentModuleMetadata
+                {
+                    Id = metadata.Id,
+                    LoadType = LoadType.LoadBeforeThis,
+                    IsOptional = metadata.IsOptional,
+                    Version = metadata.Version
+                };
+            }
         }
-    }
         
-    public static IEnumerable<DependentModuleMetadata> DependenciesLoadAfterThisDistinct(this ModuleInfoExtended module) => DependenciesLoadAfterThis(module).DistinctBy(x => x.Id);
-    public static IEnumerable<DependentModuleMetadata> DependenciesLoadAfterThis(this ModuleInfoExtended module)
-    {
-        foreach (var metadata in module.DependentModuleMetadatas.Where(x => x is not null).Where(x => x.LoadType == LoadType.LoadAfterThis))
+        public static IEnumerable<DependentModuleMetadata> DependenciesLoadAfterThisDistinct(this ModuleInfoExtended module) => DependenciesLoadAfterThis(module).DistinctBy(x => x.Id);
+        public static IEnumerable<DependentModuleMetadata> DependenciesLoadAfterThis(this ModuleInfoExtended module)
         {
-            yield return metadata;
-        }
-        foreach (var metadata in module.ModulesToLoadAfterThis.Where(x => x is not null))
-        {
-            yield return new DependentModuleMetadata
+            foreach (var metadata in module.DependentModuleMetadatas.Where(x => x is not null).Where(x => x.LoadType == LoadType.LoadAfterThis))
             {
-                Id = metadata.Id,
-                LoadType = LoadType.LoadAfterThis,
-                IsOptional = metadata.IsOptional,
-                Version = metadata.Version
-            };
+                yield return metadata;
+            }
+            foreach (var metadata in module.ModulesToLoadAfterThis.Where(x => x is not null))
+            {
+                yield return new DependentModuleMetadata
+                {
+                    Id = metadata.Id,
+                    LoadType = LoadType.LoadAfterThis,
+                    IsOptional = metadata.IsOptional,
+                    Version = metadata.Version
+                };
+            }
         }
-    }
         
-    public static IEnumerable<DependentModuleMetadata> DependenciesIncompatiblesDistinct(this ModuleInfoExtended module) => DependenciesIncompatibles(module).DistinctBy(x => x.Id);
-    public static IEnumerable<DependentModuleMetadata> DependenciesIncompatibles(this ModuleInfoExtended module)
-    {
-        foreach (var metadata in module.DependentModuleMetadatas.Where(x => x is not null).Where(x => x.IsIncompatible))
+        public static IEnumerable<DependentModuleMetadata> DependenciesIncompatiblesDistinct(this ModuleInfoExtended module) => DependenciesIncompatibles(module).DistinctBy(x => x.Id);
+        public static IEnumerable<DependentModuleMetadata> DependenciesIncompatibles(this ModuleInfoExtended module)
         {
-            yield return metadata;
-        }
-        foreach (var metadata in module.IncompatibleModules.Where(x => x is not null))
-        {
-            yield return new DependentModuleMetadata
+            foreach (var metadata in module.DependentModuleMetadatas.Where(x => x is not null).Where(x => x.IsIncompatible))
             {
-                Id = metadata.Id,
-                IsIncompatible = true,
-                IsOptional = metadata.IsOptional,
-                Version = metadata.Version
-            };
+                yield return metadata;
+            }
+            foreach (var metadata in module.IncompatibleModules.Where(x => x is not null))
+            {
+                yield return new DependentModuleMetadata
+                {
+                    Id = metadata.Id,
+                    IsIncompatible = true,
+                    IsOptional = metadata.IsOptional,
+                    Version = metadata.Version
+                };
+            }
         }
     }
-}
-
 #nullable restore
 #if !BANNERLORDBUTRMODULEMANAGER_ENABLE_WARNING
 #pragma warning restore
 #endif
+}
