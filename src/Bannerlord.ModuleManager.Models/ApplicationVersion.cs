@@ -112,7 +112,7 @@ namespace Bannerlord.ModuleManager
                 return false;
 
             var array = versionAsString.Split('.');
-            if (array.Length != 3 && array.Length != 4 && array[0].Length == 0)
+            if ((array.Length != 3 && array.Length != 4) || array[0].Length == 0)
                 return false;
 
             var applicationVersionType = FromPrefix(array[0][0]);
