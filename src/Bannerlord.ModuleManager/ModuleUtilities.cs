@@ -122,9 +122,7 @@ namespace Bannerlord.ModuleManager
             ModuleInfoExtended targetModule, 
             Func<ModuleInfoExtended, bool> isSelected)
         {
-            var visited = new HashSet<ModuleInfoExtended>();
-            return ValidateModuleEx(modules, targetModule, visited, isSelected, 
-                    x => !ValidateModuleEx(modules, x, isSelected).Any())
+            return ValidateModuleEx(modules, targetModule, isSelected)
                 .Select(x => x.ToLegacy());
         }
 
@@ -229,8 +227,10 @@ namespace Bannerlord.ModuleManager
             ModuleInfoExtended targetModule,
             Func<ModuleInfoExtended, bool> isSelected)
         {
+            // A dependency is valid when it has no issues itself, the context validates each module once per call
+            var context = new ModuleValidationContext(modules, isSelected);
             var visited = new HashSet<ModuleInfoExtended>();
-            foreach (var issue in ValidateModuleEx(modules, targetModule, visited, isSelected, x => !ValidateModuleEx(modules, x, isSelected).Any()))
+            foreach (var issue in ValidateModuleEx(context, targetModule, visited, context.IsValid, true))
             {
                 yield return issue;
             }
@@ -277,13 +277,25 @@ namespace Bannerlord.ModuleManager
             Func<ModuleInfoExtended, bool> isValid,
             bool validateDependencies = true)
         {
+            var context = new ModuleValidationContext(modules, isSelected);
+            foreach (var issue in ValidateModuleEx(context, targetModule, visitedModules, isValid, validateDependencies))
+                yield return issue;
+        }
+
+        internal static IEnumerable<ModuleIssueV2> ValidateModuleEx(
+            ModuleValidationContext context,
+            ModuleInfoExtended targetModule,
+            HashSet<ModuleInfoExtended> visitedModules,
+            Func<ModuleInfoExtended, bool> isValid,
+            bool validateDependencies)
+        {
             foreach (var issue in ValidateModuleCommonDataEx(targetModule))
                 yield return issue;
-            
-            foreach (var issue in ValidateModuleDependenciesDeclarationsEx(modules, targetModule))
+
+            foreach (var issue in ValidateModuleDependenciesDeclarationsEx(context, targetModule))
                 yield return issue;
-            
-            foreach (var issue in ValidateModuleDependenciesEx(modules, targetModule, visitedModules, isSelected, isValid, validateDependencies))
+
+            foreach (var issue in ValidateModuleDependenciesEx(context, targetModule, visitedModules, isValid, validateDependencies))
                 yield return issue;
         }
 
@@ -333,11 +345,20 @@ namespace Bannerlord.ModuleManager
             IReadOnlyList<ModuleInfoExtended> modules,
             ModuleInfoExtended targetModule)
         {
+            var context = new ModuleValidationContext(modules, null);
+            foreach (var issue in ValidateModuleDependenciesDeclarationsEx(context, targetModule))
+                yield return issue;
+        }
+
+        private static IEnumerable<ModuleIssueV2> ValidateModuleDependenciesDeclarationsEx(
+            ModuleValidationContext context,
+            ModuleInfoExtended targetModule)
+        {
             // Any Incompatible module is depended on
             // TODO: Will a null Id break things?
-            foreach (var moduleId in targetModule.DependenciesToLoadDistinct()
+            foreach (var moduleId in context.GetToLoad(targetModule)
                          .Select(x => x.Id)
-                         .Intersect(targetModule.DependenciesIncompatiblesDistinct().Select(x => x.Id)))
+                         .Intersect(context.GetIncompatibles(targetModule).Select(x => x.Id)))
             {
                 yield return new ModuleDependencyConflictDependentAndIncompatibleIssue(targetModule, moduleId);
             }
@@ -351,9 +372,9 @@ namespace Bannerlord.ModuleManager
             }
 
             // LoadBeforeThis conflicts with LoadAfterThis
-            foreach (var module in targetModule.DependenciesLoadBeforeThisDistinct())
+            foreach (var module in context.GetLoadBeforeThis(targetModule))
             {
-                if (targetModule.DependenciesLoadAfterThisDistinct()
+                if (context.GetLoadAfterThis(targetModule)
                         .FirstOrDefault(x => string.Equals(x.Id, module.Id, StringComparison.Ordinal)) is { } metadata)
                 {
                     yield return new ModuleDependencyConflictLoadBeforeAndAfterIssue(targetModule, metadata);
@@ -361,10 +382,10 @@ namespace Bannerlord.ModuleManager
             }
 
             // Circular dependency detection
-            foreach (var module in targetModule.DependenciesToLoadDistinct().Where(x => x.LoadType != LoadType.None))
+            foreach (var module in context.GetToLoad(targetModule).Where(x => x.LoadType != LoadType.None))
             {
-                var moduleInfo = modules.FirstOrDefault(x => string.Equals(x.Id, module.Id, StringComparison.Ordinal));
-                if (moduleInfo?.DependenciesToLoadDistinct()
+                var moduleInfo = context.GetModule(module.Id);
+                if (moduleInfo is not null && context.GetToLoad(moduleInfo)
                         .Where(x => x.LoadType != LoadType.None)
                         .FirstOrDefault(x => string.Equals(x.Id, targetModule.Id, StringComparison.Ordinal)) is { } metadata)
                 {
@@ -372,7 +393,7 @@ namespace Bannerlord.ModuleManager
                         continue;
 
                     // Find the full module with given ID.
-                    var fullModule = modules.First(x => moduleInfo.Id == x.Id);
+                    var fullModule = context.GetModule(moduleInfo.Id)!;
                     yield return new ModuleDependencyConflictCircularIssue(targetModule, fullModule);
                 }
             }
@@ -396,8 +417,22 @@ namespace Bannerlord.ModuleManager
             Func<ModuleInfoExtended, bool> isValid,
             bool validateDependencies = true)
         {
+            var context = new ModuleValidationContext(modules, isSelected);
+            foreach (var issue in ValidateModuleDependenciesEx(context, targetModule, visitedModules, isValid, validateDependencies))
+                yield return issue;
+        }
+
+        private static IEnumerable<ModuleIssueV2> ValidateModuleDependenciesEx(
+            ModuleValidationContext context,
+            ModuleInfoExtended targetModule,
+            HashSet<ModuleInfoExtended> visitedModules,
+            Func<ModuleInfoExtended, bool> isValid,
+            bool validateDependencies)
+        {
+            var isSelected = context.IsSelected;
+
             // Check that all dependencies are present
-            foreach (var metadata in targetModule.DependenciesToLoadDistinct())
+            foreach (var metadata in context.GetToLoad(targetModule))
             {
                 // Ignore the check if the Id is incorrect
                 if (string.IsNullOrWhiteSpace(metadata.Id)) continue;
@@ -405,7 +440,7 @@ namespace Bannerlord.ModuleManager
                 // Ignore the check for Optional
                 if (metadata.IsOptional) continue;
 
-                if (!modules.Any(x => string.Equals(x.Id, metadata.Id, StringComparison.Ordinal)))
+                if (!context.ContainsModule(metadata.Id))
                 {
                     // For BLSE, there is a special case, 
                     if (metadata.Id is "BLSE.LoadingInterceptor" or "BLSE.AssemblyResolver")
@@ -423,11 +458,10 @@ namespace Bannerlord.ModuleManager
             // Check that the dependencies themselves have all dependencies present
             if (validateDependencies)
             {
-                var opts = new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true };
-                var dependencies = GetDependencies(modules, targetModule, visitedModules, opts).ToArray();
+                var dependencies = GetDependencies(context.RequiredDependencies, targetModule, visitedModules).ToArray();
                 foreach (var dependency in dependencies)
                 {
-                    if (targetModule.DependenciesAllDistinct().FirstOrDefault(x => 
+                    if (context.GetAll(targetModule).FirstOrDefault(x => 
                             string.Equals(x.Id, dependency.Id, StringComparison.Ordinal)) is { } metadata)
                     {
                         // Not found, should not be possible
@@ -440,7 +474,7 @@ namespace Bannerlord.ModuleManager
                         if (metadata.IsIncompatible) continue;
 
                         // Check missing dependency dependencies
-                        if (modules.FirstOrDefault(x => string.Equals(x.Id, dependency.Id, StringComparison.Ordinal)) is not { } dependencyModuleInfo)
+                        if (context.GetModule(dependency.Id) is not { } dependencyModuleInfo)
                         {
                             yield return new ModuleDependencyMissingDependenciesIssue(targetModule, dependency.Id);
                             continue;
@@ -454,14 +488,14 @@ namespace Bannerlord.ModuleManager
             }
 
             // Check that the dependencies have the minimum required version set by DependedModuleMetadatas
-            foreach (var metadata in targetModule.DependenciesToLoadDistinct())
+            foreach (var metadata in context.GetToLoad(targetModule))
             {
                 // Ignore the check for empty versions
                 if (metadata.Version == ApplicationVersion.Empty && metadata.VersionRange == ApplicationVersionRange.Empty) 
                     continue;
 
                 // Dependency is loaded
-                if (modules.FirstOrDefault(x => string.Equals(x.Id, metadata.Id, StringComparison.Ordinal)) is not { } metadataModule) 
+                if (context.GetModule(metadata.Id) is not { } metadataModule) 
                     continue;
 
                 if (metadata.Version != ApplicationVersion.Empty)
@@ -501,10 +535,10 @@ namespace Bannerlord.ModuleManager
             }
 
             // Do not load this mod if an incompatible mod is selected
-            foreach (var metadata in targetModule.DependenciesIncompatiblesDistinct())
+            foreach (var metadata in context.GetIncompatibles(targetModule))
             {
                 // Dependency is loaded
-                if (modules.FirstOrDefault(x => string.Equals(x.Id, metadata.Id, StringComparison.Ordinal)) is not { } metadataModule || 
+                if (context.GetModule(metadata.Id) is not { } metadataModule || 
                     !isSelected(metadataModule)) continue;
 
                 // If the incompatible mod is selected, this mod should be disabled
@@ -515,20 +549,15 @@ namespace Bannerlord.ModuleManager
             // If another mod declared incompatibility and is selected, disable this
             if (validateDependencies)
             {
-                foreach (var module in modules)
+                // Only the modules that declare it, a module declares an ID once
+                foreach (var module in context.GetModulesDeclaringIncompatible(targetModule.Id))
                 {
                     // Ignore self
                     if (string.Equals(module.Id, targetModule.Id, StringComparison.Ordinal)) continue;
                     if (!isSelected(module)) continue;
 
-                    foreach (var metadata in module.DependenciesIncompatiblesDistinct())
-                    {
-                        if (!string.Equals(metadata.Id, targetModule.Id, StringComparison.Ordinal)) continue;
-
-                        // If the incompatible mod is selected, this mod is disabled
-                        if (isSelected(module))
-                            yield return new ModuleIncompatibleIssue(targetModule, module);
-                    }
+                    // If the incompatible mod is selected, this mod is disabled
+                    yield return new ModuleIncompatibleIssue(targetModule, module);
                 }
             }
         }

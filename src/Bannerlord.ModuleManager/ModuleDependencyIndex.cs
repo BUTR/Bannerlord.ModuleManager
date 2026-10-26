@@ -32,7 +32,6 @@ namespace Bannerlord.ModuleManager
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Runtime.CompilerServices;
 
     /// <summary>
     /// A module list prepared for <see cref="ModuleUtilities.GetDependencies(ModuleDependencyIndex, ModuleInfoExtended)"/>:
@@ -51,13 +50,13 @@ namespace Bannerlord.ModuleManager
         private readonly bool _skipExternalDependencies;
 
         // The first module with each ID, the one a FirstOrDefault over the list finds
-        private readonly Dictionary<string, ModuleInfoExtended> _modulesById = new(StringComparer.Ordinal);
+        private readonly ModuleIdDictionary<ModuleInfoExtended> _modulesById = new();
 
         // For each ID, the modules that declare LoadAfterThis for it, in the order of the list
-        private readonly Dictionary<string, List<ModuleInfoExtended>> _modulesLoadingAfter = new(StringComparer.Ordinal);
+        private readonly ModuleIdDictionary<List<ModuleInfoExtended>> _modulesLoadingAfter = new();
 
         // Each module's distinct LoadBeforeThis dependencies, computed once
-        private readonly Dictionary<ModuleInfoExtended, DependentModuleMetadata[]> _loadBeforeThis = new(ReferenceComparer.Instance);
+        private readonly Dictionary<ModuleInfoExtended, DependentModuleMetadata[]> _loadBeforeThis = new(ModuleReferenceComparer.Instance);
 
         public IReadOnlyCollection<ModuleInfoExtended> Modules { get; }
 
@@ -69,8 +68,7 @@ namespace Bannerlord.ModuleManager
 
             foreach (var module in modules)
             {
-                if (!_modulesById.ContainsKey(module.Id))
-                    _modulesById.Add(module.Id, module);
+                _modulesById.AddIfMissing(module.Id, module);
 
                 if (_skipExternalDependencies)
                     continue;
@@ -121,16 +119,6 @@ namespace Bannerlord.ModuleManager
                 _loadBeforeThis.Add(module, metadatas);
             }
             return metadatas;
-        }
-
-        // Records compare by value, a cache only needs the same instance
-        private sealed class ReferenceComparer : IEqualityComparer<ModuleInfoExtended>
-        {
-            public static readonly ReferenceComparer Instance = new();
-
-            public bool Equals(ModuleInfoExtended? x, ModuleInfoExtended? y) => ReferenceEquals(x, y);
-
-            public int GetHashCode(ModuleInfoExtended obj) => RuntimeHelpers.GetHashCode(obj);
         }
     }
 #nullable restore
