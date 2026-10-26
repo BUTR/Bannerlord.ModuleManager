@@ -85,48 +85,28 @@ namespace Bannerlord.ModuleManager
         /// </summary>
         public static IEnumerable<ModuleInfoExtended> GetDependencies(IReadOnlyCollection<ModuleInfoExtended> modules, ModuleInfoExtended module, HashSet<ModuleInfoExtended> visited, ModuleSorterOptions options)
         {
+            return GetDependencies(new ModuleDependencyIndex(modules, options), module, visited);
+        }
+        /// <summary>
+        /// Returns all dependencies for a module. Reuse the index for every module of its list, like a sort does
+        /// </summary>
+        public static IEnumerable<ModuleInfoExtended> GetDependencies(ModuleDependencyIndex index, ModuleInfoExtended module)
+        {
+            var visited = new HashSet<ModuleInfoExtended>();
+            return GetDependencies(index, module, visited);
+        }
+        /// <summary>
+        /// Returns all dependencies for a module. Reuse the index for every module of its list, like a sort does
+        /// </summary>
+        public static IEnumerable<ModuleInfoExtended> GetDependencies(ModuleDependencyIndex index, ModuleInfoExtended module, HashSet<ModuleInfoExtended> visited)
+        {
             var dependencies = new List<ModuleInfoExtended>();
-            ModuleSorter.Visit(module, x => GetDependenciesInternal(modules, x, options), moduleToAdd =>
+            ModuleSorter.Visit(module, index.GetDirectDependencies, moduleToAdd =>
             {
                 if (moduleToAdd != module)
                     dependencies.Add(moduleToAdd);
             }, visited);
             return dependencies;
-        }
-        private static IEnumerable<ModuleInfoExtended> GetDependenciesInternal(IReadOnlyCollection<ModuleInfoExtended> modules, ModuleInfoExtended module, ModuleSorterOptions options)
-        {
-            foreach (var dependentModuleMetadata in module.DependenciesLoadBeforeThisDistinct())
-            {
-                if (dependentModuleMetadata.IsOptional && options.SkipOptionals)
-                    continue;
-
-                var moduleInfo = modules.FirstOrDefault(x => string.Equals(x.Id, dependentModuleMetadata.Id, StringComparison.Ordinal));
-                if (!dependentModuleMetadata.IsOptional && moduleInfo is null)
-                {
-                    // We should not hit this place. If we do, the module list is invalid
-                }
-                else if (moduleInfo is not null)
-                {
-                    yield return moduleInfo;
-                }
-            }
-
-            if (!options.SkipExternalDependencies)
-            {
-                foreach (var moduleInfo in modules)
-                {
-                    foreach (var dependentModuleMetadata in moduleInfo.DependenciesLoadAfterThisDistinct())
-                    {
-                        if (dependentModuleMetadata.IsOptional && options.SkipOptionals)
-                            continue;
-
-                        if (!string.Equals(dependentModuleMetadata.Id, module.Id, StringComparison.Ordinal))
-                            continue;
-
-                        yield return moduleInfo;
-                    }
-                }
-            }
         }
 
         #region Polyfills
@@ -639,23 +619,24 @@ namespace Bannerlord.ModuleManager
         public static void EnableModule(IReadOnlyCollection<ModuleInfoExtended> modules, ModuleInfoExtended targetModule, Func<ModuleInfoExtended, bool> getSelected, Action<ModuleInfoExtended, bool> setSelected, Func<ModuleInfoExtended, bool> getDisabled, Action<ModuleInfoExtended, bool> setDisabled)
         {
             var visited = new HashSet<ModuleInfoExtended>();
-            EnableModuleInternal(modules, targetModule, visited, getSelected, setSelected, getDisabled, setDisabled);
+            // One index for the whole recursion, it asks for the dependencies of many modules of the same list
+            var index = new ModuleDependencyIndex(modules, new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true });
+            EnableModuleInternal(modules, index, targetModule, visited, getSelected, setSelected, getDisabled, setDisabled);
         }
-        private static void EnableModuleInternal(IReadOnlyCollection<ModuleInfoExtended> modules, ModuleInfoExtended targetModule, HashSet<ModuleInfoExtended> visitedModules, Func<ModuleInfoExtended, bool> getSelected, Action<ModuleInfoExtended, bool> setSelected, Func<ModuleInfoExtended, bool> getDisabled, Action<ModuleInfoExtended, bool> setDisabled)
+        private static void EnableModuleInternal(IReadOnlyCollection<ModuleInfoExtended> modules, ModuleDependencyIndex index, ModuleInfoExtended targetModule, HashSet<ModuleInfoExtended> visitedModules, Func<ModuleInfoExtended, bool> getSelected, Action<ModuleInfoExtended, bool> setSelected, Func<ModuleInfoExtended, bool> getDisabled, Action<ModuleInfoExtended, bool> setDisabled)
         {
             if (!visitedModules.Add(targetModule)) return;
 
             setSelected(targetModule, true);
 
-            var opt = new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true };
-            var dependencies = GetDependencies(modules, targetModule, opt).ToArray();
+            var dependencies = GetDependencies(index, targetModule).ToArray();
 
             // Select all dependencies
             foreach (var module in modules)
             {
                 if (!getSelected(module) && dependencies.Any(d => string.Equals(d.Id, module.Id, StringComparison.Ordinal)))
                 {
-                    EnableModuleInternal(modules, module, visitedModules, getSelected, setSelected, getDisabled, setDisabled);
+                    EnableModuleInternal(modules, index, module, visitedModules, getSelected, setSelected, getDisabled, setDisabled);
                 }
             }
             
@@ -670,7 +651,7 @@ namespace Bannerlord.ModuleManager
 
                 if (!getSelected(metadataModule))
                 {
-                    EnableModuleInternal(modules, metadataModule, visitedModules, getSelected, setSelected, getDisabled, setDisabled);
+                    EnableModuleInternal(modules, index, metadataModule, visitedModules, getSelected, setSelected, getDisabled, setDisabled);
                 }
             }
 
@@ -681,7 +662,7 @@ namespace Bannerlord.ModuleManager
                 
                 if (getSelected(metadataModule))
                 {
-                    DisableModuleInternal(modules, metadataModule, visitedModules, getSelected, setSelected, getDisabled, setDisabled);
+                    DisableModuleInternal(modules, index, metadataModule, visitedModules, getSelected, setSelected, getDisabled, setDisabled);
                 }
 
                 setDisabled(metadataModule, true);
@@ -696,7 +677,7 @@ namespace Bannerlord.ModuleManager
                     
                     if (getSelected(module))
                     {
-                        DisableModuleInternal(modules, module, visitedModules, getSelected, setSelected, getDisabled, setDisabled);
+                        DisableModuleInternal(modules, index, module, visitedModules, getSelected, setSelected, getDisabled, setDisabled);
                     }
 
                     // We need to re-check that everything is alright with the external dependency
@@ -711,24 +692,24 @@ namespace Bannerlord.ModuleManager
         public static void DisableModule(IReadOnlyCollection<ModuleInfoExtended> modules, ModuleInfoExtended targetModule, Func<ModuleInfoExtended, bool> getSelected, Action<ModuleInfoExtended, bool> setSelected, Func<ModuleInfoExtended, bool> getDisabled, Action<ModuleInfoExtended, bool> setDisabled)
         {
             var visited = new HashSet<ModuleInfoExtended>();
-            DisableModuleInternal(modules, targetModule, visited, getSelected, setSelected, getDisabled, setDisabled);
+            // One index for the whole recursion, it asks for the dependencies of many modules of the same list
+            var index = new ModuleDependencyIndex(modules, new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true });
+            DisableModuleInternal(modules, index, targetModule, visited, getSelected, setSelected, getDisabled, setDisabled);
         }
-        private static void DisableModuleInternal(IReadOnlyCollection<ModuleInfoExtended> modules, ModuleInfoExtended targetModule, HashSet<ModuleInfoExtended> visitedModules, Func<ModuleInfoExtended, bool> getSelected, Action<ModuleInfoExtended, bool> setSelected, Func<ModuleInfoExtended, bool> getDisabled, Action<ModuleInfoExtended, bool> setDisabled)
+        private static void DisableModuleInternal(IReadOnlyCollection<ModuleInfoExtended> modules, ModuleDependencyIndex index, ModuleInfoExtended targetModule, HashSet<ModuleInfoExtended> visitedModules, Func<ModuleInfoExtended, bool> getSelected, Action<ModuleInfoExtended, bool> setSelected, Func<ModuleInfoExtended, bool> getDisabled, Action<ModuleInfoExtended, bool> setDisabled)
         {
             if (!visitedModules.Add(targetModule)) return;
 
             setSelected(targetModule, false);
 
-            var opt = new ModuleSorterOptions { SkipOptionals = true, SkipExternalDependencies = true };
-
             // Vanilla check
             // Deselect all modules that depend on this module if they are selected
             foreach (var module in modules)
             {
-                var dependencies = GetDependencies(modules, module, opt);
+                var dependencies = GetDependencies(index, module);
                 if (getSelected(module) && dependencies.Any(d => string.Equals(d.Id, targetModule.Id, StringComparison.Ordinal)))
                 {
-                    DisableModuleInternal(modules, module, visitedModules, getSelected, setSelected, getDisabled, setDisabled);
+                    DisableModuleInternal(modules, index, module, visitedModules, getSelected, setSelected, getDisabled, setDisabled);
                 }
                 
                 // Enable modules that are marked as LoadAfterThis
@@ -742,7 +723,7 @@ namespace Bannerlord.ModuleManager
                     
                     if (getSelected(module))
                     {
-                        DisableModuleInternal(modules, module, visitedModules, getSelected, setSelected, getDisabled, setDisabled);
+                        DisableModuleInternal(modules, index, module, visitedModules, getSelected, setSelected, getDisabled, setDisabled);
                     }
                 }
                 

@@ -66,7 +66,8 @@ namespace Bannerlord.ModuleManager
                 .ThenByDescending(mim => mim.Id, new AlphanumComparatorFast())
                 .ToArray();
 
-            return TopologySort(correctModules, module => ModuleUtilities.GetDependencies(correctModules, module));
+            var index = new ModuleDependencyIndex(correctModules, new ModuleSorterOptions { SkipOptionals = false, SkipExternalDependencies = false });
+            return TopologySort(correctModules, module => ModuleUtilities.GetDependencies(index, module));
         }
         public static IList<ModuleInfoExtended> Sort(IReadOnlyCollection<ModuleInfoExtended> source, ModuleSorterOptions options)
         {
@@ -76,7 +77,8 @@ namespace Bannerlord.ModuleManager
                 .ThenByDescending(mim => mim.Id, new AlphanumComparatorFast())
                 .ToArray();
 
-            return TopologySort(correctModules, module => ModuleUtilities.GetDependencies(correctModules, module, options));
+            var index = new ModuleDependencyIndex(correctModules, options);
+            return TopologySort(correctModules, module => ModuleUtilities.GetDependencies(index, module));
         }
 
         public static IList<T> TopologySort<T>(IEnumerable<T> source, Func<T, IEnumerable<T>> getDependencies)
